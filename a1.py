@@ -31,14 +31,11 @@ def make_rand_8puzzle():
     #verify solvability of createRandom8Tuple
     while not puzzle.check_solvability(state):
         print("Generated 8-puzzle not solvable, trying again...")
-        
-        #puzzle = EightPuzzle(state, goal)
-        puzzle = EightPuzzle(state)
-
+        state = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+        puzzle.initial = state
         puzzle = shufflePuzzle(puzzle)
         state = puzzle.initial
-        
-    print("Found solvable 8-puzzle")
+
     return puzzle
 
 def display(state):
@@ -61,10 +58,19 @@ def display(state):
 
 # ~~Heuristics~~ #
 # Misplaced Tile Heuristic
-# need to redefine to take max
-# taken from method EightPuzzle.h()
+# redefining from search.py to make it admissible
 def MisplacedTileHeuristic(node, goal = (1,2,3,4,5,6,7,8,0)):
-    return sum(s != g for (s, g) in zip(node.state, goal))
+    #total number of tiles out of position
+    count = 0
+    #location of current stateTile
+    tilePosition = 0
+    (1,5,7,6,0,2,1,8)
+    for nodeTile in node.state:
+        if nodeTile != goal[tilePosition] and nodeTile != 0:
+            count += 1
+        tilePosition += 1
+    
+    return count
 
 # Manhattan Heuristic
 def ManhattanHeuristic(node):
@@ -91,11 +97,8 @@ def ManhattanHeuristic(node):
         # all other tiles must be moved left 1 index
         if nodeTile != 0:
             tileHomePosition = nodeTile - 1
-        else: 
-            tileHomePosition = 8
-
-        cost += listEstimation[tileHomePosition][tilePosition]
-        tilePosition += 1
+            cost += listEstimation[tileHomePosition][tilePosition]
+            tilePosition += 1
         
     return cost
 
@@ -135,18 +138,17 @@ def astarSearch(problem, h=None):
 
 #seach using Misplaced Tile heuristic
 def searchAStarMisplacedTile(state):
-    print("Solving with Misplaced Tile heuristic...")
+    print("\nSolving with Misplaced Tile heuristic...")
     puzzle = EightPuzzle(state)
     start_time = time.time()
-    # TODO modify A* algorithm to display total number of tiles moved and total number of tiles remaining in frontier
     # [0] = node, [1] = # of nodes popped from frontier
-    tupleSolution = astarSearch(puzzle)
+    tupleSolution = astarSearch(puzzle, MisplacedTileHeuristic)
     elapsed_time = time.time() - start_time
     printHeuristicResults(tupleSolution, elapsed_time)
 
 #search using Manhattan heuristic
 def searchAStarManhattan(state):
-    print("Solving with Manhattan heuristic...")
+    print("\nSolving with Manhattan heuristic...")
     puzzle = EightPuzzle(state)
     start_time = time.time()
     tupleSolution = astarSearch(puzzle, ManhattanHeuristic)
@@ -155,7 +157,7 @@ def searchAStarManhattan(state):
 
 #search using max of Misplaced Tile and Manhattan
 def searchAStarMax(state):
-    print("Solving with max(Misplaced, Manhattan) heuristic...")
+    print("\nSolving with max(Misplaced, Manhattan) heuristic...")
     puzzle = EightPuzzle(state)
     start_time = time.time()
     tupleSolution = astarSearch(puzzle, maxMisplacedManhattan)
@@ -300,18 +302,18 @@ def maxMisplacedManhattanDuck(node):
 # ~~ A* Calls ~~ #
 #seach using Misplaced Tile heuristic
 def searchAStarMisplacedTileDuck(state):
-    print("Solving with Misplaced Tile heuristic...")
+    print("\nSolving with Misplaced Tile heuristic...")
     puzzle = DuckPuzzle(state)
     start_time = time.time()
     # TODO modify A* algorithm to display total number of tiles moved and total number of tiles remaining in frontier
     # [0] = node, [1] = # of nodes popped from frontier
-    tupleSolution = astarSearch(puzzle)
+    tupleSolution = astarSearch(puzzle, MisplacedTileHeuristic)
     elapsed_time = time.time() - start_time
     printHeuristicResults(tupleSolution, elapsed_time)
 
 #search using Manhattan heuristic
 def searchAStarManhattanDuck(state):
-    print("Solving with Manhattan heuristic...")
+    print("\nSolving with Manhattan heuristic...")
     puzzle = DuckPuzzle(state)
     start_time = time.time()
     tupleSolution = astarSearch(puzzle, ManhattanHeuristicDuck)
@@ -320,7 +322,7 @@ def searchAStarManhattanDuck(state):
 
 #search using max of Misplaced Tile and Manhattan
 def searchAStarMaxDuck(state):
-    print("Solving with max(Misplaced, Manhattan) heuristic...")
+    print("\nSolving with max(Misplaced, Manhattan) heuristic...")
     puzzle = DuckPuzzle(state)
     start_time = time.time()
     tupleSolution = astarSearch(puzzle, maxMisplacedManhattanDuck)
@@ -353,7 +355,7 @@ def displayDuck(state):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Question 2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 # Generate and solve 10 EightPuzzle objects
 
-print("# ------------ Solving EightPuzzle ------------ #")
+print("\n# ------------ Solving EightPuzzle ------------ #")
 
 
 listEightPuzzle = []
@@ -361,9 +363,13 @@ for i in range(10):
     eightPuzzle = make_rand_8puzzle()
     listEightPuzzle.append(eightPuzzle)
 
+counter = 0
 for puzzle in listEightPuzzle:
-    display(puzzle.initial)
+    print("\nSovling Puzzle #" + counter + ":")
+    counter += 1
 
+    display(puzzle.initial)
+    
     # search using Misplaced Tile heuristic
     searchAStarMisplacedTile(puzzle.initial)
 
@@ -384,7 +390,11 @@ for i in range(10):
     duckPuzzle = makeRandomDuckPuzzle()
     listDuckPuzzle.append(duckPuzzle)
 
+counter = 0
 for puzzle in listDuckPuzzle:
+    print("\nSovling Puzzle #" + counter + ":")
+    counter += 1
+    
     displayDuck(puzzle.initial)
 
     # search using Misplaced Tile heuristic

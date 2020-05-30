@@ -1,4 +1,5 @@
-#a1.py
+# a1.py
+# Cameron Savage - 301310824
 
 from search import *
 import time

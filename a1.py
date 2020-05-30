@@ -171,15 +171,6 @@ def solveEightPuzzle(state, heuristicName):
     elapsed_time = time.time() - start_time
     printHeuristicResults(tupleSolution, elapsed_time)
 
-#search using max of Misplaced Tile and Manhattan
-def searchAStarMax(state):
-    print("\nSolving with max(Misplaced, Manhattan) heuristic...")
-    puzzle = EightPuzzle(state)
-    start_time = time.time()
-    tupleSolution = astarSearch(puzzle, maxMisplacedManhattan)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-
 
 # -------------------------- Question 3 -------------------------- #
 
@@ -402,4 +393,4 @@ for puzzle in listDuckPuzzle:
     solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.ManhattanDuck)
 
     # search using max of Manhattan and Misplaced Tile
-    solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.MaxEight)
+    solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.MaxDuck)

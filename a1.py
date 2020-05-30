@@ -148,7 +148,6 @@ def astarSearch(problem, h=None):
                     frontier.append(child)
     return None
 
-
 #call A* Search using a specific heuristic
 def solveEightPuzzle(state, heuristicName):
     puzzle = EightPuzzle(state)
@@ -174,25 +173,6 @@ def solveEightPuzzle(state, heuristicName):
     elapsed_time = time.time() - start_time
     printHeuristicResults(tupleSolution, elapsed_time)
 
-'''
-def searchAStarMisplacedTile(state):
-    print("\nSolving with Misplaced Tile heuristic...")
-    puzzle = EightPuzzle(state)
-    start_time = time.time()
-    # tupleSolution: [0] = node, [1] = # of nodes popped from frontier
-    tupleSolution = astarSearch(puzzle, MisplacedTileHeuristic)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-
-#search using Manhattan heuristic
-def searchAStarManhattan(state):
-    print("\nSolving with Manhattan heuristic...")
-    puzzle = EightPuzzle(state)
-    start_time = time.time()
-    tupleSolution = astarSearch(puzzle, ManhattanHeuristic)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-'''
 #search using max of Misplaced Tile and Manhattan
 def searchAStarMax(state):
     print("\nSolving with max(Misplaced, Manhattan) heuristic...")
@@ -352,34 +332,6 @@ def solveDuckPuzzle(state, heuristicName):
     elapsed_time = time.time() - start_time
     printHeuristicResults(tupleSolution, elapsed_time)
 
-'''
-def searchAStarMisplacedTileDuck(state):
-    print("\nSolving with Misplaced Tile heuristic...")
-    puzzle = DuckPuzzle(state)
-    start_time = time.time()
-    # [0] = node, [1] = # of nodes popped from frontier
-    tupleSolution = astarSearch(puzzle, MisplacedTileHeuristic)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-
-def searchAStarManhattanDuck(state):
-    print("\nSolving with Manhattan heuristic...")
-    puzzle = DuckPuzzle(state)
-    start_time = time.time()
-    tupleSolution = astarSearch(puzzle, ManhattanHeuristicDuck)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-
-#search using max of Misplaced Tile and Manhattan
-def searchAStarMaxDuck(state):
-    print("\nSolving with max(Misplaced, Manhattan) heuristic...")
-    puzzle = DuckPuzzle(state)
-    start_time = time.time()
-    tupleSolution = astarSearch(puzzle, maxMisplacedManhattanDuck)
-    elapsed_time = time.time() - start_time
-    printHeuristicResults(tupleSolution, elapsed_time)
-'''
-
 def displayDuck(state):
     puzzle = DuckPuzzle(state)
     strRow = ""
@@ -421,15 +373,12 @@ for puzzle in listEightPuzzle:
     
     # search using Misplaced Tile heuristic
     solveEightPuzzle(puzzle.initial, PuzzleHeuristics.MisplacedTile)
-    #searchAStarMisplacedTile(puzzle.initial)
 
     #search using Mahattan heuristic
     solveEightPuzzle(puzzle.initial, PuzzleHeuristics.ManhattanEight)
-    #searchAStarManhattan(puzzle.initial)
 
     #search using max of Manhattan and Misplaced Tile
     solveEightPuzzle(puzzle.initial, PuzzleHeuristics.MaxEight)
-    #searchAStarMax(puzzle.initial)
 
 # ~~~~~ Duck Puzzle ~~~~~ #
 
@@ -450,12 +399,9 @@ for puzzle in listDuckPuzzle:
 
     # search using Misplaced Tile heuristic
     solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.MisplacedTile)
-    #searchAStarMisplacedTileDuck(puzzle.initial)
 
     # search using Mahattan heuristic
     solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.ManhattanDuck)
-    #searchAStarManhattanDuck(puzzle.initial)
 
     # search using max of Manhattan and Misplaced Tile
     solveDuckPuzzle(puzzle.initial, PuzzleHeuristics.MaxEight)
-    #searchAStarMaxDuck(puzzle.initial)

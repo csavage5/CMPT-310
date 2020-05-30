@@ -4,11 +4,8 @@ from search import *
 import time
 from enum import Enum
 
-# python passing info
-# **modifying** a passed object will maintain pass by reference
-# **reassigning** a passed object will break shared reference, act as pass by value
+# ---- Used Across Different Heuristics and Questions ---- #
 
-# ---- Used Across Heuristics and Questions ---- #
 class PuzzleHeuristics(Enum):
     MisplacedTile = 1
     ManhattanEight = 2
@@ -85,6 +82,7 @@ def MisplacedTileHeuristic(node, goal = (1,2,3,4,5,6,7,8,0)):
                 count += 1
     return count
 
+# Manhattan Heuristic for EightPuzzle
 def ManhattanHeuristic(node):
     #pre-computed Manhattan estimation - retrieved from notes on Chapter 3
     listEstimation = [
@@ -273,7 +271,7 @@ def makeRandomDuckPuzzle():
     #print("Shuffled Duck Puzzle")
     return puzzle
 
-#Manhattan heuristic for DuckPuzzle
+# Manhattan heuristic for DuckPuzzle
 def ManhattanHeuristicDuck(node):
     #pre-computed Manhattan estimation - modified for Duck Puzzle
     listEstimation = [
@@ -307,7 +305,7 @@ def ManhattanHeuristicDuck(node):
 def maxMisplacedManhattanDuck(node):
     return max(ManhattanHeuristicDuck(node), MisplacedTileHeuristic(node))
 
-#call A* Search using a specific heuristic
+# call A* Search using a specific heuristic
 def solveDuckPuzzle(state, heuristicName):
     puzzle = DuckPuzzle(state)
     

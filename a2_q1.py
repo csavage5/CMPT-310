@@ -1,7 +1,6 @@
 # a1.py
 # Cameron Savage - 301310824
 
-import csp
 import random
 
 def rand_graph(p, n):
@@ -35,9 +34,9 @@ def rand_graph(p, n):
                 if (adjacent not in nodeValue):
                     nodeValue.append(adjacent)
                     graph.update({node : nodeValue})
-                    
+    print("Friendship dictionary: ")          
     print(graph)
 
+    return graph
 
-
-rand_graph(0.6, 9)
+#rand_graph(0.6, 9)

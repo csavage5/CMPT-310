@@ -1,4 +1,4 @@
-# a1.py
+# a1_q1.py
 # Cameron Savage - 301310824
 
 import random
@@ -39,4 +39,4 @@ def rand_graph(p, n):
 
     return graph
 
-#rand_graph(0.6, 9)
+rand_graph(0.35, 4)

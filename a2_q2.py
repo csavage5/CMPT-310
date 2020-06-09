@@ -15,7 +15,7 @@ def check_teams(graph, csp_sol):
         for adjNode in nodeValue:
             # if adjNode < node, it has already been checked
             if adjNode > node:
-                print("Adjacent node team: " + str(csp_sol.get(adjNode)) + " | current node team: " + str(nodeTeam))
+                print("Adjacent node " + str(adjNode) + "'s team: " + str(csp_sol.get(adjNode)) + " | current node " + str(node) + "'s team: " + str(nodeTeam))
                 if csp_sol.get(adjNode) == nodeTeam:
                     return False
 

@@ -13,7 +13,7 @@ def rand_graph(p, n):
     for node in nodeList:
 
         for adjacent in nodeList:
-            randChoice = random.randint(0, 1000) * 0.001
+            randChoice = random.randint(0, 100) * 0.01
             if node != adjacent and randChoice < p:
                 # adjacent node is selected
                 # get the current values for node and adjacent node

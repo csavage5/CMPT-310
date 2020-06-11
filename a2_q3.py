@@ -8,6 +8,18 @@ import time
 from a2_q1 import rand_graph
 from a2_q2 import check_teams
 
+def MapColoringCSP(colors, neighbors):
+    """
+    Redefined from csp.py to construct a revised CSP class
+
+    Make a CSP for the problem of coloring a map with different colors
+    for any two adjacent regions. Arguments are a list of colors, and a
+    dict of {region: [neighbor,...]} entries. This dict may also be
+    specified as a string of the form defined by parse_neighbors."""
+    if isinstance(neighbors, str):
+        neighbors = csp.parse_neighbors(neighbors)
+    return CSP(list(neighbors.keys()), csp.UniversalDict(colors), neighbors, csp.different_values_constraint)
+
 class CSP(Problem):
     """
     Redefined from csp.py to include member field to track number 
@@ -156,108 +168,102 @@ class CSP(Problem):
         return [var for var in self.variables
                 if self.nconflicts(var, current[var], current) > 0]
 
-def backtracking_search(csp, select_unassigned_variable = csp.first_unassigned_variable,
-                        order_domain_values = csp.unordered_domain_values, 
-                        inference = csp.no_inference):
-    """Redefinition of backtracking_search from csp.py to include counting of
-    unassignments"""
-
-    def backtrack(assignment: dict):
-        numAssignments = 0
-        numUnassignments = 0
-
-        if len(assignment) == len(csp.variables):
-            return [assignment, numAssignments, numUnassignments]
-        var = select_unassigned_variable(assignment, csp)
-
-        for value in order_domain_values(var, assignment, csp):
-
-            if 0 == csp.nconflicts(var, value, assignment):
-                csp.assign(var, value, assignment)
-                numAssignments += 1
-                #print("Current # of assignments: " + str(numAssignments))
-                removals = csp.suppose(var, value)
-
-                if inference(csp, var, value, assignment, removals):
-                    #print("calling recursion...")
-                    result = backtrack(assignment)
-                    #print("old # of assignments: " + str(numAssignments))
-                    numAssignments += result[1]
-                    numUnassignments += result[2]
-                    #print("new # of assignments: " + str(numAssignments))
-                    
-                    if result[0] is not None:
-                        return [result[0], numAssignments, numUnassignments]
-                csp.restore(removals)
-
-        csp.unassign(var, assignment)
-        numUnassignments += 1
-        #print("unassigning...")
-        return [None, numAssignments, numUnassignments]
-
-    result = backtrack({})
-    #print("Total # of assignments: " + str(result[1]))
-    #print("Total # of unassignments: " + str(result[2]))
-    assert result[0] is None or csp.goal_test(result[0])
-    return result[0]
-
 def run_q3(hardcoded = False): 
-    n = 31
-    cycles = 5
-    # outer: cycle # ; inner: graph instance
+    n = 10
+    trials = 5
+    # outer index: trial #, inner: graph #
     totalRuntime = []
     totalAssignments = []
     totalUnassignments = []
     totalTeams = []
 
-    #for i in range(cycles):
-    for i in range(1):
-        '''
+    for _ in range(trials):
+        
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
-        '''
-        n = 15
-        cycles = 1
-        graphs = [rand_graph(0.4, n)]
-        # stores data from each solution
+        
+        #graphs = [rand_graph(0.4, n)]
+
+        # stores data from each trial to append to total lists
         runtime = []
         assignments = []
         unassignments = []
         teams = []
-
+        # step through different colours
         colours = list(range(n))
 
         for graph in graphs:
-            
+
+            #debug
+            print("Graph:")
+            print(graph)
+
             # test increasing numbers of colour combinations
+            deltaTime = 0
+            elapsedTime = 0
+            startTime = 0
+
+            deltaAssigns = 0
+            deltaUnassigns = 0
+
             result = None
             attemptCounter = 1
             while result == None:
-                print("Attempting Backtracking with " + attemptCounter + " teams...")
-                cspPuzzle = csp.MapColoringCSP(colours[0:attemptCounter], graph)
-                result = backtracking_search(cspPuzzle)
+                print("Attempting Backtracking with " + str(attemptCounter) + " teams...")
+                cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
+                
+                startTime = time.time()
+                result = csp.backtracking_search(cspPuzzle)
+                elapsedTime = time.time() - startTime
+                deltaTime += elapsedTime
+
+                #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
+                deltaAssigns += cspPuzzle.nassigns
+                deltaUnassigns += cspPuzzle.nunassigns
+
                 attemptCounter += 1
 
-            print("Completed with " + str( len( numOfTeams(result) ) ) + " teams")
+            # Display and save information
+            runtime.append(deltaTime)
+            #print("Completed in " + str(deltaTime) + " seconds")
+            teams.append(numOfTeams(result))
+            #print("Completed with " + str( len( teams[-1] ) ) + " teams")
+            assignments.append(deltaAssigns)
+            #print("Total number of Assignments: " + str(assignments[-1]))
+            unassignments.append(deltaUnassigns)
+            #print("Total number of Unassignments: " + str(unassignments[-1]))
             print(result)
+            #print("Solution is " + str(check_teams(graph, result)))
 
-            #elapsedTime = time.time() - startTime
+            # end of graph loop
 
-            # runtime.append(elapsedTime)
-            #print("Solution Corect? " + str(check_teams(graph, result[0])))
-            # print(cspPuzzle.neighbors)
-            # print(result)
-            # print(str(check_teams(cspPuzzle.neighbors, result)))
+        # end of trial loop
 
-        # totalRuntime.append(runtime)
+        # trial over, display info so far
+        totalRuntime.append(runtime)
+        totalAssignments.append(assignments)
+        totalUnassignments.append(unassignments)
+        totalTeams.append(teams)
+        displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams)
+
 
 def numOfTeams(result: dict) :
-    size = len(result)
     teams = []
-
-    for i in range(size):
+    for i in range(len(result)):
         if result.get(i) not in teams:
             teams.append(result.get(i))
 
-    return teams
+    return len(teams)
+
+def displayFormattedData(time, assigns, unassigns, teams):
+    print("|    Trial #    |  Time (seconds)  |     Assigns    |    Unassigns    |  # of Teams  |")
+
+    for trial in range (len(time)):
+        for graph in range(len(time[trial])):
+            print("      " + str((trial * 6) + (graph + 1)), end = "        | ")
+            print("      " + str(round(time[trial][graph], 2)), end = "\t | ")
+            print("      " + str(assigns[trial][graph]), end = "\t | ")
+            print("      " + str(unassigns[trial][graph]), end = "\t | ")
+            print("      " + str(teams[trial][graph]), end = "\t | \n")
+
 run_q3()

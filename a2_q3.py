@@ -169,7 +169,7 @@ class CSP(Problem):
                 if self.nconflicts(var, current[var], current) > 0]
 
 def run_q3(hardcoded = False): 
-    n = 12
+    n = 31
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
@@ -231,7 +231,7 @@ def run_q3(hardcoded = False):
 
                 attemptCounter += 1
 
-            print("Found solution: " + str(numOfTeams(result)). + "\n\n")
+            print("Found solution: " + str(numOfTeams(result)) + "\n\n")
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)

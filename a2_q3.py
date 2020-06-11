@@ -169,19 +169,20 @@ class CSP(Problem):
                 if self.nconflicts(var, current[var], current) > 0]
 
 def run_q3(hardcoded = False): 
-    n = 10
+    n = 12
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
     totalAssignments = []
     totalUnassignments = []
     totalTeams = []
+    totalAcChecks = []
 
     for _ in range(trials):
         
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
-        
+        graphCounter = 1
         #graphs = [rand_graph(0.4, n)]
 
         # stores data from each trial to append to total lists
@@ -189,16 +190,15 @@ def run_q3(hardcoded = False):
         assignments = []
         unassignments = []
         teams = []
-        # step through different colours
+        acChecks = []
+        # iterate through to grow colour / team size
         colours = list(range(n))
 
         for graph in graphs:
-
             #debug
             # print("Graph:")
             # print(graph)
-
-            # test increasing numbers of colour combinations
+            deltaChecks = 0
             deltaTime = 0
             elapsedTime = 0
             startTime = 0
@@ -208,12 +208,19 @@ def run_q3(hardcoded = False):
 
             result = None
             attemptCounter = 1
+            print("Solving random graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
             while result == None:
-                #print("Attempting Backtracking with " + str(attemptCounter) + " teams...")
+                print("--> Attempting with " + str(attemptCounter) + " teams...")
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
                 startTime = time.time()
-                result = csp.backtracking_search(cspPuzzle)
+                #print("----> Number of AC3 checks: " + str(csp.AC3(cspPuzzle)[1]))
+                deltaChecks += csp.AC3(cspPuzzle)[1]
+                elapsedTime = time.time() - startTime
+                deltaTime += elapsedTime
+
+                startTime = time.time()
+                result = csp.backtracking_search(cspPuzzle, inference = csp.forward_checking)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
 
@@ -223,17 +230,21 @@ def run_q3(hardcoded = False):
 
                 attemptCounter += 1
 
+            print("Found solution.\n\n")
+            graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)
             #print("Completed in " + str(deltaTime) + " seconds")
             teams.append(numOfTeams(result))
-            #print("Completed with " + str( len( teams[-1] ) ) + " teams")
+            # print(result)
+            # print("Completed with " + str( teams[-1] ) + " teams")
             assignments.append(deltaAssigns)
             #print("Total number of Assignments: " + str(assignments[-1]))
             unassignments.append(deltaUnassigns)
             #print("Total number of Unassignments: " + str(unassignments[-1]))
             #print(result)
             #print("Solution is " + str(check_teams(graph, result)))
+            acChecks.append(deltaChecks)
 
             # end of graph loop
 
@@ -244,28 +255,31 @@ def run_q3(hardcoded = False):
         totalAssignments.append(assignments)
         totalUnassignments.append(unassignments)
         totalTeams.append(teams)
-        displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams)
+        totalAcChecks.append(acChecks)
+        displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams, totalAcChecks)
 
 
-def numOfTeams(result: dict) :
-    teams = []
+def numOfTeams(result: dict) -> int:
+    numTeams = []
     for i in range(len(result)):
-        if result.get(i) not in teams:
-            teams.append(result.get(i))
+        if result.get(i) not in numTeams:
+            numTeams.append(result.get(i))
 
-    return len(teams)
+    return len(numTeams)
 
-def displayFormattedData(time, assigns, unassigns, teams):
+def displayFormattedData(time, assigns, unassigns, teams, acChecks):
     compTrials = len(time)
-    print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + " updating table...")
-    print("|    Trial #    |  Time (seconds)  |     Assigns    |    Unassigns    |  # of Teams  |")
+    print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
+    print("|  Trial # \t|  Time (seconds)  |  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
 
     for trial in range (compTrials):
         for graph in range(len(time[trial])):
-            print("      " + str((trial * 6) + (graph + 1)), end = "        | ")
-            print("      " + str(round(time[trial][graph], 2)), end = "\t | ")
-            print("      " + str(assigns[trial][graph]), end = "\t | ")
-            print("      " + str(unassigns[trial][graph]), end = "\t | ")
-            print("      " + str(teams[trial][graph]), end = "\t | \n")
+            print("     " + str((trial * 6) + (graph + 1)), end = "  \t| ")
+            print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
+            print("    " + str(assigns[trial][graph]), end = " \t| ")
+            print("    " + str(unassigns[trial][graph]), end = " \t| ")
+            print("    " + str(acChecks[trial][graph]), end = " \t| ")
+            print("    " + str(teams[trial][graph]), end = " \t|\n")
+        print("--------------------------------------------------------------------------------------------------------")
 
 run_q3()

@@ -169,7 +169,7 @@ class CSP(Problem):
                 if self.nconflicts(var, current[var], current) > 0]
 
 def run_q3(hardcoded = False): 
-    n = 31
+    n = 11
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
@@ -221,7 +221,7 @@ def run_q3(hardcoded = False):
 
                 startTime = time.time()
                 result = csp.backtracking_search(cspPuzzle, select_unassigned_variable = csp.mrv,
-                                                inference = csp.mac)
+                                                inference = csp.forward_checking)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
 
@@ -231,7 +231,7 @@ def run_q3(hardcoded = False):
 
                 attemptCounter += 1
 
-            print("Found solution: " + str(numOfTeams(result)) + "\n\n")
+            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.\n\n")
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)

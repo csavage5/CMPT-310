@@ -230,7 +230,7 @@ def run_q3(hardcoded = False):
 
                 attemptCounter += 1
 
-            print("Found solution.\n\n")
+            print("Found solution: " + str(numOfTeams(result)). + "\n\n")
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)

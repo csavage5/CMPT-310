@@ -213,14 +213,15 @@ def run_q3(hardcoded = False):
                 print("--> Attempting with " + str(attemptCounter) + " teams...")
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
-                startTime = time.time()
-                #print("----> Number of AC3 checks: " + str(csp.AC3(cspPuzzle)[1]))
-                deltaChecks += csp.AC3(cspPuzzle)[1]
-                elapsedTime = time.time() - startTime
-                deltaTime += elapsedTime
+                # startTime = time.time()
+                # #print("----> Number of AC3 checks: " + str(csp.AC3(cspPuzzle)[1]))
+                # deltaChecks += csp.AC3(cspPuzzle)[1]
+                # elapsedTime = time.time() - startTime
+                # deltaTime += elapsedTime
 
                 startTime = time.time()
-                result = csp.backtracking_search(cspPuzzle, inference = csp.forward_checking)
+                result = csp.backtracking_search(cspPuzzle, select_unassigned_variable = csp.mrv,
+                                                inference = csp.mac)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
 

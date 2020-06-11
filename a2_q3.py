@@ -195,8 +195,8 @@ def run_q3(hardcoded = False):
         for graph in graphs:
 
             #debug
-            print("Graph:")
-            print(graph)
+            # print("Graph:")
+            # print(graph)
 
             # test increasing numbers of colour combinations
             deltaTime = 0
@@ -209,7 +209,7 @@ def run_q3(hardcoded = False):
             result = None
             attemptCounter = 1
             while result == None:
-                print("Attempting Backtracking with " + str(attemptCounter) + " teams...")
+                #print("Attempting Backtracking with " + str(attemptCounter) + " teams...")
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
                 startTime = time.time()
@@ -232,7 +232,7 @@ def run_q3(hardcoded = False):
             #print("Total number of Assignments: " + str(assignments[-1]))
             unassignments.append(deltaUnassigns)
             #print("Total number of Unassignments: " + str(unassignments[-1]))
-            print(result)
+            #print(result)
             #print("Solution is " + str(check_teams(graph, result)))
 
             # end of graph loop
@@ -256,9 +256,11 @@ def numOfTeams(result: dict) :
     return len(teams)
 
 def displayFormattedData(time, assigns, unassigns, teams):
+    compTrials = len(time)
+    print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + " updating table...")
     print("|    Trial #    |  Time (seconds)  |     Assigns    |    Unassigns    |  # of Teams  |")
 
-    for trial in range (len(time)):
+    for trial in range (compTrials):
         for graph in range(len(time[trial])):
             print("      " + str((trial * 6) + (graph + 1)), end = "        | ")
             print("      " + str(round(time[trial][graph], 2)), end = "\t | ")

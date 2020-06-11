@@ -76,3 +76,5 @@ target/
 # for macOS
 .DS_Store
 ._.DS_Store
+*.py
+.vscode/.ropeproject/objectdb

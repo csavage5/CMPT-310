@@ -214,8 +214,7 @@ def run_q3(hardcoded = False):
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
                 startTime = time.time()
-                acResult = csp.AC3b(cspPuzzle)[1]
-                deltaChecks += csp.AC3(cspPuzzle)[1]
+                deltaChecks += csp.AC3b(cspPuzzle)[1]
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
                 print("----> Number of AC3 checks: " + str(acResult))

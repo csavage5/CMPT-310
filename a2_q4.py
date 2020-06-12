@@ -169,15 +169,14 @@ class CSP(Problem):
                 if self.nconflicts(var, current[var], current) > 0]
 
 def run_q3(hardcoded = False): 
-    n = 12
+    n = 31
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
     totalAssignments = []
-    totalUnassignments = []
     totalTeams = []
-    totalAcChecks = []
-
+    totalConflicts = []
+    
     for _ in range(trials):
         
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
@@ -188,9 +187,8 @@ def run_q3(hardcoded = False):
         # stores data from each trial to append to total lists
         runtime = []
         assignments = []
-        unassignments = []
         teams = []
-        acChecks = []
+        listConflicts = []
         # iterate through to grow colour / team size
         colours = list(range(n))
 
@@ -198,55 +196,52 @@ def run_q3(hardcoded = False):
             #debug
             # print("Graph:")
             # print(graph)
-            deltaChecks = 0
+
+            minSolutionSize = n + 1
+            solutionSize = None
             deltaTime = 0
             elapsedTime = 0
             startTime = 0
-
             deltaAssigns = 0
-            deltaUnassigns = 0
+            bestResult = None
 
-            result = None
-            attemptCounter = 1
-            print("Solving random graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
-            while result == None:
-                print("--> Attempting with " + str(attemptCounter) + " teams...")
-                cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
-                
-                startTime = time.time()
-                #print("----> Number of AC3 checks: " + str(csp.AC3(cspPuzzle)[1]))
-                deltaChecks += csp.AC3(cspPuzzle)[1]
-                elapsedTime = time.time() - startTime
-                deltaTime += elapsedTime
+            print("\nGetting min-conflicts solution for graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
+            for colourSize in colours:
+                print("--> Attempting with " + str(colourSize + 1) + " teams...")
+                cspPuzzle = MapColoringCSP(colours[0 : colourSize + 1], graph)
 
                 startTime = time.time()
-                #result = csp.backtracking_search(cspPuzzle, inference = csp.forward_checking)
                 result = csp.min_conflicts(cspPuzzle)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
+                
+                # debug
+                #print("Graph: ", end="")
+                #print(graph)
+                #print("Min Conflicts result: ", end = "")
+                #print(result)
+
+                if result != None:
+                    solutionSize = numOfTeams(result)
+                    #conflicts = getNumOfConflicts(graph, result)
+                    #print("Computed conflicts: " + str(conflicts))
+                    print("--> Found solution.\n")
+                    if solutionSize < minSolutionSize:
+                        minSolutionSize = solutionSize
+                        bestResult = (cspPuzzle, result)
+
+                else:
+                    print("--> Did not find solution.\n")
 
                 #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
                 deltaAssigns += cspPuzzle.nassigns
-                deltaUnassigns += cspPuzzle.nunassigns
-
-                attemptCounter += 1
-
-            print("Found solution.\n\n")
+            
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)
-            #print("Completed in " + str(deltaTime) + " seconds")
-            teams.append(numOfTeams(result))
-            # print(result)
-            # print("Completed with " + str( teams[-1] ) + " teams")
+            teams.append(solutionSize)
             assignments.append(deltaAssigns)
-            #print("Total number of Assignments: " + str(assignments[-1]))
-            unassignments.append(deltaUnassigns)
-            #print("Total number of Unassignments: " + str(unassignments[-1]))
-            #print(result)
-            #print("Solution is " + str(check_teams(graph, result)))
-            acChecks.append(deltaChecks)
-
+            listConflicts.append(getNumOfConflicts(bestResult[0], bestResult[1]))
             # end of graph loop
 
         # end of trial loop
@@ -254,10 +249,9 @@ def run_q3(hardcoded = False):
         # trial over, display info so far
         totalRuntime.append(runtime)
         totalAssignments.append(assignments)
-        totalUnassignments.append(unassignments)
         totalTeams.append(teams)
-        totalAcChecks.append(acChecks)
-        displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams, totalAcChecks)
+        totalConflicts.append(listConflicts)
+        displayFormattedData(totalRuntime, totalAssignments, totalTeams, totalConflicts)
 
 
 def numOfTeams(result: dict) -> int:
@@ -268,19 +262,37 @@ def numOfTeams(result: dict) -> int:
 
     return len(numTeams)
 
-def displayFormattedData(time, assigns, unassigns, teams, acChecks):
+def getNumOfConflicts(graph: CSP, csp_sol: dict):
+    # graphSize = len(graph)
+    # conflicts = 0
+
+    # for node in range(graphSize):
+    #     nodeValue = graph.get(node)
+    #     nodeTeam = csp_sol.get(node)
+
+    #     #verify all adjacent nodes are on different teams
+    #     for adjNode in nodeValue:
+    #         # if adjNode < node, it has already been checked
+    #         # avoids double-counting conflicts
+    #         if adjNode > node:
+    #             #print("Adjacent node " + str(adjNode) + "'s team: " + str(csp_sol.get(adjNode)) + " | current node " + str(node) + "'s team: " + str(nodeTeam))
+    #             if csp_sol.get(adjNode) == nodeTeam:
+    #                 conflicts += 1
+
+    return len(graph.conflicted_vars(csp_sol))
+
+def displayFormattedData(time, assigns, teams, conflicts):
     compTrials = len(time)
     print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
-    print("|  Trial # \t|  Time (seconds)  |  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
+    print("|  p value # \t|  Time (seconds)  |  Assigns \t|  Teams \t|  Conflicts \t|")
 
     for trial in range (compTrials):
         for graph in range(len(time[trial])):
-            print("     " + str((trial * 6) + (graph + 1)), end = "  \t| ")
+            print("     0." + str(graph + 1), end = "  \t| ")
             print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
             print("    " + str(assigns[trial][graph]), end = " \t| ")
-            print("    " + str(unassigns[trial][graph]), end = " \t| ")
-            print("    " + str(acChecks[trial][graph]), end = " \t| ")
-            print("    " + str(teams[trial][graph]), end = " \t|\n")
+            print("    " + str(teams[trial][graph]), end = " \t| ")
+            print("    " + str(conflicts[trial][graph]), end = " \t|\n")
         print("--------------------------------------------------------------------------------------------------------")
 
 run_q3()

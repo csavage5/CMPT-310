@@ -32,7 +32,10 @@ def rand_graph(p: float, n: int):
 
         for adjacent in nodeList:
             randChoice = random.randint(0, 100) * 0.01
-            if node != adjacent and randChoice < p:
+
+            # check from the smaller node for the pair - avoids double-checking
+            # pairs of nodes
+            if node < adjacent and randChoice < p:
                 # adjacent node is selected
                 # get the current values for node and adjacent node
                 nodeValue = graph.get(node)

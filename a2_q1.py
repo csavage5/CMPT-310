@@ -3,26 +3,25 @@
 
 import random
 
-# def check_validity(graph: dict):
-#     nodeList = range(len(graph))
+def check_validity(graph: dict):
+    nodeList = range(len(graph))
     
-#     for node in nodeList:
-#         neighbours = graph.get(node)
+    for node in nodeList:
+        neighbours = graph.get(node)
 
-#         for adjacent in neighbours:
-#             adjNeighbours = graph.get(adjacent)
+        for adjacent in neighbours:
+            adjNeighbours = graph.get(adjacent)
             
-#             if (node not in adjNeighbours):
-#                 return False
+            if (node not in adjNeighbours):
+                return False
     
-#     return True
-
+    return True
 
 def rand_graph(p: float, n: int):
     random.seed()
     nodeList = list(range(n))
-    #print(nodeList)
     graph = {}
+    pairCounter = 0
     #init graph
     for node in range(n):
         graph.update({node : []})
@@ -36,29 +35,23 @@ def rand_graph(p: float, n: int):
             # check from the smaller node for the pair - avoids double-checking
             # pairs of nodes
             if node < adjacent and randChoice < p:
+                pairCounter += 1
                 # adjacent node is selected
-                # get the current values for node and adjacent node
-                nodeValue = graph.get(node)
-                # if nodeValue == None:
-                #     nodeValue = []
-                
-                adjacentValue = graph.get(adjacent)
-                # if adjacentValue == None:
-                #     adjacentValue = []
+                # get the neighbour values for node and adjacent node keys
+                nodeNeighbours = graph.get(node)
+                adjacentNeighbours = graph.get(adjacent)
 
                 #add node to the adjacent node's list
-                if (node not in adjacentValue):
-                    adjacentValue.append(node)
-                    graph.update({adjacent : adjacentValue})
+                if (node not in adjacentNeighbours):
+                    adjacentNeighbours.append(node)
+                    graph.update({adjacent : adjacentNeighbours})
 
                 #add the adjacent node to node's list
-                if (adjacent not in nodeValue):
-                    nodeValue.append(adjacent)
-                    graph.update({node : nodeValue})
+                if (adjacent not in nodeNeighbours):
+                    nodeNeighbours.append(adjacent)
+                    graph.update({node : nodeNeighbours})
 
-    #print("Friendship dictionary: ")          
-    #print(graph)
-    #print("Valid? " + str(check_validity(graph)))
+    print("Created graph (n, p = " + str(n) + ", "+ str(p) + ") with " + str(pairCounter) + " connected pairs.\nChecking validity..." + str(check_validity(graph)))
     return graph
-#print (3 not in [])
+
 # rand_graph(0.35, 4)

@@ -208,7 +208,7 @@ def run_q3(hardcoded = False):
 
             result = None
             attemptCounter = 1
-            print("Solving random graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
+            print("\nSolving graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
             while result == None:
                 print("--> Attempting with " + str(attemptCounter) + " teams...")
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
@@ -217,7 +217,6 @@ def run_q3(hardcoded = False):
                 deltaChecks += csp.AC3b(cspPuzzle)[1]
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
-                print("----> Number of AC3 checks: " + str(acResult))
 
                 startTime = time.time()
                 result = csp.backtracking_search(cspPuzzle, select_unassigned_variable = csp.mrv,
@@ -229,10 +228,9 @@ def run_q3(hardcoded = False):
                 #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
                 deltaAssigns += cspPuzzle.nassigns
                 deltaUnassigns += cspPuzzle.nunassigns
-
                 attemptCounter += 1
 
-            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.\n\n")
+            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)
@@ -272,11 +270,11 @@ def numOfTeams(result: dict) -> int:
 def displayFormattedData(time, assigns, unassigns, teams, acChecks):
     compTrials = len(time)
     print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
-    print("|  Trial # \t|  Time (seconds)  |  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
+    print("|  p value \t|  Time (seconds) \t|  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
 
     for trial in range (compTrials):
         for graph in range(len(time[trial])):
-            print("     " + str((trial * 6) + (graph + 1)), end = "  \t| ")
+            print("  0." + str(graph + 1), end = " \t\t| ")
             print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
             print("    " + str(assigns[trial][graph]), end = " \t| ")
             print("    " + str(unassigns[trial][graph]), end = " \t| ")

@@ -169,7 +169,7 @@ class CSP(Problem):
                 if self.nconflicts(var, current[var], current) > 0]
 
 def run_q3(hardcoded = False): 
-    n = 11
+    n = 31
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
@@ -213,14 +213,16 @@ def run_q3(hardcoded = False):
                 print("--> Attempting with " + str(attemptCounter) + " teams...")
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
-                # startTime = time.time()
-                # #print("----> Number of AC3 checks: " + str(csp.AC3(cspPuzzle)[1]))
-                # deltaChecks += csp.AC3(cspPuzzle)[1]
-                # elapsedTime = time.time() - startTime
-                # deltaTime += elapsedTime
+                startTime = time.time()
+                acResult = csp.AC3b(cspPuzzle)[1]
+                deltaChecks += csp.AC3(cspPuzzle)[1]
+                elapsedTime = time.time() - startTime
+                deltaTime += elapsedTime
+                print("----> Number of AC3 checks: " + str(acResult))
 
                 startTime = time.time()
                 result = csp.backtracking_search(cspPuzzle, select_unassigned_variable = csp.mrv,
+                                                order_domain_values = csp.lcv,
                                                 inference = csp.forward_checking)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime

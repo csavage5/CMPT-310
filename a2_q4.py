@@ -203,35 +203,48 @@ def run_q3(hardcoded = False):
             elapsedTime = 0
             startTime = 0
             deltaAssigns = 0
-            bestResult = None
+            colours = list(range(n))
 
-            print("\nGetting min-conflicts solution for graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
-            for colourSize in colours:
-                print("--> Attempting with " + str(colourSize + 1) + " teams...")
-                cspPuzzle = MapColoringCSP(colours[0 : colourSize + 1], graph)
+        for graph in graphs:
+            deltaChecks = 0
+            deltaTime = 0
+            elapsedTime = 0
+            startTime = 0
+
+            deltaAssigns = 0
+            deltaUnassigns = 0
+
+            result = None
+            attemptCounter = 1
+            print("\nSolving graph: n = " + str(n) + ", " + "p = 0." + str(graphCounter))
+            while result == None:
+                print("--> Attempting with " + str(attemptCounter) + " teams...")
+                cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
+                
+                startTime = time.time()
+                deltaChecks += csp.AC3b(cspPuzzle)[1]
+                elapsedTime = time.time() - startTime
+                deltaTime += elapsedTime
 
                 startTime = time.time()
                 result = csp.min_conflicts(cspPuzzle)
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
-                
-                # debug
-                #print("Graph: ", end="")
-                #print(graph)
-                #print("Min Conflicts result: ", end = "")
-                #print(result)
 
-                if result != None:
-                    solutionSize = numOfTeams(result)
-                    #conflicts = getNumOfConflicts(graph, result)
-                    #print("Computed conflicts: " + str(conflicts))
-                    print("--> Found solution.\n")
-                    if solutionSize < minSolutionSize:
-                        minSolutionSize = solutionSize
-                        bestResult = (cspPuzzle, result)
+                #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
+                deltaAssigns += cspPuzzle.nassigns
+                deltaUnassigns += cspPuzzle.nunassigns
+                attemptCounter += 1
 
-                else:
-                    print("--> Did not find solution.\n")
+            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
+            graphCounter += 1
+            # Display and save information
+            runtime.append(deltaTime)
+            teams.append(numOfTeams(result))
+            assignments.append(deltaAssigns)
+            unassignments.append(deltaUnassigns)
+            acChecks.append(deltaChecks)
+
 
                 #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
                 deltaAssigns += cspPuzzle.nassigns
@@ -263,6 +276,7 @@ def numOfTeams(result: dict) -> int:
     return len(numTeams)
 
 def getNumOfConflicts(graph: CSP, csp_sol: dict):
+    return len(graph.conflicted_vars(csp_sol))
     # graphSize = len(graph)
     # conflicts = 0
 
@@ -279,7 +293,7 @@ def getNumOfConflicts(graph: CSP, csp_sol: dict):
     #             if csp_sol.get(adjNode) == nodeTeam:
     #                 conflicts += 1
 
-    return len(graph.conflicted_vars(csp_sol))
+    
 
 def displayFormattedData(time, assigns, teams, conflicts):
     compTrials = len(time)

@@ -171,7 +171,7 @@ class CSP(Problem):
 def run_q3(hardcoded = False): 
     n = 31
     trials = 5
-    # outer index: trial #, inner: graph #
+    # 2D lists: store list of results for each trial
     totalRuntime = []
     totalAssignments = []
     totalUnassignments = []
@@ -183,9 +183,8 @@ def run_q3(hardcoded = False):
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
         graphCounter = 1
-        #graphs = [rand_graph(0.4, n)]
 
-        # stores data from each trial to append to total lists
+        # store data from each trial to append to 2D lists
         runtime = []
         assignments = []
         unassignments = []
@@ -195,9 +194,6 @@ def run_q3(hardcoded = False):
         colours = list(range(n))
 
         for graph in graphs:
-            #debug
-            # print("Graph:")
-            # print(graph)
             deltaChecks = 0
             deltaTime = 0
             elapsedTime = 0
@@ -234,30 +230,20 @@ def run_q3(hardcoded = False):
             graphCounter += 1
             # Display and save information
             runtime.append(deltaTime)
-            #print("Completed in " + str(deltaTime) + " seconds")
             teams.append(numOfTeams(result))
-            # print(result)
-            # print("Completed with " + str( teams[-1] ) + " teams")
             assignments.append(deltaAssigns)
-            #print("Total number of Assignments: " + str(assignments[-1]))
             unassignments.append(deltaUnassigns)
-            #print("Total number of Unassignments: " + str(unassignments[-1]))
-            #print(result)
-            #print("Solution is " + str(check_teams(graph, result)))
             acChecks.append(deltaChecks)
 
             # end of graph loop
 
-        # end of trial loop
-
-        # trial over, display info so far
+        # trial over, display table with last 6 solutions added
         totalRuntime.append(runtime)
         totalAssignments.append(assignments)
         totalUnassignments.append(unassignments)
         totalTeams.append(teams)
         totalAcChecks.append(acChecks)
         displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams, totalAcChecks)
-
 
 def numOfTeams(result: dict) -> int:
     numTeams = []

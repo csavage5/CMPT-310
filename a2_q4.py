@@ -168,27 +168,27 @@ class CSP(Problem):
         return [var for var in self.variables
                 if self.nconflicts(var, current[var], current) > 0]
 
-def run_q3(hardcoded = False): 
-    n = 31
+def run_q4(hardcoded = False): 
+    n = 105
     trials = 5
     # outer index: trial #, inner: graph #
     totalRuntime = []
     totalAssignments = []
     totalTeams = []
-    totalConflicts = []
+    totalAcChecks = []
     
     for _ in range(trials):
         
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
         graphCounter = 1
-        #graphs = [rand_graph(0.4, n)]
 
         # stores data from each trial to append to total lists
         runtime = []
         assignments = []
         teams = []
-        listConflicts = []
+        acChecks = []
+        #listConflicts = []
         # iterate through to grow colour / team size
         colours = list(range(n))
 
@@ -196,23 +196,12 @@ def run_q3(hardcoded = False):
             #debug
             # print("Graph:")
             # print(graph)
-
-            minSolutionSize = n + 1
-            solutionSize = None
             deltaTime = 0
+            deltaChecks = 0
             elapsedTime = 0
             startTime = 0
             deltaAssigns = 0
             colours = list(range(n))
-
-        for graph in graphs:
-            deltaChecks = 0
-            deltaTime = 0
-            elapsedTime = 0
-            startTime = 0
-
-            deltaAssigns = 0
-            deltaUnassigns = 0
 
             result = None
             attemptCounter = 1
@@ -233,7 +222,6 @@ def run_q3(hardcoded = False):
 
                 #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
                 deltaAssigns += cspPuzzle.nassigns
-                deltaUnassigns += cspPuzzle.nunassigns
                 attemptCounter += 1
 
             print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
@@ -242,19 +230,8 @@ def run_q3(hardcoded = False):
             runtime.append(deltaTime)
             teams.append(numOfTeams(result))
             assignments.append(deltaAssigns)
-            unassignments.append(deltaUnassigns)
             acChecks.append(deltaChecks)
-
-
-                #cspPuzzle instance is reset every loop, save the # of assigns/unassigns
-                deltaAssigns += cspPuzzle.nassigns
             
-            graphCounter += 1
-            # Display and save information
-            runtime.append(deltaTime)
-            teams.append(solutionSize)
-            assignments.append(deltaAssigns)
-            listConflicts.append(getNumOfConflicts(bestResult[0], bestResult[1]))
             # end of graph loop
 
         # end of trial loop
@@ -263,8 +240,8 @@ def run_q3(hardcoded = False):
         totalRuntime.append(runtime)
         totalAssignments.append(assignments)
         totalTeams.append(teams)
-        totalConflicts.append(listConflicts)
-        displayFormattedData(totalRuntime, totalAssignments, totalTeams, totalConflicts)
+        totalAcChecks.append(acChecks)
+        displayFormattedData(totalRuntime, totalAssignments, totalTeams, totalAcChecks)
 
 
 def numOfTeams(result: dict) -> int:
@@ -295,10 +272,10 @@ def getNumOfConflicts(graph: CSP, csp_sol: dict):
 
     
 
-def displayFormattedData(time, assigns, teams, conflicts):
+def displayFormattedData(time, assigns, teams, acChecks):
     compTrials = len(time)
     print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
-    print("|  p value # \t|  Time (seconds)  |  Assigns \t|  Teams \t|  Conflicts \t|")
+    print("|  p value # \t|  Time (seconds)  |  Assigns \t|  Teams \t|  AC Checks \t|")
 
     for trial in range (compTrials):
         for graph in range(len(time[trial])):
@@ -306,7 +283,7 @@ def displayFormattedData(time, assigns, teams, conflicts):
             print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
             print("    " + str(assigns[trial][graph]), end = " \t| ")
             print("    " + str(teams[trial][graph]), end = " \t| ")
-            print("    " + str(conflicts[trial][graph]), end = " \t|\n")
+            print("    " + str(acChecks[trial][graph]), end = " \t|\n")
         print("--------------------------------------------------------------------------------------------------------")
 
-run_q3()
+run_q4()

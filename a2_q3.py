@@ -171,7 +171,7 @@ class CSP(Problem):
 def run_q3(hardcoded = False): 
     n = 31
     trials = 5
-    # 2D lists: store list of results for each trial
+    #store results
     totalRuntime = []
     totalAssignments = []
     totalUnassignments = []
@@ -184,21 +184,12 @@ def run_q3(hardcoded = False):
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
         graphCounter = 1
 
-        # store data from each trial to append to 2D lists
-        runtime = []
-        assignments = []
-        unassignments = []
-        teams = []
-        acChecks = []
         # iterate through to grow colour / team size
         colours = list(range(n))
 
         for graph in graphs:
             deltaChecks = 0
             deltaTime = 0
-            elapsedTime = 0
-            startTime = 0
-
             deltaAssigns = 0
             deltaUnassigns = 0
 
@@ -210,14 +201,12 @@ def run_q3(hardcoded = False):
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
                 startTime = time.time()
-                deltaChecks += csp.AC3b(cspPuzzle)[1]
-                elapsedTime = time.time() - startTime
-                deltaTime += elapsedTime
 
-                startTime = time.time()
+                deltaChecks += csp.AC3b(cspPuzzle)[1]
                 result = csp.backtracking_search(cspPuzzle, select_unassigned_variable = csp.mrv,
                                                 order_domain_values = csp.lcv,
                                                 inference = csp.forward_checking)
+                
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
 
@@ -228,21 +217,17 @@ def run_q3(hardcoded = False):
 
             print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
             graphCounter += 1
-            # Display and save information
-            runtime.append(deltaTime)
-            teams.append(numOfTeams(result))
-            assignments.append(deltaAssigns)
-            unassignments.append(deltaUnassigns)
-            acChecks.append(deltaChecks)
+
+            # Save information
+            totalRuntime.append(deltaTime)
+            totalTeams.append(numOfTeams(result))
+            totalAssignments.append(deltaAssigns)
+            totalUnassignments.append(deltaUnassigns)
+            totalAcChecks.append(deltaChecks)
 
             # end of graph loop
 
         # trial over, display table with last 6 solutions added
-        totalRuntime.append(runtime)
-        totalAssignments.append(assignments)
-        totalUnassignments.append(unassignments)
-        totalTeams.append(teams)
-        totalAcChecks.append(acChecks)
         displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams, totalAcChecks)
 
 def numOfTeams(result: dict) -> int:
@@ -254,18 +239,23 @@ def numOfTeams(result: dict) -> int:
     return len(numTeams)
 
 def displayFormattedData(time, assigns, unassigns, teams, acChecks):
-    compTrials = len(time)
-    print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
+    completedTrials = len(time)    
+    print("\nCompleted trials #" + str(completedTrials - 5) + " - " + str(completedTrials) + ", updating table...")
     print("|  p value \t|  Time (seconds) \t|  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
 
-    for trial in range (compTrials):
-        for graph in range(len(time[trial])):
-            print("  0." + str(graph + 1), end = " \t\t| ")
-            print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
-            print("    " + str(assigns[trial][graph]), end = " \t| ")
-            print("    " + str(unassigns[trial][graph]), end = " \t| ")
-            print("    " + str(acChecks[trial][graph]), end = " \t| ")
-            print("    " + str(teams[trial][graph]), end = " \t|\n")
-        print("--------------------------------------------------------------------------------------------------------")
+    probTracker = -1
+    for row in range(completedTrials):
+        if ( row % 6 == 0 ):
+            print("--------------------------------------------------------------------------------------------------------")
+            probTracker += 1
+
+        print("     0." + str( (row + 1) - (6 * probTracker)), end = "  \t| ")
+        print("    " + str(round(time[row], 3)), end = " \t| ")
+        print("    " + str(assigns[row]), end = " \t| ")
+        print("    " + str(unassigns[row]), end = " \t| ")
+        print("    " + str(teams[row]), end = " \t| ")
+        print("    " + str(acChecks[row]), end = " \t|\n")
+    
+    print("--------------------------------------------------------------------------------------------------------")
 
 run_q3()

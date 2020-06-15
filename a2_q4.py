@@ -171,7 +171,7 @@ class CSP(Problem):
 def run_q4(hardcoded = False): 
     n = 105
     trials = 5
-    # outer index: trial #, inner: graph #
+    # store results
     totalRuntime = []
     totalAssignments = []
     totalTeams = []
@@ -179,16 +179,11 @@ def run_q4(hardcoded = False):
     
     for _ in range(trials):
         
+        # randomly generate 6 graphs
         graphs = [rand_graph(0.1, n), rand_graph(0.2, n), rand_graph(0.3, n),
                   rand_graph(0.4, n), rand_graph(0.5, n), rand_graph(0.6, n)]
         graphCounter = 1
 
-        # stores data from each trial to append to total lists
-        runtime = []
-        assignments = []
-        teams = []
-        acChecks = []
-        #listConflicts = []
         # iterate through to grow colour / team size
         colours = list(range(n))
 
@@ -198,10 +193,7 @@ def run_q4(hardcoded = False):
             # print(graph)
             deltaTime = 0
             deltaChecks = 0
-            elapsedTime = 0
-            startTime = 0
             deltaAssigns = 0
-            colours = list(range(n))
 
             result = None
             attemptCounter = 1
@@ -211,12 +203,10 @@ def run_q4(hardcoded = False):
                 cspPuzzle = MapColoringCSP(colours[0 : attemptCounter], graph)
                 
                 startTime = time.time()
-                deltaChecks += csp.AC3b(cspPuzzle)[1]
-                elapsedTime = time.time() - startTime
-                deltaTime += elapsedTime
 
-                startTime = time.time()
+                deltaChecks += csp.AC3b(cspPuzzle)[1]
                 result = csp.min_conflicts(cspPuzzle)
+                
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
 
@@ -226,23 +216,15 @@ def run_q4(hardcoded = False):
 
             print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
             graphCounter += 1
-            # Display and save information
-            runtime.append(deltaTime)
-            teams.append(numOfTeams(result))
-            assignments.append(deltaAssigns)
-            acChecks.append(deltaChecks)
+
+            # Save information
+            totalRuntime.append(deltaTime)
+            totalTeams.append(numOfTeams(result))
+            totalAssignments.append(deltaAssigns)
+            totalAcChecks.append(deltaChecks)
             
-            # end of graph loop
-
-        # end of trial loop
-
         # trial over, display info so far
-        totalRuntime.append(runtime)
-        totalAssignments.append(assignments)
-        totalTeams.append(teams)
-        totalAcChecks.append(acChecks)
         displayFormattedData(totalRuntime, totalAssignments, totalTeams, totalAcChecks)
-
 
 def numOfTeams(result: dict) -> int:
     numTeams = []
@@ -254,36 +236,25 @@ def numOfTeams(result: dict) -> int:
 
 def getNumOfConflicts(graph: CSP, csp_sol: dict):
     return len(graph.conflicted_vars(csp_sol))
-    # graphSize = len(graph)
-    # conflicts = 0
-
-    # for node in range(graphSize):
-    #     nodeValue = graph.get(node)
-    #     nodeTeam = csp_sol.get(node)
-
-    #     #verify all adjacent nodes are on different teams
-    #     for adjNode in nodeValue:
-    #         # if adjNode < node, it has already been checked
-    #         # avoids double-counting conflicts
-    #         if adjNode > node:
-    #             #print("Adjacent node " + str(adjNode) + "'s team: " + str(csp_sol.get(adjNode)) + " | current node " + str(node) + "'s team: " + str(nodeTeam))
-    #             if csp_sol.get(adjNode) == nodeTeam:
-    #                 conflicts += 1
-
-    
 
 def displayFormattedData(time, assigns, teams, acChecks):
-    compTrials = len(time)
-    print("\nCompleted trials #" + str(compTrials * 6 - 5) + " - " + str(compTrials * 6) + ", updating table...")
-    print("|  p value # \t|  Time (seconds)  |  Assigns \t|  Teams \t|  AC Checks \t|")
+    completedTrials = len(time)
+    print("\nCompleted trials #" + str(completedTrials - 5) + " - " + str(completedTrials) + ", updating table...")
+    print("|  p value  \t|  Time (seconds)  |  Assigns \t|  Teams \t|  AC Checks \t|")
+    
+    probTracker = -1
+    for row in range(completedTrials):
+        if ( row % 6 == 0 ):
+            print("--------------------------------------------------------------------------------------------------------")
+            probTracker += 1
 
-    for trial in range (compTrials):
-        for graph in range(len(time[trial])):
-            print("     0." + str(graph + 1), end = "  \t| ")
-            print("    " + str(round(time[trial][graph], 3)), end = " \t| ")
-            print("    " + str(assigns[trial][graph]), end = " \t| ")
-            print("    " + str(teams[trial][graph]), end = " \t| ")
-            print("    " + str(acChecks[trial][graph]), end = " \t|\n")
-        print("--------------------------------------------------------------------------------------------------------")
+        print("     0." + str( (row + 1) - (6 * probTracker)), end = "  \t| ")
+        print("    " + str(round(time[row], 3)), end = " \t| ")
+        print("    " + str(assigns[row]), end = " \t| ")
+        print("    " + str(teams[row]), end = " \t| ")
+        print("    " + str(acChecks[row]), end = " \t|\n")
+    
+    print("--------------------------------------------------------------------------------------------------------")
+
 
 run_q4()

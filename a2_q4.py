@@ -238,9 +238,6 @@ def numOfTeams(result: dict) -> int:
 
     return len(numTeams)
 
-def getNumOfConflicts(graph: CSP, csp_sol: dict):
-    return len(graph.conflicted_vars(csp_sol))
-
 def displayFormattedData(time, assigns, teams, acChecks):
     completedTrials = len(time)
     print("\nCompleted trials #" + str(completedTrials - 5) + " - " + str(completedTrials) + ", updating table...")
@@ -261,4 +258,4 @@ def displayFormattedData(time, assigns, teams, acChecks):
     print("--------------------------------------------------------------------------------------------------------")
 
 
-run_q4()
+#run_q4()

@@ -263,4 +263,4 @@ def displayFormattedData(time, assigns, unassigns, teams, acChecks):
     print("--------------------------------------------------------------------------------------------------------")
 
 
-run_q3()
+#run_q3()

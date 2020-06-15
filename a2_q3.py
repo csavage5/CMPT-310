@@ -248,7 +248,7 @@ def displayFormattedData(time, assigns, unassigns, teams, acChecks):
             probTracker += 1
 
         print("     0." + str( (row + 1) - (6 * probTracker)), end = "  \t| ")
-        print("    " + str(round(time[row], 3)), end = " \t| ")
+        print("    " + str(round(time[row], 4)), end = " \t| ")
         print("    " + str(assigns[row]), end = " \t| ")
         print("    " + str(unassigns[row]), end = " \t| ")
         print("    " + str(teams[row]), end = " \t| ")

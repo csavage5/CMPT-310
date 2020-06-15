@@ -225,8 +225,6 @@ def run_q3(hardcoded = False):
             totalUnassignments.append(deltaUnassigns)
             totalAcChecks.append(deltaChecks)
 
-            # end of graph loop
-
         # trial over, display table with last 6 solutions added
         displayFormattedData(totalRuntime, totalAssignments, totalUnassignments, totalTeams, totalAcChecks)
 
@@ -241,7 +239,7 @@ def numOfTeams(result: dict) -> int:
 def displayFormattedData(time, assigns, unassigns, teams, acChecks):
     completedTrials = len(time)    
     print("\nCompleted trials #" + str(completedTrials - 5) + " - " + str(completedTrials) + ", updating table...")
-    print("|  p value \t|  Time (seconds) \t|  Assigns \t|  Unassigns \t|  AC Checks \t|  # of Teams \t|")
+    print("|  p value \t|  Time (seconds) \t|  Assigns \t|  Unassigns \t|  # of Teams \t|  AC Checks \t|")
 
     probTracker = -1
     for row in range(completedTrials):

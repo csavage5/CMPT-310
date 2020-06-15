@@ -3,6 +3,7 @@
 
 import random
 
+# for each pair, verify both have the other node in adjacency list
 def check_validity(graph: dict):
     nodeList = range(len(graph))
     
@@ -32,8 +33,8 @@ def rand_graph(p: float, n: int):
         for adjacent in nodeList:
             randChoice = random.randint(0, 100) * 0.01
 
-            # check from the smaller node for the pair - avoids double-checking
-            # pairs of nodes
+            # check from the smaller node for the node pair - 
+            # avoids double-checking pairs of nodes
             if node < adjacent and randChoice < p:
                 pairCounter += 1
                 # adjacent node is selected
@@ -53,5 +54,3 @@ def rand_graph(p: float, n: int):
 
     print("Created graph (n, p = " + str(n) + ", "+ str(p) + ") with " + str(pairCounter) + " connected pairs.\nChecking validity..." + str(check_validity(graph)))
     return graph
-
-# rand_graph(0.35, 4)

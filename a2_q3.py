@@ -215,7 +215,13 @@ def run_q3(hardcoded = False):
                 deltaUnassigns += cspPuzzle.nunassigns
                 attemptCounter += 1
 
-            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
+            print("Verifying solution...", end = "")
+            verify = check_teams(graph, result)
+            if verify:
+                print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
+            else:
+                print("Solution not valid")
+
             graphCounter += 1
 
             # Save information
@@ -255,5 +261,6 @@ def displayFormattedData(time, assigns, unassigns, teams, acChecks):
         print("    " + str(acChecks[row]), end = " \t|\n")
     
     print("--------------------------------------------------------------------------------------------------------")
+
 
 run_q3()

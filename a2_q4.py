@@ -188,9 +188,7 @@ def run_q4(hardcoded = False):
         colours = list(range(n))
 
         for graph in graphs:
-            #debug
-            # print("Graph:")
-            # print(graph)
+
             deltaTime = 0
             deltaChecks = 0
             deltaAssigns = 0
@@ -205,7 +203,7 @@ def run_q4(hardcoded = False):
                 startTime = time.time()
 
                 deltaChecks += csp.AC3b(cspPuzzle)[1]
-                result = csp.min_conflicts(cspPuzzle)
+                result = csp.min_conflicts(cspPuzzle, max_steps = 1000)
                 
                 elapsedTime = time.time() - startTime
                 deltaTime += elapsedTime
@@ -214,7 +212,13 @@ def run_q4(hardcoded = False):
                 deltaAssigns += cspPuzzle.nassigns
                 attemptCounter += 1
 
-            print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
+            print("Verifying solution...", end = "")
+            verify = check_teams(graph, result)
+            if verify:
+                print("Found solution in " + str(round(deltaTime, 3)) + " seconds.")
+            else:
+                print("Solution not valid")
+
             graphCounter += 1
 
             # Save information

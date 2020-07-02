@@ -32,11 +32,7 @@ class BoardState():
                 boardString += '\n'
         print(boardString)
 
-    def checkVictory(self, lastPlacement: int):
-        #check if the last placed tile wins the game
-        # corners = [0, 2, 6, 8]
-        # centre = 4
-        # edges = [1, 3, 5, 7]
+    def checkVictory(self):
 
         #check diagonal
         # if lastPlacement in corners
@@ -95,7 +91,7 @@ class BoardState():
             
             # recalculate validMoves
             self.calcValidMoves()
-            self.checkVictory(position)
+            self.checkVictory()
             self.printBoard()
             self.switchTurn()
 

@@ -7,11 +7,10 @@ class Turn(Enum):
 
 class State():
     
-    def __init__(self, turn : Turn, board, validMoves):
+    def __init__(self, turn: Turn, board: list):
         self.board = board
-        #self.validMoves = validMoves
         self.validMoves = [0] * 9
-        self.calcAvailableMoves()
+        self.calcValidMoves()
         self.turn = turn
         self.won = False
 
@@ -32,34 +31,48 @@ class State():
                 boardString += '\n'
         print(boardString)
 
-    def makeMove(self, turn : Turn):
+    def switchTurn(self):
+        if self.turn == Turn.PLAYER:
+            self.turn == Turn.CPU
+        else:
+            self.turn == Turn.PLAYER
+
+    def makeMove(self, position: int):
         if turn == Turn.PLAYER:
-            # place player tile
+            # place player tile - O
+            self.board[position] = 2
 
         else:
-            # place CPU tile
+            # place CPU tile - X
+            self.board[position] = 1
+        
+        self.printBoard()
+        # TODO check for victory
+        # switch turn **if not victory** 
+        self.switchTurn()
+        # recalculate validMoves
+        self.calcValidMoves()
 
-    def calcAvailableMoves(self):
+    def calcValidMoves(self):
         index = 0
         for tile in board:
             if tile == 0:
                 validMoves[index] == 1
             index += 1
                 
-
     def convert(self, x: int, y:int) -> int:
         return (y * 3) + x
 
 
 class mcNode():
-    
-    self.wins = 0
-    self.losses = 0
-    self.draws = 0
 
-    def __init__(self, turn : Turn, id : int, board, validMoves):
-        boardState = State(turn, board, validMoves)
+    def __init__(self, id : int, board : State):
+        self.boardState = board
         self.id = id
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
+
 
 class TTTGame():
 
@@ -67,25 +80,47 @@ class TTTGame():
 
     def __init__(self, turn : Turn):
         self.boardState = State(Turn.CPU, [0] * 9, [1] * 9)
+        self.tree = dict()
+        self.nodeCounter = 0
 
     def CPUMove(self):
-        tree = dict()
+        
         # call recursiveMonteCarlo on each child board
         # to get total data for each possible move
-
-        def recursiveMonteCarlo(nodeID: int):
-            childList = []
-            # for x in range(# of 1's in boardState.validMoves)...
-            #   childList.append(mcNode(State(with tile placed at board[x])))
-            
-            tree.update(nodeID, childList)
-
-            for child in childList:
-
-
-        recursiveMonteCarlo(0)
+        self.tree.clear()
+        self.nodeCounter = 0
+        node = mcNode(0, self.boardState)
+        recursiveMonteCarlo(node, 0)
         # analyze children of tree.get(0), decide which one is best
+        childList = self.tree.get(0)
         # self.boardState.makeMove(bestMove)
+
+    def recursiveMonteCarlo(self, node: mcNode, nodeID: int) -> mcNode:
+        
+        # TODO base case - node.boardState.victory == true, update win / loss data
+        
+        # generate children
+        childList = []
+        index = 0
+        for x in node.boardState.validMoves:
+            if x == 1:
+                # position is available
+                newBoard = State(node.boardState.turn, node.boardState.board)
+                newBoard.makeMove(index)
+                
+                self.nodeCounter += 1
+                childList.append(mcNode(nodeCounter, newBoard))
+                
+            index += 1
+
+        # add children to tree
+        self.tree.update(nodeID, childList)
+        
+        #call recursiveMonteCarlo for each child
+        for index in len(childList):
+            childList[index] = recursiveMonteCarlo(childList[index])
+
+
 
     def promptPlayer(self):
         boardState.printBoard()

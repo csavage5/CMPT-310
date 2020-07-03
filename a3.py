@@ -1,5 +1,6 @@
 from enum import Enum
 import copy
+import random
 
 class Turn(Enum):
     NONE = 0
@@ -8,20 +9,21 @@ class Turn(Enum):
 
 class BoardState():
     
-    def __init__(self, turn: Turn, board: list):
+    def __init__(self, turn: Turn, board: list = [0] * 9):
         self.board = board
         self.validMoves = [0] * 9
         self.calcValidMoves()
         self.turn = turn
         self.filled = False
         self.victor = Turn.NONE
+        self.finished == False
 
-    def update(self, board):
-        self.board = copy.deepcopy(board.board)
+    def update(self, boardState):
+        self.board = copy.deepcopy(boardState.board)
         self.calcValidMoves()
-        self.turn = board.turn
-        self.filled = board.filled
-        self.victor = board.victor
+        self.turn = boardState.turn
+        self.filled = boardState.filled
+        self.victor = boardState.victor
 
     def printBoard(self):
         index = 0
@@ -47,10 +49,40 @@ class BoardState():
     def isGameOver(self) -> bool:
         return (self.filled or self.victor != Turn.NONE)
 
-    def checkVictory(self):
+    def getChildrenStates(self) -> list:
+        # generate children
+        childList = []
+        index = 0
+        for x in self.validMoves:
+            if x == 1:
+                # position is available
+                newBoard = BoardState(self.turn, copy.deepcopy(self.board))
+                newBoard.makeMove(index)
+                
+                childList.append(newBoard)
+                
+            index += 1
 
+        return childList  
+
+    def getChildrenNodes(self) -> list:
+        # generate children
+        childList = []
+        index = 0
+        for x in self.validMoves:
+            if x == 1:
+                # position is available
+                newBoard = BoardState(self.turn, copy.deepcopy(self.board))
+                newBoard.makeMove(index)
+                
+                childList.append(mcNode(newBoard))
+                
+            index += 1
+
+        return childList  
+
+    def checkVictory(self):
         #check diagonal
-        # if lastPlacement in corners
         foundVictory = False
         # check diagonal
         for diag in range(2, -1, 2):
@@ -65,43 +97,62 @@ class BoardState():
 
         # check horizontal
         if not foundVictory:
-            counter = 0
             for row in range(3):
+                counter = 0
                 for col in range(3):
                     if self.board[self.convert(col, row)] == self.turn.value:
                         counter += 1
                 
                 if counter == 3:
-                    foundVictory == True
+                    foundVictory = True
 
         #check vertical
         if not foundVictory:
-            counter = 0
             for col in range(3):
+                counter = 0
                 for row in range(3):
                     if self.board[self.convert(col, row)] == self.turn.value:
                         counter += 1
                 
                 if counter == 3:
-                    foundVictory == True
+                    foundVictory = True
 
         if foundVictory:
             self.victor = self.turn
+            self.finished = True
 
     def switchTurn(self):
         if self.turn == Turn.PLAYER:
-            self.turn == Turn.CPU
-        else:
-            self.turn == Turn.PLAYER
+            print("Switching turn to CPU")
+            self.turn = Turn.CPU
+        elif self.turn == Turn.CPU:
+            print("Switching turn to PLAYER")
+            self.turn = Turn.PLAYER
+
+    def makeRandomMove(self):
+
+        #get random validMove
+        validMoveIndex = []
+
+        index = 0
+        for x in self.validMoves:
+            if x == 1:
+                validMoveIndex.append(index)
+            index += 1
+
+        position = random.choice(validMoveIndex)
+        self.makeMove(position)
 
     def makeMove(self, position: int):
         if self.filled == False and self.victor == Turn.NONE:
             if self.turn == Turn.PLAYER:
                 # place player tile - O
+                print("Placing PLAYER tile")
                 self.board[position] = Turn.PLAYER.value
 
-            else:
+            elif self.turn == Turn.CPU:
                 # place CPU tile - X
+                print("Placing CPU tile")
                 self.board[position] = Turn.CPU.value
             
             # recalculate validMoves
@@ -110,17 +161,24 @@ class BoardState():
             self.printBoard()
             self.switchTurn()
 
+        else:
+            print("Cannot move, game end condition(s) is/are met")
+
     def calcValidMoves(self):
         index = 0
         counter = 0
         for tile in self.board:
+            # print("tile: " + str(tile))
             if tile == 0:
                 self.validMoves[index] = 1
                 counter += 1
+            elif tile > 0:
+                self.validMoves[index] = 0
             index += 1
-        #print("valid moves: " + str(self.validMoves))
+        print("valid moves: " + str(self.validMoves))
         if counter == 0:
             self.filled = True
+            self.finished = True
                 
     def convert(self, x: int, y:int) -> int:
         return (y * 3) + x
@@ -128,46 +186,71 @@ class BoardState():
 
 class mcNode():
 
-    def __init__(self, id : int, board : BoardState, moveCoordinate = -1):
-        self.boardState = board
-        self.id = id
+    def __init__(self, state : BoardState):
+        self.state = state
         self.wins = 0
         self.losses = 0
         self.draws = 0
-        self.moveCoordinate = moveCoordinate
+        self.playouts = 0
+        self.evalMetric = 0
 
     def update(self, newNode):
-        self.boardState.update(newNode.boardState)
+        self.state.update(newNode.boardState)
         self.id = newNode.id
         self.wins = newNode.wins
         self.losses = newNode.losses
         self.draws = newNode.draws
         self.moveCoordinate = newNode.moveCoordinate
 
+    def updateEvalMetric(self):
+        self.evalMetric = self.wins
+
+    def completeRandomPlayout(self):
+        # get children of state
+        children = self.state.getChildrenStates()
+        # randomly choose a child state
+        child = random.choice(children)
+
+        # while the state is not in endgame, 
+        # keep making random moves
+        while (not child.finished):
+            child.makeRandomMove()
+        
+        # add statistics to node based on victor
+        self.playouts += 1
+
+        if child.victor == Turn.PLAYER:
+            self.losses += 1
+        elif child.victor == Turn.CPU:
+            self.wins += 1
+        elif child.victor == Turn.NONE:
+            self.draws += 1
+
+        self.updateEvalMetric()
 
 class TTTGame():
 
     def __init__(self, turn : Turn):
-        self.board = BoardState(Turn.CPU, [0] * 9)
+        self.state = BoardState(Turn.CPU, [0] * 9)
         self.tree = dict()
         self.nodeCounter = 0
 
     def CPUMove(self):
         print("CPU is making a move...")
-        # call recursiveMonteCarlo on each child board
-        # to get total data for each possible move
-        self.tree.clear()
-        self.nodeCounter = 0
-        node = mcNode(0, copy.deepcopy(self.board))
-        node = self.recursiveMonteCarlo(copy.deepcopy(node))
-        print("-------------------------DONE -----------------------------------")
+
+        subnodes = self.state.getChildrenNodes()
+
+        # complete a large number of random playouts
+        for _ in range(500):
+            childChoice = random.choice(subnodes)
+            childChoice.completeRandomPlayout()
+
         # TODO analyze child moves of node, decide which one is best
         # choose node with highest win + draw stat if there is more than 1 move with the same # of wins
         mostWinsIndex = 0
         mostWins = 0
         winDuplicates = True
-        #print(self.tree)
-        children = self.tree.get(node.id)
+
         index = 0
         for child in children:
             if child.wins > mostWins:
@@ -180,89 +263,47 @@ class TTTGame():
 
             index += 1
 
-        # break wins tie
-        # if winDuplicates:
-        #     winsAndDraws = 0
-        #     for child in children:
-        #         if child.wins == mostWins and (child.wins + child.draws > winsAndDraws):
-
         self.board.makeMove(children[mostWinsIndex].moveCoordinate)
 
     def playerMove(self):
-        self.board.printBoard()
+        self.state.printBoard()
         choice = input("Place X at coordinate: ")
-        self.board.makeMove(choice)
+        self.state.makeMove(choice)
     
-    def recursiveMonteCarlo(self, node: mcNode) -> mcNode: 
-        
-        # base case - node.boardState.victory == true, update win / loss data
-        if node.boardState.victor != Turn.NONE or node.boardState.filled == True:
-            print("base case")
-            if node.boardState.victor == Turn.PLAYER:
-                # record LOSS
-                node.losses += 1
-            elif node.boardState.victor == Turn.CPU:
-                # record WIN
-                node.wins += 1
-            elif node.boardState.victor == Turn.NONE:
-                # board is filled, record DRAW
-                node.draws += 1
-            return copy.deepcopy(node)
-
-        # generate children
-        childList = []
-        index = 0
-        print(node.boardState.board)
-        print(node.boardState.validMoves)
-        for x in node.boardState.validMoves:
-            if x == 1:
-                # position is available
-                newBoard = BoardState(node.boardState.turn, copy.deepcopy(node.boardState.board))
-                newBoard.makeMove(index)
-                
-                self.nodeCounter += 1
-                childList.append(mcNode(self.nodeCounter, newBoard, index))
-                
-            index += 1
-        #print("******************* NODECOUNT " + str(self.nodeCounter))
-        #call recursiveMonteCarlo for each child
-        for index in range(len(childList)):
-            childList[index].update(self.recursiveMonteCarlo(copy.deepcopy(childList[index])))
-            #print(childList[index].id)
-
-        # TODO total up data for children, save it to current node's data
-        for child in childList:
-            node.wins += child.wins
-            node.losses += child.losses
-            node.draws += child.draws
-
-        # add children to tree
-        self.tree.update({node.id: childList})
-
-        return copy.deepcopy(node)
-
 
 def play_a_new_game():
     
-    userInput = input("Welcome to Tic-Tac-Toe! You are X's, the CPU is O's.\nEnter 1 to go first, enter 2 to go second: ")
+    #userInput = input("Welcome to Tic-Tac-Toe! You are X's, the CPU is O's.\nEnter 1 to go first, enter 2 to go second: ")
     turn = Turn.CPU
-    if userInput == "1":
-        turn = Turn.PLAYER
-    elif userInput == "2":
-        turn = Turn.CPU
+    # if userInput == "1":
+    #     turn = Turn.PLAYER
+    # elif userInput == "2":
+    #     turn = Turn.CPU
 
     game = TTTGame(turn)
-    
-    while game.board.isGameOver() == False:
-        print("is now " + game.board.turn.name + "'s turn")
-        if game.board.turn == Turn.PLAYER:
-            # player makes a move
-            game.playerMove()
-            #game.turn = Turn.CPU
 
-        else:
-            # CPU makes a move
-            game.CPUMove()
+    # testing
+    game.state.makeMove(0)
+    game.state.makeMove(1)
+    game.state.makeMove(3)
+    game.state.makeMove(4)
+    game.state.makeMove(6)
+    game.state.makeMove(8)
+    #game.board.calcValidMoves()
+    #game.board.checkVictory()
+    print(game.state.victor)
+
+
+    # while game.board.isGameOver() == False:
+    #     print("is now " + game.board.turn.name + "'s turn")
+    #     if game.board.turn == Turn.PLAYER:
+    #         # player makes a move
+    #         game.playerMove()
+    #         #game.turn = Turn.CPU
+
+    #     else:
+    #         # CPU makes a move
+    #         game.CPUMove()
 
     # update game status
 

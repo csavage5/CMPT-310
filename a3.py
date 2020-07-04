@@ -16,7 +16,6 @@ class BoardState():
         self.turn = turn
         self.filled = False
         self.victor = Turn.NONE
-        self.finished == False
 
     def update(self, boardState):
         self.board = copy.deepcopy(boardState.board)
@@ -31,20 +30,24 @@ class BoardState():
         for tile in self.board:
             if tile == 0:
                 # empty
-                boardString += str("  ")
+                #boardString += str("| " + str(index + 1) + " ")
+                boardString += str("|   ")
             elif tile == 1:
                 # X
-                boardString += str("X ")
+                boardString += str("| X ")
             elif tile == 2:
                 # 0
-                boardString += str("O ")
+                boardString += str("| O ")
             
             if (index + 1) % 3 == 0:
-                boardString += '\n'
+                boardString += '|\n'
 
             index += 1
 
         print(boardString)
+
+    def isValidMove(self, choice: int):
+        return (self.validMoves[choice] == 1)
 
     def isGameOver(self) -> bool:
         return (self.filled or self.victor != Turn.NONE)
@@ -85,14 +88,16 @@ class BoardState():
         #check diagonal
         foundVictory = False
         # check diagonal
-        for diag in range(2, -1, 2):
+        for diag in range(0, 3, 2):
             counter = 0
             for offset in range(3):
                 coordinate = diag + ( (4 - diag) * offset)
+                #print(str(coordinate))
                 if self.board[coordinate] == self.turn.value:
                     counter += 1
             
             if counter == 3:
+                #print("found diagonal victory")
                 foundVictory = True
 
         # check horizontal
@@ -119,18 +124,16 @@ class BoardState():
 
         if foundVictory:
             self.victor = self.turn
-            self.finished = True
 
     def switchTurn(self):
         if self.turn == Turn.PLAYER:
-            print("Switching turn to CPU")
+            #print("Switching turn to CPU")
             self.turn = Turn.CPU
         elif self.turn == Turn.CPU:
-            print("Switching turn to PLAYER")
+            #print("Switching turn to PLAYER")
             self.turn = Turn.PLAYER
 
     def makeRandomMove(self):
-
         #get random validMove
         validMoveIndex = []
 
@@ -147,18 +150,18 @@ class BoardState():
         if self.filled == False and self.victor == Turn.NONE:
             if self.turn == Turn.PLAYER:
                 # place player tile - O
-                print("Placing PLAYER tile")
+                #print("Placing PLAYER tile")
                 self.board[position] = Turn.PLAYER.value
 
             elif self.turn == Turn.CPU:
                 # place CPU tile - X
-                print("Placing CPU tile")
+                #print("Placing CPU tile")
                 self.board[position] = Turn.CPU.value
             
             # recalculate validMoves
             self.calcValidMoves()
             self.checkVictory()
-            self.printBoard()
+            #self.printBoard()
             self.switchTurn()
 
         else:
@@ -175,10 +178,9 @@ class BoardState():
             elif tile > 0:
                 self.validMoves[index] = 0
             index += 1
-        print("valid moves: " + str(self.validMoves))
+        #print("valid moves: " + str(self.validMoves))
         if counter == 0:
             self.filled = True
-            self.finished = True
                 
     def convert(self, x: int, y:int) -> int:
         return (y * 3) + x
@@ -203,19 +205,27 @@ class mcNode():
         self.moveCoordinate = newNode.moveCoordinate
 
     def updateEvalMetric(self):
-        self.evalMetric = self.wins
+        self.evalMetric = self.wins + self.draws
+        #self.evalMetric = self.losses * -1
 
     def completeRandomPlayout(self):
         # get children of state
         children = self.state.getChildrenStates()
-        # randomly choose a child state
-        child = random.choice(children)
 
-        # while the state is not in endgame, 
-        # keep making random moves
-        while (not child.finished):
-            child.makeRandomMove()
+        # if no children, board is full
+        if len(children) > 0:
+            # randomly choose a child state
+            #print("Size of children: " + str(len(children)))
+            child = random.choice(children)
+
+            # while the state is not in endgame, 
+            # keep making random moves
+            while (not child.isGameOver()):
+                child.makeRandomMove()
         
+        else:
+            child = self.state
+
         # add statistics to node based on victor
         self.playouts += 1
 
@@ -231,82 +241,101 @@ class mcNode():
 class TTTGame():
 
     def __init__(self, turn : Turn):
-        self.state = BoardState(Turn.CPU, [0] * 9)
+        self.state = BoardState(turn, [0] * 9)
         self.tree = dict()
         self.nodeCounter = 0
 
     def CPUMove(self):
         print("CPU is making a move...")
+        #print("valid moves: " + str(self.state.validMoves))
 
         subnodes = self.state.getChildrenNodes()
 
         # complete a large number of random playouts
-        for _ in range(500):
+        for _ in range(20000):
             childChoice = random.choice(subnodes)
             childChoice.completeRandomPlayout()
 
         # TODO analyze child moves of node, decide which one is best
-        # choose node with highest win + draw stat if there is more than 1 move with the same # of wins
-        mostWinsIndex = 0
-        mostWins = 0
-        winDuplicates = True
-
+        # choose a move
         index = 0
-        for child in children:
-            if child.wins > mostWins:
-                mostWinsIndex = index
-                mostWins = child.mostWins
-                winDuplicates = False
-
-            elif child.wins == mostWins:
-                winDuplicates = True
+        maxMetric = 0
+        childIndex = 0
+        for child in subnodes:
+            if child.evalMetric > maxMetric:
+                maxMetric = child.evalMetric
+                childIndex = index
 
             index += 1
 
-        self.board.makeMove(children[mostWinsIndex].moveCoordinate)
+        # update state with state of child
+        self.state.update(subnodes[childIndex].state)
+        self.state.printBoard()
+        #print("valid moves: " + str(self.state.validMoves))
+
 
     def playerMove(self):
-        self.state.printBoard()
-        choice = input("Place X at coordinate: ")
+        choice = int(input("Place O at coordinate: ")) - 1
+
+        while (not self.state.isValidMove(choice)):
+            choice = int(input("Invalid choice, pick again: ")) - 1
+
         self.state.makeMove(choice)
+        #print("valid moves: " + str(self.state.validMoves))
+        self.state.printBoard()
     
 
 def play_a_new_game():
     
-    #userInput = input("Welcome to Tic-Tac-Toe! You are X's, the CPU is O's.\nEnter 1 to go first, enter 2 to go second: ")
+    userInput = input(
+'''
+Welcome to Tic-Tac-Toe! You are Os, the CPU is Xs.
+
+Enter 1 to go first, enter 2 to go second: ''')
+
+    print('''
+When prompted to place an O, enter the number that matches the desired placement.
+    | 1 | 2 | 3 |
+    | 4 | 5 | 6 |
+    | 7 | 8 | 9 |
+    ''')
+
     turn = Turn.CPU
-    # if userInput == "1":
-    #     turn = Turn.PLAYER
-    # elif userInput == "2":
-    #     turn = Turn.CPU
+    
+    if userInput == "1":
+        turn = Turn.PLAYER
+    elif userInput == "2":
+        turn = Turn.CPU
 
     game = TTTGame(turn)
 
-    # testing
-    game.state.makeMove(0)
-    game.state.makeMove(1)
-    game.state.makeMove(3)
-    game.state.makeMove(4)
-    game.state.makeMove(6)
-    game.state.makeMove(8)
-    #game.board.calcValidMoves()
-    #game.board.checkVictory()
-    print(game.state.victor)
 
 
-    # while game.board.isGameOver() == False:
-    #     print("is now " + game.board.turn.name + "'s turn")
-    #     if game.board.turn == Turn.PLAYER:
-    #         # player makes a move
-    #         game.playerMove()
-    #         #game.turn = Turn.CPU
+    while (not game.state.isGameOver()):
+        print("is now " + game.state.turn.name + "'s turn")
+        if game.state.turn == Turn.PLAYER:
+            # player makes a move
+            game.playerMove()
 
-    #     else:
-    #         # CPU makes a move
-    #         game.CPUMove()
+        else:
+            # CPU makes a move
+            game.CPUMove()
 
     # update game status
+    print("Game is over - the winner is " + game.state.victor.name)
 
+    # #testing
+    # state = BoardState(Turn.CPU, [1,0,0, 0,1,0, 0,0,1])
+    # state.checkVictory()
+    # game.state.makeMove(0)
+    # game.state.makeMove(1)
+    # game.state.makeMove(3)
+    # game.state.makeMove(4)
+    # game.state.makeMove(6)
+    # game.state.makeMove(8)
+    # #game.board.calcValidMoves()
+    # #game.board.checkVictory()
+    # print(game.state.victor)
 
 if __name__ == "__main__":
     play_a_new_game()

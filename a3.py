@@ -1,6 +1,7 @@
 from enum import Enum
 import copy
 import random
+import math
 
 class Turn(Enum):
     NONE = 0
@@ -205,10 +206,13 @@ class mcNode():
         self.moveCoordinate = newNode.moveCoordinate
 
     def updateEvalMetric(self):
-        self.evalMetric = self.wins + self.draws
+        #self.evalMetric = self.wins + self.draws
         #self.evalMetric = self.losses * -1
+        #self.evalMetric = ( (self.wins + self.draws) / self.playouts) + ( 1.41 * math.sqrt( math.log(self.playouts) / self.playouts ))
+        #self.evalMetric = ( (-1 * self.losses) / self.playouts)
+        self.evalMetric = (self.wins + self.draws) / (self.losses + 1)
 
-    def completeRandomPlayout(self):
+    def completeRandomPlayout(self):        
         # get children of state
         children = self.state.getChildrenStates()
 
@@ -252,7 +256,8 @@ class TTTGame():
         subnodes = self.state.getChildrenNodes()
 
         # complete a large number of random playouts
-        for _ in range(20000):
+        random.seed()
+        for _ in range(150000):
             childChoice = random.choice(subnodes)
             childChoice.completeRandomPlayout()
 

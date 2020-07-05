@@ -57,6 +57,11 @@ class BoardState():
         # generate children
         childList = []
         index = 0
+
+        # verify state is not won
+        if self.isGameOver():
+            return childList
+
         for x in self.validMoves:
             if x == 1:
                 # position is available
@@ -257,7 +262,7 @@ class TTTGame():
 
         # complete a large number of random playouts
         random.seed()
-        for _ in range(150000):
+        for _ in range(50000):
             childChoice = random.choice(subnodes)
             childChoice.completeRandomPlayout()
 

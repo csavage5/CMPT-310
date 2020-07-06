@@ -1,3 +1,7 @@
+# Cameron Savage, 301310824
+# cdsavage@sfu.ca
+# CMPT 310, SU2020
+
 from enum import Enum
 import copy
 import random

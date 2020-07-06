@@ -1,9 +1,10 @@
 from enum import Enum
 import copy
 import random
-import math
 
 """
+Explanation for why AI loses against Player if Player goes first
+
 Fork Case: AI will lose against a smart player if:
     -> Player goes first, AND
     -> Player (O tile) creates a fork case, i.e.:
@@ -17,60 +18,78 @@ Fork Case: AI will lose against a smart player if:
             | 7 | 8 | 9 |
 
 In this case, the AI should place an X on an edge (tile # 2, 4, 6, 8) 
-properly kill the fork case, i.e.:
+to properly kill the fork case, i.e.:
 
-    | O |   |   |       | O |   |   |
-    | X | X |   |   or  |   | X | X |
-    |   |   | O |       |   |   | O |
+    | O |   |   |      | O |   |   |      | O |   | X |
+    | X | X |   |  =>  | X | X | O |  =>  | X | X | O | => DRAW
+    |   |   | O |      |   |   | O |      |   |   | O |
 
 Instead, the AI places an X in the corner, which, with a 
 smart Player, leads to:
 
-    | O |   |   |       | O |   | O |
-    |   | X |   |  =>   |   | X |   |  Player can now win no matter what
-    | X |   | O |       | X |   | O |  the AI does
+    | O |   |   |      | O |   | O |
+    |   | X |   |  =>  |   | X |   |  Player is guaranteed to win  
+    | X |   | O |      | X |   | O |  no matter what the AI does
 
 The AI chooses the bad move because the random playouts see it as 
 the best move. Without game knowledge or more criteria to evaluate 
 the best position, the AI can only decide on a move based on the 
 knowledge it has. When deciding for this move:
-        | O |   |   |
-        |   | X |   |
-        |   |   | O |
+    | O |   |   |
+    |   | X |   |
+    |   |   | O |
 
-The results it gets from the playouts are:
-    Move #0:
-    --> Coordinate: 2
-    --> Wins: 1690, Losses: 1353, Draws: 342
-    --> Evaluation Metric: 1.500738552437223
-    Move #1:
-    --> Coordinate: 3
-    --> Wins: 1795, Losses: 1270, Draws: 328
-    --> Evaluation Metric: 1.6703383162863887
-    Move #2:
-    --> Coordinate: 4
-    --> Wins: 1631, Losses: 1322, Draws: 362
-    --> Evaluation Metric: 1.5064247921390779
-    Move #3:
-    --> Coordinate: 6
-    --> Wins: 1698, Losses: 1299, Draws: 355
-    --> Evaluation Metric: 1.5792307692307692
-    Move #4:
-    --> Coordinate: 7
-    --> Wins: 1758, Losses: 1226, Draws: 297
-    --> Evaluation Metric: 1.6748166259168704
-    Move #5:
-    --> Coordinate: 8
-    --> Wins: 1649, Losses: 1317, Draws: 308
-    --> Evaluation Metric: 1.484825493171472
-    ** Chose Move #4 **
+    The results the AI gets from the playouts are:
+        Move #0:
+        --> Coordinate: 2
+        --> Wins: 1690, Losses: 1353, Draws: 342
+        --> Evaluation Metric: 1.500738552437223
+        Move #1:
+        --> Coordinate: 3
+        --> Wins: 1795, Losses: 1270, Draws: 328
+        --> Evaluation Metric: 1.6703383162863887
+        Move #2:
+        --> Coordinate: 4
+        --> Wins: 1631, Losses: 1322, Draws: 362
+        --> Evaluation Metric: 1.5064247921390779
+        Move #3:
+        --> Coordinate: 6
+        --> Wins: 1698, Losses: 1299, Draws: 355
+        --> Evaluation Metric: 1.5792307692307692
+        Move #4:
+        --> Coordinate: 7
+        --> Wins: 1758, Losses: 1226, Draws: 297
+        --> Evaluation Metric: 1.6748166259168704
+        Move #5:
+        --> Coordinate: 8
+        --> Wins: 1649, Losses: 1317, Draws: 308
+        --> Evaluation Metric: 1.484825493171472
+        ** Chose Move #4 **
+
+        Note: 
+        -> Move is chosen based on the *largest* evaluation metric
+        -> Evaluation metric is win + draw : loss ratio
 
 The AI *should* have chosen Move # 0, 2, 3, or 8, but those all were evaluated
-as worse than Move # 4, which is the corner move.
+as worse than Move #4, which is the corner move. I have modified the evaluation
+metric, but still end up with the same result.
+
+The AI will always choose the bad move because the bad move is always evaluated
+as better based on the purely random playouts (i.e. Pure Monte Carlo Tree Search).
+In order to fix this we would have to add a heuristic, like Upper Confidence Bound,
+to choose moves in the playouts instead of randomness - which is against the rules
+of the assignment. 
+
+If the AI goes first, the AI will shut down the player's attempt to make the fork
+case:
+
+|   |   |   |      | O |   |   |      | O |   |   |      | O |   |   |      | O |   | X |
+|   | X |   |  =>  |   | X |   |  =>  | X | X |   |  =>  | X | X | O |  =>  | X | X | O |  =>  DRAW
+|   |   |   |      |   |   |   |      |   |   |   |      |   |   |   |      |   |   |   |
+
+If the AI goes first, the AI will always win or draw against a smart player.
+
 """
-
-
-
 
 class Turn(Enum):
     NONE = 0
@@ -88,12 +107,14 @@ class BoardState():
         self.victor = Turn.NONE
         self.lastMove = 0
 
+    # duplicates given BoardState to this instance
     def update(self, boardState):
         self.board = copy.deepcopy(boardState.board)
         self.calcValidMoves()
         self.turn = boardState.turn
         self.filled = boardState.filled
         self.victor = boardState.victor
+        self.lastMove = boardState.lastMove
 
     def printBoard(self):
         index = 0
@@ -118,11 +139,15 @@ class BoardState():
         print(boardString)
 
     def isValidMove(self, choice: int):
+        if (choice < 0 or choice >= len(self.validMoves)):
+            return False
+
         return (self.validMoves[choice] == 1)
 
     def isGameOver(self) -> bool:
         return (self.filled or self.victor != Turn.NONE)
-
+    
+    # Generate moves from current board, as BoardStates
     def getChildrenStates(self) -> list:
         # generate children
         childList = []
@@ -144,8 +169,8 @@ class BoardState():
 
         return childList  
 
+    # Generate moves from current board, as mcNodes
     def getChildrenNodes(self) -> list:
-        # generate children
         childList = []
         index = 0
         for x in self.validMoves:
@@ -160,8 +185,10 @@ class BoardState():
 
         return childList  
 
+    # Checks if current board is a victory for
+    # the player in self.turn
     def checkVictory(self):
-        #check diagonal
+
         foundVictory = False
         # check diagonal
         for diag in range(0, 3, 2):
@@ -210,7 +237,6 @@ class BoardState():
             self.turn = Turn.PLAYER
 
     def makeRandomMove(self):
-        #get random validMove
         validMoveIndex = []
 
         index = 0
@@ -219,43 +245,43 @@ class BoardState():
                 validMoveIndex.append(index)
             index += 1
 
+        #get random validMove
         position = random.choice(validMoveIndex)
         self.makeMove(position)
 
+    # Places an X or an O at position, depending on
+    # the value of self.turn
     def makeMove(self, position: int):
         if self.filled == False and self.victor == Turn.NONE:
             if self.turn == Turn.PLAYER:
                 # place player tile - O
-                #print("Placing PLAYER tile")
                 self.board[position] = Turn.PLAYER.value
 
             elif self.turn == Turn.CPU:
                 # place CPU tile - X
-                #print("Placing CPU tile")
                 self.board[position] = Turn.CPU.value
             
             # recalculate validMoves
             self.calcValidMoves()
             self.checkVictory()
-            #self.printBoard()
             self.switchTurn()
             self.lastMove = position
 
         else:
             print("Cannot move, game end condition(s) is/are met")
 
+    # Saves which spaces on the board are empty
     def calcValidMoves(self):
         index = 0
         counter = 0
         for tile in self.board:
-            # print("tile: " + str(tile))
             if tile == 0:
                 self.validMoves[index] = 1
                 counter += 1
             elif tile > 0:
                 self.validMoves[index] = 0
             index += 1
-        #print("valid moves: " + str(self.validMoves))
+
         if counter == 0:
             self.filled = True
                 
@@ -264,13 +290,11 @@ class BoardState():
 
 
 class mcNode():
-
     def __init__(self, state : BoardState):
         self.state = state
         self.wins = 0
         self.losses = 0
         self.draws = 0
-        #self.playouts = 0
         self.evalMetric = 0
 
     def update(self, newNode):
@@ -284,6 +308,7 @@ class mcNode():
     def updateEvalMetric(self):
         #self.evalMetric = self.wins + self.draws
         #self.evalMetric = self.losses * -1
+        #self.evalMetric = self.draws
         
         # add 1 to losses to avoid divide by 0 error
         self.evalMetric = (self.wins + self.draws) / (self.losses + 1)
@@ -322,18 +347,15 @@ class TTTGame():
 
     def __init__(self, turn : Turn):
         self.state = BoardState(turn, [0] * 9)
-        self.tree = dict()
-        self.nodeCounter = 0
 
     def CPUMove(self):
         print("CPU is making a move...")
-        #print("valid moves: " + str(self.state.validMoves))
 
         subnodes = self.state.getChildrenNodes()
 
         # complete a large number of random playouts
         random.seed()
-        for _ in range(20000):
+        for _ in range(10000):
             childChoice = random.choice(subnodes)
             childChoice.completeRandomPlayout()
 
@@ -352,14 +374,18 @@ class TTTGame():
                 maxMetric = child.evalMetric
                 childIndex = index
 
+            elif child.evalMetric == maxMetric:
+                # if there's a tie, resolve via coin flip
+                if random.randint(0, 1) == 0:
+                    maxMetric = child.evalMetric
+                    childIndex = index
+
             index += 1
 
-        print("** Chose Move #" + str(childIndex) + " **")
+        print("** Chose Move #" + str(childIndex) + " **\n")
         # update state with state of child
         self.state.update(subnodes[childIndex].state)
         self.state.printBoard()
-        #print("valid moves: " + str(self.state.validMoves))
-
 
     def playerMove(self):
         choice = int(input("Place O at coordinate: ")) - 1
@@ -368,7 +394,6 @@ class TTTGame():
             choice = int(input("Invalid choice, pick again: ")) - 1
 
         self.state.makeMove(choice)
-        #print("valid moves: " + str(self.state.validMoves))
         self.state.printBoard()
     
 
@@ -396,8 +421,6 @@ When prompted to place an O, enter the number that matches the desired placement
 
     game = TTTGame(turn)
 
-
-
     while (not game.state.isGameOver()):
         print("is now " + game.state.turn.name + "'s turn")
         if game.state.turn == Turn.PLAYER:
@@ -411,7 +434,7 @@ When prompted to place an O, enter the number that matches the desired placement
     # update game status
     print("Game is over - the winner is " + game.state.victor.name)
 
-    # #testing
+    # ~testing~
     # state = BoardState(Turn.CPU, [1,0,0, 0,1,0, 0,0,1])
     # state.checkVictory()
     # game.state.makeMove(0)

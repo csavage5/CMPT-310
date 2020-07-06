@@ -3,6 +3,75 @@ import copy
 import random
 import math
 
+"""
+Fork Case: AI will lose against a smart player if:
+    -> Player goes first, AND
+    -> Player (O tile) creates a fork case, i.e.:
+        | O |   |   |
+        |   | X |   |
+        |   |   | O |
+
+        Note: coordinates are laid out as:
+            | 1 | 2 | 3 |
+            | 4 | 5 | 6 |
+            | 7 | 8 | 9 |
+
+In this case, the AI should place an X on an edge (tile # 2, 4, 6, 8) 
+properly kill the fork case, i.e.:
+
+    | O |   |   |       | O |   |   |
+    | X | X |   |   or  |   | X | X |
+    |   |   | O |       |   |   | O |
+
+Instead, the AI places an X in the corner, which, with a 
+smart Player, leads to:
+
+    | O |   |   |       | O |   | O |
+    |   | X |   |  =>   |   | X |   |  Player can now win no matter what
+    | X |   | O |       | X |   | O |  the AI does
+
+The AI chooses the bad move because the random playouts see it as 
+the best move. Without game knowledge or more criteria to evaluate 
+the best position, the AI can only decide on a move based on the 
+knowledge it has. When deciding for this move:
+        | O |   |   |
+        |   | X |   |
+        |   |   | O |
+
+The results it gets from the playouts are:
+    Move #0:
+    --> Coordinate: 2
+    --> Wins: 1690, Losses: 1353, Draws: 342
+    --> Evaluation Metric: 1.500738552437223
+    Move #1:
+    --> Coordinate: 3
+    --> Wins: 1795, Losses: 1270, Draws: 328
+    --> Evaluation Metric: 1.6703383162863887
+    Move #2:
+    --> Coordinate: 4
+    --> Wins: 1631, Losses: 1322, Draws: 362
+    --> Evaluation Metric: 1.5064247921390779
+    Move #3:
+    --> Coordinate: 6
+    --> Wins: 1698, Losses: 1299, Draws: 355
+    --> Evaluation Metric: 1.5792307692307692
+    Move #4:
+    --> Coordinate: 7
+    --> Wins: 1758, Losses: 1226, Draws: 297
+    --> Evaluation Metric: 1.6748166259168704
+    Move #5:
+    --> Coordinate: 8
+    --> Wins: 1649, Losses: 1317, Draws: 308
+    --> Evaluation Metric: 1.484825493171472
+    ** Chose Move #4 **
+
+The AI *should* have chosen Move # 0, 2, 3, or 8, but those all were evaluated
+as worse than Move # 4, which is the corner move.
+"""
+
+
+
+
 class Turn(Enum):
     NONE = 0
     CPU = 1
@@ -17,6 +86,7 @@ class BoardState():
         self.turn = turn
         self.filled = False
         self.victor = Turn.NONE
+        self.lastMove = 0
 
     def update(self, boardState):
         self.board = copy.deepcopy(boardState.board)
@@ -169,6 +239,7 @@ class BoardState():
             self.checkVictory()
             #self.printBoard()
             self.switchTurn()
+            self.lastMove = position
 
         else:
             print("Cannot move, game end condition(s) is/are met")
@@ -199,7 +270,7 @@ class mcNode():
         self.wins = 0
         self.losses = 0
         self.draws = 0
-        self.playouts = 0
+        #self.playouts = 0
         self.evalMetric = 0
 
     def update(self, newNode):
@@ -213,8 +284,8 @@ class mcNode():
     def updateEvalMetric(self):
         #self.evalMetric = self.wins + self.draws
         #self.evalMetric = self.losses * -1
-        #self.evalMetric = ( (self.wins + self.draws) / self.playouts) + ( 1.41 * math.sqrt( math.log(self.playouts) / self.playouts ))
-        #self.evalMetric = ( (-1 * self.losses) / self.playouts)
+        
+        # add 1 to losses to avoid divide by 0 error
         self.evalMetric = (self.wins + self.draws) / (self.losses + 1)
 
     def completeRandomPlayout(self):        
@@ -236,7 +307,7 @@ class mcNode():
             child = self.state
 
         # add statistics to node based on victor
-        self.playouts += 1
+        #self.playouts += 1
 
         if child.victor == Turn.PLAYER:
             self.losses += 1
@@ -262,7 +333,7 @@ class TTTGame():
 
         # complete a large number of random playouts
         random.seed()
-        for _ in range(50000):
+        for _ in range(20000):
             childChoice = random.choice(subnodes)
             childChoice.completeRandomPlayout()
 
@@ -272,12 +343,18 @@ class TTTGame():
         maxMetric = 0
         childIndex = 0
         for child in subnodes:
+            print("Move #" + str(index) + ":")
+            print("--> Coordinate: " + str(child.state.lastMove + 1))
+            print("--> Wins: " + str(child.wins) + ", Losses: " + str(child.losses) + ", Draws: " + str(child.draws))
+            print("--> Evaluation Metric: " + str(child.evalMetric))
+
             if child.evalMetric > maxMetric:
                 maxMetric = child.evalMetric
                 childIndex = index
 
             index += 1
 
+        print("** Chose Move #" + str(childIndex) + " **")
         # update state with state of child
         self.state.update(subnodes[childIndex].state)
         self.state.printBoard()

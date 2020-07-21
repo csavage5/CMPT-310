@@ -78,4 +78,3 @@ target/
 ._.DS_Store
 *.py
 .vscode/.ropeproject/objectdb
-.vscode/settings.json

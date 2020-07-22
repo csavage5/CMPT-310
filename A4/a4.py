@@ -44,17 +44,40 @@ class KB():
         self.inferred.clear()
         self.rules.clear()
 
-        rule = file.readline()
+        #rule = file.readline()
 
-        while (rule != ""):
-            print(rule)
-            try:
-                self.tokenizeRuleset(rule)
-            except:
-                print("Error: file is not formatted correctly. Nothing added to KB.")
-                return
+        for line in file:
+            print(line)
 
-            #if 
+            if line.strip() == "":
+                continue
+
+            self.tokenizeRuleset(line)
+
+            # try:
+            #     self.tokenizeRuleset(rule)
+            # except:
+            #     print("Error: file is not formatted correctly. Nothing added to KB.")
+            #     return
+
+            #rule = file.readline().strip()
+
+
+        # while (rule != ""):
+        #     print(rule)
+
+        #     if rule.strip() == "":
+        #         rule = file.readline()
+
+        #     self.tokenizeRuleset(rule)
+
+        #     # try:
+        #     #     self.tokenizeRuleset(rule)
+        #     # except:
+        #     #     print("Error: file is not formatted correctly. Nothing added to KB.")
+        #     #     return
+
+        #     rule = file.readline().strip()
         
 
     def tokenizeRuleset(self, input: str) -> list:
@@ -68,25 +91,35 @@ class KB():
         while itr != "<" and index < len(input):
             temp += itr
             index += 1
-            itr = input[index]
-        temp.strip()
+
+            if index < len(input):
+                itr = input[index]
+
+        temp = temp.strip()
 
         if not is_atom(temp):
+            print(f'Head {temp} not formatted correctly')
             raise Exception()
 
         tokens.append(temp)
+        print(tokens)
 
         # find <--
         temp = ""
-        itr = input[index]
         while not is_letter(itr) and index < len(input):
             temp += itr
             index += 1
-            itr = input[index]
-        temp.strip()
+
+            if index < len(input):
+                itr = input[index]
+
+        temp = temp.strip()
 
         if temp != ("<--"):
+            print(f'{temp} not formatted correctly')
             raise Exception()
+        
+        print(f'Found arrow {temp}')
 
         # find atoms + &
         temp = ""
@@ -94,9 +127,9 @@ class KB():
         # TRUE if there's an ampersand BEFORE the current token
         # set to TRUE since there shouldn't be an '&' after '<--'
         ampersandCount = 1
-        itr = input[index]
         while index < len(input):
-            
+            itr = input[index]
+
             if itr == "&" and temp == "":
                 # switch boolean value if ampersand is found
                 # this will deal with edge case if there is
@@ -109,9 +142,12 @@ class KB():
                     # no & separating atom tokens
                     # or too many &s between tokens,
                     # throw error
+                    print("& not formatted correctly")
                     raise Exception()
                 
+                temp = temp.strip()
                 tokens.append(temp)
+                print(tokens)
                 temp = ""
                 
                 if itr == "&":
@@ -124,11 +160,13 @@ class KB():
                 temp += itr
 
             index += 1
-            itr = input[index]
+            
 
         if temp != "":
+            temp = temp.strip()
             tokens.append(temp)
-            
+        print(tokens)
+
         return tokens
 
     def expandKB(self, newAtoms: list):

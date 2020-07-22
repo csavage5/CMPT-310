@@ -31,7 +31,7 @@ class KB():
         wipe current rules and all known facts.
         '''
 
-        # TODO implement
+        # TODO test
 
         try:
             file = open(path)
@@ -92,7 +92,6 @@ class KB():
                 prefix = '& '
             
             print()
-
         
     def tokenizeRuleset(self, input: str) -> list:
         # TODO test for edge cases
@@ -204,6 +203,7 @@ class KB():
         for atom in newAtoms:
             # all atoms are valid, add to knowledge base
             self.facts[atom] = True
+            print(f'  "{atom}" added to KB')
 
     def infer_all(self):
         '''
@@ -212,13 +212,49 @@ class KB():
         '''
         # TODO implement
 
+        # End condition: after looping through all rules,
+        # nothing new was inferred
+        madeInference = True
+        newInferences = []
+
+        while (madeInference == True):
+            madeInference = False
+            
+            # make pass on all rules
+            for head in self.rules:
+
+                # if HEAD is NOT believed
+                if not isKnown(head):
+                    
+                    # check if all b_1, ... , b_n are true
+                    foundFalse = False
+                    for atom in self.rules[head]:
+                        if not isKnown:
+                            foundFalse = True
+                            break
+
+                    # add head to inferred if 
+                    # b_i, ... , b_n are true
+                    if foundFalse == False:
+                        self.inferred[head] = True
+                        newInferences.append(head)
+                        madeInference = True
+
+        # TODO separate new inferences from already known inferences
         # TODO display all atoms in self.inferred
-        print("Newly inferred atoms: ")
+        print(f'Newly inferred atoms: \n{newInferences}')
 
         # TODO display all atoms in self.facts
-        print("Atoms already known to be true: ")
+        print(f'Atoms already known to be true: \n{self.facts}{self.inferences}')
 
         return
+
+    def isKnown(self, atom: str) -> bool:
+        '''
+        Checks if the given atom has been inferred or 
+        is known via "tell" command
+        '''
+        return self.facts.get(atom, False) or self.inferred.get(atom, False)
 
 
 # returns True if, and only if, string s is a valid variable name
@@ -244,11 +280,13 @@ def tokenizeInput(input: str) -> list:
             tokens.append(strTemp)
             strTemp = ""
 
+        elif itr == 
+
         elif itr != "":
             strTemp += itr
 
     if strTemp != "":
-        tokens.append(strTemp)
+        tokens.append(strTemp.strip())
         
     return tokens
 
@@ -258,11 +296,14 @@ def main():
     kb = KB()
     
     while True:
-        userInput = tokenizeInput(input("kb> "))
+        userInput = tokenizeInput(input("\nkb> "))
         print(userInput)
 
+        if len(userInput) == 0:
+            print("Error: no input")
+
         # decide what to do based on first token
-        if userInput[0] == "tell":
+        elif userInput[0] == "tell":
             if len(userInput) > 1:
                 kb.expandKB(userInput[1:])
             
@@ -285,6 +326,12 @@ def main():
 
         elif userInput[0] == "exit":
             break
+
+        elif userInput[0] == "disp_facts":
+            print(kb.facts)
+
+        elif userInput[0] == "disp_inferred":
+            print(kb.inferred)
 
         else:
             print(f'Error: unknown command "{userInput[0]}"')

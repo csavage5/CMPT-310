@@ -16,24 +16,120 @@ class KB():
         # atoms known to be true via inference or 
         # 'tell'. Will be reset upon KB reload.
         # (key, value) = (atom, boolean)
-        self.facts = dict()
+        self.inferred = dict()
 
         # all atoms known to be true via 'tell' 
         # command. Will NOT be reset upon KB
         # reload.
-        self.tells = dict()
+        self.facts = dict()
 
+        self.isFormattedCorrectly = True
 
-    def loadKBFile(self, path: str):
+    def loadKBRuleset(self, path: str):
         '''
         Loads new rules from provided file. Will
         wipe current rules and all known facts.
         '''
 
         # TODO implement
-        self.facts.clear()
-        self.rules.clear()
+
+        try:
+            file = open(path)
         
+        except:
+            print(f'Error: could not open provided file with filename "{path}". Nothing added to KB.')
+            return
+
+        # reset facts and rules
+        self.inferred.clear()
+        self.rules.clear()
+
+        rule = file.readline()
+
+        while (rule != ""):
+            print(rule)
+            try:
+                self.tokenizeRuleset(rule)
+            except:
+                print("Error: file is not formatted correctly. Nothing added to KB.")
+                return
+
+            #if 
+        
+
+    def tokenizeRuleset(self, input: str) -> list:
+        # TODO implement
+        tokens = []
+        temp = ""
+
+        # find HEAD
+        index = 0
+        itr = input[index]
+        while itr != "<" and index < len(input):
+            temp += itr
+            index += 1
+            itr = input[index]
+        temp.strip()
+
+        if not is_atom(temp):
+            raise Exception()
+
+        tokens.append(temp)
+
+        # find <--
+        temp = ""
+        itr = input[index]
+        while not is_letter(itr) and index < len(input):
+            temp += itr
+            index += 1
+            itr = input[index]
+        temp.strip()
+
+        if temp != ("<--"):
+            raise Exception()
+
+        # find atoms + &
+        temp = ""
+
+        # TRUE if there's an ampersand BEFORE the current token
+        # set to TRUE since there shouldn't be an '&' after '<--'
+        ampersandCount = 1
+        itr = input[index]
+        while index < len(input):
+            
+            if itr == "&" and temp == "":
+                # switch boolean value if ampersand is found
+                # this will deal with edge case if there is
+                # an '&' after '<--'
+                ampersandCount += 1
+
+            elif (itr == " " or itr == "&") and temp != "":
+                # found end of atom token
+                if ampersandCount != 1:
+                    # no & separating atom tokens
+                    # or too many &s between tokens,
+                    # throw error
+                    raise Exception()
+                
+                tokens.append(temp)
+                temp = ""
+                
+                if itr == "&":
+                    # found & for next token
+                    ampersandCount = 1
+                else: 
+                    ampersandCount = 0
+            
+            elif itr != " ":
+                temp += itr
+
+            index += 1
+            itr = input[index]
+
+        if temp != "":
+            tokens.append(temp)
+            
+        return tokens
 
     def expandKB(self, newAtoms: list):
         '''
@@ -50,7 +146,6 @@ class KB():
 
         for atom in newAtoms:
             # all atoms are valid, add to knowledge base
-            self.tells[atom] = True
             self.facts[atom] = True
 
     def infer_all(self):
@@ -59,6 +154,13 @@ class KB():
         knowledge base.
         '''
         # TODO implement
+
+        # TODO display all atoms in self.inferred
+        print("Newly inferred atoms: ")
+
+        # TODO display all atoms in self.facts
+        print("Atoms already known to be true: ")
+
         return
 
 
@@ -74,13 +176,14 @@ def is_letter(s):
     return len(s) == 1 and s.lower() in "_abcdefghijklmnopqrstuvwxyz"
 
 # separate user input into tokens
-def tokenize(input: str) -> list:
+def tokenizeInput(input: str) -> list:
+    
     tokens = []
-
     strTemp = ""
 
     for itr in input:
         if itr == " " and strTemp != "":
+            # found end of token
             tokens.append(strTemp)
             strTemp = ""
 
@@ -97,8 +200,8 @@ def main():
 
     kb = KB()
     
-    while true:
-        userInput = tokenize(input("kb> "))
+    while True:
+        userInput = tokenizeInput(input("kb> "))
         print(userInput)
 
         # decide what to do based on first token
@@ -107,18 +210,17 @@ def main():
                 kb.expandKB(userInput[1:])
             
             else:
-                print("Error: must provide at least one atom")
+                print("Error: must provide at least one atom.")
             
         elif userInput[0] == "load":
 
             if len(userInput) > 1:
-                kb.loadKBFile(userInput[1])
+                kb.loadKBRuleset(userInput[1])
             
             else:
-                print("Error: must provide a file path")
+                print("Error: must provide a file path.")
         
-        elif userInput[0] == "clear_tells":
-            kb.tells.clear()
+        elif userInput[0] == "clear_atoms":
             kb.facts.clear()
 
         elif userInput[0] == "infer_all":
@@ -129,8 +231,6 @@ def main():
 
         else:
             print(f'Error: unknown command "{userInput[0]}"')
-
-
 
 if __name__ == "__main__":
     main()

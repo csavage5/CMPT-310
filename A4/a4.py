@@ -55,31 +55,32 @@ class KB():
             #self.tokenizeRuleset(line)
 
             try:
-                self.tokenizeRuleset(line)
+                tokens = self.tokenizeRuleset(line)
             except:
                 print("Error: file is not formatted correctly. Nothing added to KB.")
                 return
 
+            self.rules[tokens[0]] = tokens[1:]
+            print(self.rules)
 
-        # while (rule != ""):
-        #     print(rule)
+        # Display all clauses
+        print(f'{len(self.rules.keys())} definite clauses read in:')
 
-        #     if rule.strip() == "":
-        #         rule = file.readline()
+        for key in self.rules:
+            print(f'  {key} <-- ', end = "")
+            
+            value = self.rules[key]
 
-        #     self.tokenizeRuleset(rule)
+            prefix = ""
+            for atom in value:
+                print(f'{prefix}{atom} ', end = "")
+                prefix = '& '
+            
+            print()
 
-        #     # try:
-        #     #     self.tokenizeRuleset(rule)
-        #     # except:
-        #     #     print("Error: file is not formatted correctly. Nothing added to KB.")
-        #     #     return
-
-        #     rule = file.readline().strip()
         
-
     def tokenizeRuleset(self, input: str) -> list:
-        # TODO implement
+        # TODO test for edge cases
         tokens = []
         temp = ""
 

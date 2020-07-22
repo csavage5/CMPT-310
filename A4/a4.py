@@ -37,7 +37,7 @@ class KB():
             file = open(path)
         
         except:
-            print(f'Error: could not open provided file with filename "{path}". Nothing added to KB.')
+            print(f'Error: could not open file with provided filename "{path}". Nothing added to KB.')
             return
 
         # reset facts and rules

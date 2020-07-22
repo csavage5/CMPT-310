@@ -52,15 +52,13 @@ class KB():
             if line.strip() == "":
                 continue
 
-            self.tokenizeRuleset(line)
+            #self.tokenizeRuleset(line)
 
-            # try:
-            #     self.tokenizeRuleset(rule)
-            # except:
-            #     print("Error: file is not formatted correctly. Nothing added to KB.")
-            #     return
-
-            #rule = file.readline().strip()
+            try:
+                self.tokenizeRuleset(line)
+            except:
+                print("Error: file is not formatted correctly. Nothing added to KB.")
+                return
 
 
         # while (rule != ""):

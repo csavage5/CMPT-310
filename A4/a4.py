@@ -28,7 +28,7 @@ class KB():
     def loadKBRuleset(self, path: str):
         '''
         Loads new rules from provided file. Will
-        wipe current rules and all known facts.
+        wipe current rules and all inferences.
         '''
 
         # TODO test
@@ -201,6 +201,7 @@ class KB():
                 return
 
         for atom in newAtoms:
+            # TODO check if atom is already known
             # all atoms are valid, add to knowledge base
             self.facts[atom] = True
             print(f'  "{atom}" added to KB')
@@ -213,7 +214,7 @@ class KB():
         # TODO implement
 
         # End condition: after looping through all rules,
-        # nothing new was inferred
+        #                nothing new was inferred
         madeInference = True
         newInferences = []
 
@@ -224,12 +225,13 @@ class KB():
             for head in self.rules:
 
                 # if HEAD is NOT believed
-                if not isKnown(head):
-                    
+                if not self.isKnown(head):
+                    print(f'-> {head} is NOT believed to be true')
                     # check if all b_1, ... , b_n are true
                     foundFalse = False
                     for atom in self.rules[head]:
-                        if not isKnown:
+                        print(f'---> checking atoms {self.rules[head]} for truth...')
+                        if not self.isKnown(atom):
                             foundFalse = True
                             break
 
@@ -240,12 +242,10 @@ class KB():
                         newInferences.append(head)
                         madeInference = True
 
-        # TODO separate new inferences from already known inferences
-        # TODO display all atoms in self.inferred
+        # BUG separate new inferences from already known inferences
         print(f'Newly inferred atoms: \n{newInferences}')
 
-        # TODO display all atoms in self.facts
-        print(f'Atoms already known to be true: \n{self.facts}{self.inferences}')
+        print(f'Atoms already known to be true: \n{self.facts}{self.inferred}')
 
         return
 
@@ -280,9 +280,7 @@ def tokenizeInput(input: str) -> list:
             tokens.append(strTemp)
             strTemp = ""
 
-        elif itr == 
-
-        elif itr != "":
+        elif itr != "" and itr != " ":
             strTemp += itr
 
     if strTemp != "":
@@ -320,6 +318,7 @@ def main():
         
         elif userInput[0] == "clear_atoms":
             kb.facts.clear()
+            kb.inferred.clear()
 
         elif userInput[0] == "infer_all":
             kb.infer_all()

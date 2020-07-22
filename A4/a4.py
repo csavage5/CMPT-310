@@ -79,19 +79,7 @@ class KB():
             self.rules[tokenList[0]] = tokenList[1:]
 
         # Display added clauses
-        print(f'{len(self.rules.keys())} definite clauses read in:')
-
-        for key in self.rules:
-            print(f'  {key} <-- ', end = "")
-            
-            value = self.rules[key]
-
-            prefix = ""
-            for atom in value:
-                print(f'{prefix}{atom} ', end = "")
-                prefix = '& '
-            
-            print()
+        self.printRules()
         
     def tokenizeRuleset(self, input: str) -> list:
         # TODO test for edge cases
@@ -242,12 +230,22 @@ class KB():
                         newInferences.append(head)
                         madeInference = True
 
-        # BUG separate new inferences from already known inferences
-        print(f'Newly inferred atoms: \n{newInferences}')
+        # TODO add <none> when either category is empty
+        print(f'  Newly inferred atoms:')
+        prefix = "    "
+        for atom in newInferences:
+            print(f'{prefix}{atom}', end = "")
+            prefix = ", "
+    
+        print(f'\n  Atoms already known to be true:')
+        prefix = "    "
+        for atom in self.facts:
+            print(f'{prefix}{atom}', end = "")
+            prefix = ", "
 
-        print(f'Atoms already known to be true: \n{self.facts}{self.inferred}')
-
-        return
+        for atom in self.inferred:
+            if atom not in newInferences:
+                print(f', {atom}', end = "")
 
     def isKnown(self, atom: str) -> bool:
         '''
@@ -255,6 +253,21 @@ class KB():
         is known via "tell" command
         '''
         return self.facts.get(atom, False) or self.inferred.get(atom, False)
+
+    def printRules(self):
+        print(f'{len(self.rules.keys())} definite clauses read in:')
+
+        for key in self.rules:
+            print(f'  {key} <-- ', end = "")
+            
+            value = self.rules[key]
+
+            prefix = ""
+            for atom in value:
+                print(f'{prefix}{atom} ', end = "")
+                prefix = '& '
+            
+            print()
 
 
 # returns True if, and only if, string s is a valid variable name
@@ -331,6 +344,9 @@ def main():
 
         elif userInput[0] == "disp_inferred":
             print(kb.inferred)
+
+        elif userInput[0] == "disp_rules":
+            kb.printRules()
 
         else:
             print(f'Error: unknown command "{userInput[0]}"')

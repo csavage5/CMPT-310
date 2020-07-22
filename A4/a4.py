@@ -44,10 +44,14 @@ class KB():
         self.inferred.clear()
         self.rules.clear()
 
-        #rule = file.readline()
+        # create temporary dictionary to store atoms in before
+        # checking validity
+        tempRules = dict()
+        tokens = []
 
+        # tokenize each line of the file
         for line in file:
-            print(line)
+            #print(line)
 
             if line.strip() == "":
                 continue
@@ -55,15 +59,26 @@ class KB():
             #self.tokenizeRuleset(line)
 
             try:
-                tokens = self.tokenizeRuleset(line)
+                tokens.append(self.tokenizeRuleset(line))
             except:
-                print("Error: file is not formatted correctly. Nothing added to KB.")
+                print(f'Error: knowledge base {path} is not formatted correctly. Nothing added to KB.')
                 return
 
-            self.rules[tokens[0]] = tokens[1:]
-            print(self.rules)
+        # check each tokenized atom for validity - don't need, check in tokenizeRuleset
+        '''
+        for tokenList in tokens:
 
-        # Display all clauses
+            for atom in tokenList:
+                if not is_atom(atom):
+                    print(f'Error: {atom} is not a valid atom. Nothing added to KB.')
+                    return
+        '''
+
+        # add atoms to ruleset
+        for tokenList in tokens:
+            self.rules[tokenList[0]] = tokenList[1:]
+
+        # Display added clauses
         print(f'{len(self.rules.keys())} definite clauses read in:')
 
         for key in self.rules:
@@ -97,15 +112,15 @@ class KB():
         temp = temp.strip()
 
         if not is_atom(temp):
-            print(f'Head {temp} not formatted correctly')
+            print(f'Error: "{temp}" is not a valid atom')
             raise Exception()
 
         tokens.append(temp)
-        print(tokens)
+        #print(tokens)
 
         # find <--
         temp = ""
-        while not is_letter(itr) and index < len(input):
+        while itr in "<- " and index < len(input):
             temp += itr
             index += 1
 
@@ -115,10 +130,10 @@ class KB():
         temp = temp.strip()
 
         if temp != ("<--"):
-            print(f'{temp} not formatted correctly')
+            print(f'Error: implication "{temp}" not formatted correctly')
             raise Exception()
         
-        print(f'Found arrow {temp}')
+        #print(f'Found arrow {temp}')
 
         # find atoms + &
         temp = ""
@@ -141,12 +156,17 @@ class KB():
                     # no & separating atom tokens
                     # or too many &s between tokens,
                     # throw error
-                    print("& not formatted correctly")
+                    print("Error: & not formatted correctly")
                     raise Exception()
                 
                 temp = temp.strip()
+
+                if not is_atom(temp):
+                    print(f'Error: "{temp}" is not a valid atom')
+                    raise Exception()
+
                 tokens.append(temp)
-                print(tokens)
+                #print(tokens)
                 temp = ""
                 
                 if itr == "&":
@@ -164,7 +184,7 @@ class KB():
         if temp != "":
             temp = temp.strip()
             tokens.append(temp)
-        print(tokens)
+        #print(tokens)
 
         return tokens
 

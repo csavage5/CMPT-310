@@ -214,11 +214,11 @@ class KB():
 
                 # if HEAD is NOT believed
                 if not self.isKnown(head):
-                    print(f'-> {head} is NOT believed to be true')
+                    #print(f'-> {head} is NOT believed to be true')
                     # check if all b_1, ... , b_n are true
                     foundFalse = False
                     for atom in self.rules[head]:
-                        print(f'---> checking atoms {self.rules[head]} for truth...')
+                        #print(f'---> checking atoms {self.rules[head]} for truth...')
                         if not self.isKnown(atom):
                             foundFalse = True
                             break
@@ -233,19 +233,29 @@ class KB():
         # TODO add <none> when either category is empty
         print(f'  Newly inferred atoms:')
         prefix = "    "
-        for atom in newInferences:
-            print(f'{prefix}{atom}', end = "")
-            prefix = ", "
+
+        if len(newInferences) == 0:
+            print(f'{prefix}<none>')
+        
+        else:
+            for atom in newInferences:
+                print(f'{prefix}{atom}', end = "")
+                prefix = ", "
     
         print(f'\n  Atoms already known to be true:')
         prefix = "    "
-        for atom in self.facts:
-            print(f'{prefix}{atom}', end = "")
-            prefix = ", "
 
-        for atom in self.inferred:
-            if atom not in newInferences:
-                print(f', {atom}', end = "")
+        if len(self.facts.keys()) + len(self.inferred.keys()) == 0:
+            print(f'{prefix}<none>')
+        
+        else:
+            for atom in self.facts:
+                print(f'{prefix}{atom}', end = "")
+                prefix = ", "
+
+            for atom in self.inferred:
+                if atom not in newInferences:
+                    print(f', {atom}', end = "")
 
     def isKnown(self, atom: str) -> bool:
         '''
@@ -308,7 +318,7 @@ def main():
     
     while True:
         userInput = tokenizeInput(input("\nkb> "))
-        print(userInput)
+        #print(userInput)
 
         if len(userInput) == 0:
             print("Error: no input")

@@ -256,6 +256,8 @@ class KB():
             for atom in self.inferred:
                 if atom not in newInferences:
                     print(f', {atom}', end = "")
+        
+        print()
 
     def isKnown(self, atom: str) -> bool:
         '''

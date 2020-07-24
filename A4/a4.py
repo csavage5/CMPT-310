@@ -191,15 +191,19 @@ class KB():
         for atom in newAtoms:
             # TODO check if atom is already known
             # all atoms are valid, add to knowledge base
-            self.facts[atom] = True
-            print(f'  "{atom}" added to KB')
+            
+            if self.facts.get(atom, False) or self.inferred.get(atom, False):
+                print(f'  atom "{atom}" already known to be true')
+
+            else:
+                self.facts[atom] = True
+                print(f'  "{atom}" added to KB')
 
     def infer_all(self):
         '''
         Uses all rules to infer facts from atoms in
         knowledge base.
         '''
-        # TODO implement
 
         # End condition: after looping through all rules,
         #                nothing new was inferred
@@ -230,7 +234,6 @@ class KB():
                         newInferences.append(head)
                         madeInference = True
 
-        # TODO add <none> when either category is empty
         print(f'  Newly inferred atoms:')
         prefix = "    "
 

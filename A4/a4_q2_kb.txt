@@ -1,7 +1,7 @@
 # all atoms have condition that user has no internet access with all things true
 
 
-modem_issue <-- connected_to_router
+modem_issue <-- router_OK & modem_connected
 
 router_issue <-- modem_OK & router_lights_not_solid
 
@@ -17,7 +17,7 @@ ISP_issue <-- public_IP_not_assigned & modem_lights_not_solid
 
 DHCP_issue <-- router_connected & no_local_IP
 
-DNS_issue <-- router_OK & modem_OK & 
+DNS_issue <-- router_OK & modem_OK & can_ping_IP & cant_ping_hostname
 
 
 

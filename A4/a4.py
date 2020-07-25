@@ -59,7 +59,7 @@ class KB():
             #self.tokenizeRuleset(line)
 
             try:
-                tokens.append(self.tokenizeRuleset(line))
+                tokens.append(self.tokenizeRuleset(line.strip()))
             except:
                 print(f'Error: knowledge base {path} is not formatted correctly. Nothing added to KB.')
                 return
@@ -128,8 +128,10 @@ class KB():
             itr = input[index]
             
             # Termination of atom
-            if (itr == "&"):
-                ampersandCount += 1
+            if (itr == "&" or index == len(input) - 1):
+                
+                if itr == "&":
+                    ampersandCount += 1
 
                 # Error Checking
                 if itr == '&' and atom == "":
@@ -139,6 +141,9 @@ class KB():
                 
                 # Tokenize atom
                 elif atom != "":
+                    if itr != "&":
+                        atom += itr
+
                     atom = atom.strip()
 
                     if not is_atom(atom):
@@ -155,14 +160,13 @@ class KB():
 
             index += 1
 
-        if atom != "":
-            atom = atom.strip()
-            tokens.append(atom)
+        print(f'ampersandCount: {ampersandCount}')
+        print(f'number of tokens: {len(tokens)}')
+        print(f'tokens: {tokens}')
 
         # -2 from tokens since HEAD is included
         if ampersandCount != len(tokens) - 2:
-            print(f'ampersandCount: {ampersandCount}')
-            print(f'number of tokens: {len(tokens)}')
+
             print(f'Error: "&" character not formatted correctly')
             raise Exception()
 

@@ -56,23 +56,11 @@ class KB():
             if line.strip() == "":
                 continue
 
-            #self.tokenizeRuleset(line)
-
             try:
                 tokens.append(self.tokenizeRuleset(line.strip()))
             except:
                 print(f'Error: knowledge base {path} is not formatted correctly. Nothing added to KB.')
                 return
-
-        # check each tokenized atom for validity - don't need, check in tokenizeRuleset
-        '''
-        for tokenList in tokens:
-
-            for atom in tokenList:
-                if not is_atom(atom):
-                    print(f'Error: {atom} is not a valid atom. Nothing added to KB.')
-                    return
-        '''
 
         # add atoms to ruleset
         for tokenList in tokens:
@@ -160,9 +148,9 @@ class KB():
 
             index += 1
 
-        print(f'ampersandCount: {ampersandCount}')
-        print(f'number of tokens: {len(tokens)}')
-        print(f'tokens: {tokens}')
+        # print(f'ampersandCount: {ampersandCount}')
+        # print(f'number of tokens: {len(tokens)}')
+        # print(f'tokens: {tokens}')
 
         # -2 from tokens since HEAD is included
         if ampersandCount != len(tokens) - 2:

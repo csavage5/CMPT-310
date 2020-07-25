@@ -1,4 +1,3 @@
-# all atoms have condition that user has no internet access with all things true
 
 router_connected <-- router_has_power & router_WAN_connected_to_modem & router_lights_solid
 

@@ -84,46 +84,44 @@ class KB():
     def tokenizeRuleset(self, input: str) -> list:
         # TODO test for edge cases
         tokens = []
-        temp = ""
+        atom = ""
 
         # find HEAD
         index = 0
         itr = input[index]
         while itr != "<" and index < len(input):
-            temp += itr
+            atom += itr
             index += 1
 
             if index < len(input):
                 itr = input[index]
 
-        temp = temp.strip()
+        atom = atom.strip()
 
-        if not is_atom(temp):
-            print(f'Error: "{temp}" is not a valid atom')
+        if not is_atom(atom):
+            print(f'Error: "{atom}" is not a valid atom')
             raise Exception()
 
-        tokens.append(temp)
+        tokens.append(atom)
         #print(tokens)
 
         # find <--
-        temp = ""
+        atom = ""
         while itr in "<- " and index < len(input):
-            temp += itr
+            atom += itr
             index += 1
 
             if index < len(input):
                 itr = input[index]
 
-        temp = temp.strip()
+        atom = atom.strip()
 
-        if temp != ("<--"):
-            print(f'Error: implication "{temp}" not formatted correctly')
+        if atom != ("<--"):
+            print(f'Error: implication "{atom}" not formatted correctly')
             raise Exception()
-        
-        #print(f'Found arrow {temp}')
 
         # find atoms + &
-        temp = ""
+        atom = ""
 
         # TRUE if there's an ampersand BEFORE the current token
         # set to TRUE since there shouldn't be an '&' after '<--'
@@ -131,13 +129,12 @@ class KB():
         while index < len(input):
             itr = input[index]
 
-            if itr == "&" and temp == "":
-                # switch boolean value if ampersand is found
-                # this will deal with edge case if there is
-                # an '&' after '<--'
+            if itr == "&" and atom == "":
+                # this will deal with edge case 
+                # '<--&'
                 ampersandCount += 1
 
-            elif (itr == " " or itr == "&") and temp != "":
+            elif (itr == " " or itr == "&") and atom != "":
                 # found end of atom token
                 if ampersandCount != 1:
                     # no & separating atom tokens
@@ -146,15 +143,15 @@ class KB():
                     print("Error: & not formatted correctly")
                     raise Exception()
                 
-                temp = temp.strip()
+                atom = atom.strip()
 
-                if not is_atom(temp):
-                    print(f'Error: "{temp}" is not a valid atom')
+                if not is_atom(atom):
+                    print(f'Error: "{atom}" is not a valid atom')
                     raise Exception()
 
-                tokens.append(temp)
+                tokens.append(atom)
                 #print(tokens)
-                temp = ""
+                atom = ""
                 
                 if itr == "&":
                     # found & for next token
@@ -163,14 +160,14 @@ class KB():
                     ampersandCount = 0
             
             elif itr != " ":
-                temp += itr
+                atom += itr
 
             index += 1
             
 
-        if temp != "":
-            temp = temp.strip()
-            tokens.append(temp)
+        if atom != "":
+            atom = atom.strip()
+            tokens.append(atom)
         #print(tokens)
 
         return tokens
@@ -191,7 +188,7 @@ class KB():
         for atom in newAtoms:
             # TODO check if atom is already known
             # all atoms are valid, add to knowledge base
-            
+
             if self.facts.get(atom, False) or self.inferred.get(atom, False):
                 print(f'  atom "{atom}" already known to be true')
 

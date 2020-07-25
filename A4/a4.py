@@ -122,52 +122,50 @@ class KB():
 
         # find atoms + &
         atom = ""
+        ampersandCount = 0
 
-        # TRUE if there's an ampersand BEFORE the current token
-        # set to TRUE since there shouldn't be an '&' after '<--'
-        ampersandCount = 1
         while index < len(input):
             itr = input[index]
-
-            if itr == "&" and atom == "":
-                # this will deal with edge case 
-                # '<--&'
+            
+            # Termination of atom
+            if (itr == "&"):
                 ampersandCount += 1
 
-            elif (itr == " " or itr == "&") and atom != "":
-                # found end of atom token
-                if ampersandCount != 1:
-                    # no & separating atom tokens
-                    # or too many &s between tokens,
-                    # throw error
-                    print("Error: & not formatted correctly")
+                # Error Checking
+                if itr == '&' and atom == "":
+                    # error - incorrect '&' formatting
+                    print(f'Error: "&" character not formatted correctly')
                     raise Exception()
                 
-                atom = atom.strip()
+                # Tokenize atom
+                elif atom != "":
+                    atom = atom.strip()
 
-                if not is_atom(atom):
-                    print(f'Error: "{atom}" is not a valid atom')
-                    raise Exception()
+                    if not is_atom(atom):
+                        print(f'Error: "{atom}" is not a valid atom')
+                        raise Exception()
 
-                tokens.append(atom)
-                #print(tokens)
-                atom = ""
-                
-                if itr == "&":
-                    # found & for next token
-                    ampersandCount = 1
-                else: 
-                    ampersandCount = 0
-            
-            elif itr != " ":
+                    tokens.append(atom)
+                    #print(tokens)
+                    atom = ""
+
+            else:
+                # Add char to atom
                 atom += itr
 
             index += 1
-            
 
         if atom != "":
             atom = atom.strip()
             tokens.append(atom)
+
+        # -2 from tokens since HEAD is included
+        if ampersandCount != len(tokens) - 2:
+            print(f'ampersandCount: {ampersandCount}')
+            print(f'number of tokens: {len(tokens)}')
+            print(f'Error: "&" character not formatted correctly')
+            raise Exception()
+
         #print(tokens)
 
         return tokens

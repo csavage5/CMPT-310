@@ -28,9 +28,3 @@ ISP_issue <-- public_IP_not_assigned & modem_lights_not_solid
 DHCP_issue <-- modem_OK & router_connected & no_local_IP
 
 DNS_issue <-- router_OK & modem_OK & can_ping_IP & cant_ping_hostname
-
-
-
-
-
-

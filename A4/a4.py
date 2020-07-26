@@ -10,17 +10,18 @@ class KB():
     '''
 
     def __init__(self):
-        # (key, value) = (head, atom list)
+        # set of rules loaded from knowledge base file
+        # (key, value) = (head, atoms[])
         self.rules = dict()
         
-        # atoms known to be true via inference or 
-        # 'tell'. Will be reset upon KB reload.
+        # atoms known to be true via inference. 
+        # Will be reset upon KB reload.
         # (key, value) = (atom, boolean)
         self.inferred = dict()
 
         # all atoms known to be true via 'tell' 
-        # command. Will NOT be reset upon KB
-        # reload.
+        # command. Will be reset upon KB reload.
+        # (key, value) = (atom, boolean)
         self.facts = dict()
 
         self.isFormattedCorrectly = True
@@ -40,9 +41,10 @@ class KB():
             print(f'Error: could not open file with provided filename "{path}". Nothing added to KB.')
             return
 
-        # reset facts and rules
+        # reset known atoms and rules
         self.inferred.clear()
         self.rules.clear()
+        self.facts.clear()
 
         # create temporary dictionary to store atoms in before
         # checking validity

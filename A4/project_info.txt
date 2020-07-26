@@ -1,6 +1,10 @@
-Team: Cameron Savage
+Team: not working on a team
 
-Project: 
+Project: Reversi with Monte-Carlo Tree Search
+ 
+Language: Java JDK 14
 
-
-Language: Java 14 - any libraries will be included in the project files
+Libraries: since the Java standard library is quite extensive, I don't 
+           expect I'll need to import any other libraries for my project.
+           If I do, they will adhere to the guidelines of the assignment 
+           and be bundled with the project submission.

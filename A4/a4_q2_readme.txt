@@ -1,15 +1,28 @@
 
 Knowledge Base: Basic Home Internet Troubleshooter
 
---- Explanation of Rules ---
 
-I came up with the rules by first thinking of common issues with routers, modems, and 
-network configuration. In the rules file, these issues are organized from least to most
-complex to resolve.
+--- Purpose ---
+
+This knowledge base could be used to solve common home Internet issues by taking in 
+common symptoms and diagnosing where the problem's source may be. 
 
 The knowledge base works like a Windows troubleshooter - it is used when the user has no 
 Internet access and returns a suggestion to fix the issue based on the information it is 
 given.
+
+
+--- Explanation of Rules ---
+
+I came up with the rules by first thinking of common issues with routers, modems, and 
+network configuration, like faulty hardware or incorrect software configuration,then 
+thinking of what symptoms each issue would present. In the rules file, these issues 
+are organized from least to most complex to resolve and diagnose.
+
+The first section of rules gets a baseline of what is working - i.e. modem and router
+hardware lights are displaying correctly. The last two sections used atoms inferred 
+(or a lack of inference) from the first section to make a suggestion as to where the
+fault is.
 
 
 --- Use Case Examples ---

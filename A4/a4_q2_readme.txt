@@ -20,9 +20,8 @@ thinking of what symptoms each issue would present. In the rules file, these iss
 are organized from least to most complex to resolve and diagnose.
 
 The first section of rules gets a baseline of what is working - i.e. modem and router
-hardware lights are displaying correctly. The last two sections used atoms inferred 
-(or a lack of inference) from the first section to make a suggestion as to where the
-fault is.
+hardware lights are displaying correctly. The last two sections used atoms inferred from 
+the first section to make a suggestion as to where the fault is.
 
 
 --- Use Case Examples ---

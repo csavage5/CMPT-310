@@ -259,7 +259,6 @@ class KB():
         return self.facts.get(atom, False) or self.inferred.get(atom, False)
 
     def printRules(self):
-        print(f'{len(self.rules.keys())} definite clauses read in:')
 
         for key in self.rules:
             print(f'  {key} <-- ', end = "")
@@ -272,6 +271,8 @@ class KB():
                 prefix = '& '
             
             print()
+
+        print(f'\n  {len(self.rules.keys())} new rule(s) added')
 
 
 # returns True if, and only if, string s is a valid variable name

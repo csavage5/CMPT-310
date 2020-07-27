@@ -24,15 +24,12 @@ class KB():
         # (key, value) = (atom, boolean)
         self.facts = dict()
 
-        self.isFormattedCorrectly = True
 
     def loadKBRuleset(self, path: str):
         '''
         Loads new rules from provided file. Will
         wipe current rules and all inferences.
         '''
-
-        # TODO test
 
         try:
             file = open(path)
@@ -72,7 +69,7 @@ class KB():
         self.printRules()
         
     def tokenizeRuleset(self, input: str) -> list:
-        # TODO test for edge cases
+
         tokens = []
         atom = ""
 
@@ -150,17 +147,11 @@ class KB():
 
             index += 1
 
-        # print(f'ampersandCount: {ampersandCount}')
-        # print(f'number of tokens: {len(tokens)}')
-        # print(f'tokens: {tokens}')
-
         # -2 from tokens since HEAD is included
         if ampersandCount != len(tokens) - 2:
 
             print(f'Error: "&" character not formatted correctly')
             raise Exception()
-
-        #print(tokens)
 
         return tokens
 
@@ -178,7 +169,6 @@ class KB():
                 return
 
         for atom in newAtoms:
-            # TODO check if atom is already known
             # all atoms are valid, add to knowledge base
 
             if self.facts.get(atom, False) or self.inferred.get(atom, False):

@@ -11,9 +11,13 @@ public class Game {
     private Enum<Turn> state;
     private Board board;
 
-    public Game() {
-        board = new Board();
+    private Agent player1;
+    private Agent player2;
 
+    public Game(Agent player1, Agent player2) {
+        board = new Board();
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     public Board getBoard() {

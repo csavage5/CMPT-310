@@ -3,7 +3,7 @@ package cmpt310.a5.model;
 import java.util.HashMap;
 
 /**
- * Utility class for coordinate conversion
+ * Utility class
  */
 public class Position {
 
@@ -24,6 +24,56 @@ public class Position {
         cols.put("H", 7);
     }
 
+
+    //region Board positions
+
+    public static Boolean insideBoard(int[] cartesian) {
+        return (cartesian[0] >= 0 && cartesian[0] < 8
+                && cartesian[1] >= 0 && cartesian[1] < 8);
+    }
+
+    public static int modifyCoordinateInDirerction(Board.Direction dir, int index) {
+        int[] cartesian = convertIndex(index);
+        switch (dir) {
+            case Up:
+                cartesian[1] -= 1;
+                break;
+            case Down:
+                cartesian[1] += 1;
+                break;
+            case Left:
+                cartesian[0] -= 1;
+                break;
+            case Right:
+                cartesian[0] += 1;
+                break;
+            case DiagUpLeft:
+                cartesian[0] -= 1;
+                cartesian[1] -= 1;
+                break;
+            case DiagUpRight:
+                cartesian[0] += 1;
+                cartesian[1] -= 1;
+                break;
+            case DiagDownLeft:
+                cartesian[0] -= 1;
+                cartesian[1] += 1;
+                break;
+            case DiagDownRight:
+                cartesian[0] += 1;
+                cartesian[1] += 1;
+                break;
+            default:
+                break;
+        }
+
+        return convertCartesian(cartesian[0], cartesian[1]);
+
+    }
+
+    //endregion
+
+    //region Converter utility methods
     /**
      * Convert Letter-Number format to array index.
      * @param coord Caller must verify this is in a
@@ -41,6 +91,18 @@ public class Position {
     public static int convertCartesian(int x, int y) {
         return (x + (y * WIDTH));
     }
+
+    public static int[] convertIndex(int index) {
+        // will take floor of division
+        int y = index / WIDTH;
+        int x = index - (y * WIDTH);
+
+        return new int[]{x, y};
+    }
+
+    //endregion
+
+
 
 
 

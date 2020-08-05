@@ -1,6 +1,9 @@
 package cmpt310.a5.controller;
 
 import cmpt310.a5.model.Game;
+import cmpt310.a5.model.HumanAgent;
+import cmpt310.a5.model.MonteCarloAgent;
+import cmpt310.a5.model.PureMonteCarloAgent;
 import cmpt310.a5.view.*;
 
 import java.util.Scanner;
@@ -12,12 +15,20 @@ import java.util.Scanner;
  */
 public class GameController {
 
+    private Game game;
+
     public GameController() {
+        // TODO prompt user to choose which agents
+        //  occupy which player slots
+        game = new Game(new MonteCarloAgent(Game.Turn.PLAYER1),
+                new HumanAgent(Game.Turn.PLAYER2));
+
+
         gameLoop();
     }
 
     private void gameLoop() {
-        Game game = new Game();
+
         Scanner scanner = new Scanner(System.in);
 
         TextOutput.printBoard(game.getBoard());

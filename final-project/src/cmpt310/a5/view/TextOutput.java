@@ -27,7 +27,7 @@ public class TextOutput {
                 // cell divider
                 System.out.print(" | ");
 
-                //TODO game tile
+                //TODO print game tile
                 System.out.print(" ");
 
             }

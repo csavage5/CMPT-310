@@ -1,5 +1,7 @@
 package cmpt310.a5.controller;
 
+import cmpt310.a5.view.*;
+
 
 /**
  * Receives user input and sends the Model commands based on that input.
@@ -7,6 +9,13 @@ package cmpt310.a5.controller;
  */
 public class GameController {
 
-    
+    public GameController() {
+        gameLoop();
+    }
 
+    private void gameLoop() {
+
+        TextOutput.printBoard();
+
+    }
 }

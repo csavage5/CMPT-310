@@ -8,7 +8,13 @@ public abstract class Agent {
         this.playerNumber = playerNumber;
     }
 
-    public abstract void makeMove();
+    /**
+     * Given a board, returns the position to
+     * make a move at
+     * @param board
+     * @return coordinate for move
+     */
+    public abstract int makeMove(Board board);
 
 
 }

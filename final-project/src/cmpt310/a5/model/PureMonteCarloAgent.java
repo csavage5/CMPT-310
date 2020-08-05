@@ -8,8 +8,9 @@ public class PureMonteCarloAgent extends Agent{
     }
 
     @Override
-    public void makeMove() {
-
+    public int makeMove(Board board) {
+        // TODO implement
+        return 0;
     }
 
 

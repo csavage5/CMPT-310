@@ -1,5 +1,6 @@
 package cmpt310.a5.controller;
 
+import cmpt310.a5.model.Game;
 import cmpt310.a5.view.*;
 
 import java.util.Scanner;
@@ -16,9 +17,10 @@ public class GameController {
     }
 
     private void gameLoop() {
+        Game game = new Game();
         Scanner scanner = new Scanner(System.in);
 
-        TextOutput.printBoard();
+        TextOutput.printBoard(game.getBoard());
 
     }
 }

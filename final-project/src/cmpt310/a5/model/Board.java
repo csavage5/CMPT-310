@@ -56,11 +56,11 @@ public class Board {
     }
 
     /**
-     *
+     * Discover and save valid moves in validMoves for the given
+     * tile type
      * @param playerTile type of tile to generate valid moves from
      */
-    public void updateValidMoves(Tile playerTile) {
-        // TODO implement
+    public void discoverValidMoves(Tile playerTile) {
 
         Tile enemyTile;
 
@@ -95,19 +95,25 @@ public class Board {
                     // end when game borders are crossed
                     while (Position.insideBoard(Position.convertIndex(currentIndex))) {
 
-                        // current and previous tiles match pattern for valid move
-                        if (gameBoard.get(currentIndex) == Tile.Empty && gameBoard.get(prevIndex) == enemyTile) {
+                        if (gameBoard.get(currentIndex) == playerTile) {
+                            // move on to next direction
+                            break;
+                        }
 
-                            // add index as an originating tile for currentIndex
-                            ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
-                            value.add(index);
-                            validMoves.put(currentIndex, value);
+                        if (gameBoard.get(currentIndex) == Tile.Empty) {
+
+                            if (gameBoard.get(prevIndex) == enemyTile) {
+                                // add index as an originating tile for currentIndex
+                                ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
+                                value.add(index);
+                                validMoves.put(currentIndex, value);
+                            }
 
                             // move on to next direction
                             break;
 
                         } else {
-                            // pattern not matched, increment other values
+                            // pattern not yet found, increment other values
                             prevIndex = currentIndex;
                         }
 

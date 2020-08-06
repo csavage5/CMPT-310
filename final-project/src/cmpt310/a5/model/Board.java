@@ -90,7 +90,8 @@ public class Board {
         // that are owned by agent, discover valid
         // moves from that tile
         int index = 0;
-        for ( Tile itr : gameBoard) {
+        ArrayList<Integer> pathToGoal = new ArrayList<>();
+        for (Tile itr : gameBoard) {
 
             if (itr == playerTile) {
 
@@ -102,30 +103,30 @@ public class Board {
                     System.out.println("Moving in direction " + dir);
                     System.out.print("At index " + currentIndex + ", moving to ");
 
+                    pathToGoal.clear();
                     currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
                     System.out.println(currentIndex);
 
                     // end when game borders are crossed
                     while (Position.insideBoard(Position.convertIndex(currentIndex))) {
 
+                        pathToGoal.add(prevIndex);
+
+                        // found own before an empty tile => end search in this direction
                         if (gameBoard.get(currentIndex) == playerTile) {
                             // move on to next direction
                             break;
                         }
 
+                        // found empty tile
                         if (gameBoard.get(currentIndex) == Tile.Empty) {
 
                             if (gameBoard.get(prevIndex) == enemyTile) {
                                 System.out.println("found valid move at " + currentIndex);
                                 // add index as an originating tile for currentIndex
-                                ArrayList<Integer> value = validMoves.get(currentIndex);
+                                ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
 
-                                if (value == null) {
-                                    value = new ArrayList<>();
-                                }
-
-                                //ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
-                                value.add(index);
+                                value.addAll(pathToGoal);
                                 validMoves.put(currentIndex, value);
                             }
 
@@ -143,6 +144,7 @@ public class Board {
                     // reset index
                     prevIndex = index;
                     currentIndex = index;
+
                 }
 
             }
@@ -155,14 +157,16 @@ public class Board {
     public void selectValidMove(int validMovePosition) {
         // TODO implement
 
-        // TODO check dictionary for originating tile(s)
-        //  of valid move
+        // TODO check dictionary for list of tiles to flip
 
-        // TODO change tile alignment for tiles between
-        //  valid tile and originating tile(s) to player
-        //  with current turn
+        // check for existence of valid move at given position
+
+
+        // TODO change tile alignment for tiles on path -
+        //  *should* be # of elements in list
 
         // TODO adjust score for both players
+
     }
 
 }

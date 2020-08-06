@@ -119,12 +119,13 @@ public class Board {
 
                 // ** Check all directions for valid moves ** //
                 for (Direction dir : Direction.values()) {
-                    System.out.println("Moving in direction " + dir);
-                    System.out.print("At index " + currentIndex + ", moving to ");
+                    //System.out.println("Moving in direction " + dir);
+                    //System.out.print("At index " + currentIndex + ", moving to ");
 
                     pathToGoal.clear();
                     currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
-                    System.out.println(currentIndex);
+
+                    //System.out.println(currentIndex);
 
                     // end when game borders are crossed
                     while (Position.insideBoard(Position.convertIndex(currentIndex))) {
@@ -141,7 +142,7 @@ public class Board {
                         if (gameBoard.get(currentIndex) == Tile.Empty) {
 
                             if (gameBoard.get(prevIndex) == enemyTile) {
-                                System.out.println("found valid move at " + currentIndex);
+                                //System.out.println("found valid move at " + currentIndex);
 
                                 // add index as an originating tile for currentIndex
                                 ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
@@ -182,13 +183,25 @@ public class Board {
 
         // check dictionary for list of tiles to flip
         ArrayList<Integer> tilesToFlip = validMoves.get(validMovePosition);
-
+        
         // change tile alignment for tiles on path -
         //  *should* be # of elements in list
         for (Integer itr : tilesToFlip) {
             changeTileAlignment(itr);
         }
 
+    }
+
+    public void switchTurn() {
+        switch (state) {
+            case PLAYER1:
+                state = Turn.PLAYER2;
+                break;
+
+            case PLAYER2:
+                state = Turn.PLAYER1;
+                break;
+        }
     }
 
     private void changeTileAlignment(int index) {
@@ -218,18 +231,18 @@ public class Board {
                     scorePlayer2++;
                 }
 
-                System.out.println("placing tile at valid move " + index);
+                System.out.println("placing tile" + state + " at valid move " + index);
                 validMoves.clear();
                 break;
 
             case Empty:
-                // FIXME valid moves not saved to board, so
-                //  tile type ValidMove not found
                 System.out.println("cannot flip empty tile at " + index);
                 return;
         }
 
 
     }
+
+
 
 }

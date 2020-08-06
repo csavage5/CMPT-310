@@ -11,7 +11,7 @@ public class TextOutput {
     private static String sideNumbers = "12345678";
     private static String divider = "  ---------------------------------";
 
-    private static String inputPrompt = "Enter a coordinate of a valid move: ";
+    private static String inputPrompt = "Enter a coordinate of a valid move (*): ";
 
     public static void printBoard(ArrayList<Board.Tile> gameBoard) {
         System.out.println(topLetters);
@@ -59,9 +59,21 @@ public class TextOutput {
 
     }
 
+    public static void printTurnInformation(Board.Turn state) {
+        switch (state) {
+            case PLAYER1:
+                System.out.println("Now Player 1's turn (X).");
+                break;
+
+            case PLAYER2:
+                System.out.println("Now Player 2's turn (O).");
+        }
+    }
+
     public static void promptCoordinateEntry() {
         System.out.print(inputPrompt);
     }
+
 
     // TODO prompts for choosing players
     // TODO

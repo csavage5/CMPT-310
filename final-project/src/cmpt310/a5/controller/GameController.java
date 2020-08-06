@@ -2,6 +2,7 @@ package cmpt310.a5.controller;
 
 import cmpt310.a5.model.*;
 import cmpt310.a5.view.*;
+import org.w3c.dom.Text;
 
 import java.util.Scanner;
 
@@ -25,12 +26,15 @@ public class GameController {
     }
 
     private void gameLoop() {
-        game.board.discoverValidMoves();
-        TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
-        game.board.selectValidMove(Position.convertLetterNumber("F4"));
-        TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
-        game.board.discoverValidMoves();
-        TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
+
+        //TODO add while loop that terminates when game is finished
+
+        while (!game.isGameFinished()) {
+            game.discoverValidMoves();
+            TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
+            TextOutput.printTurnInformation(game.board.state);
+            game.takeTurn();
+        }
 
     }
 

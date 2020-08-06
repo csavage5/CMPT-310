@@ -82,7 +82,7 @@ public class Position {
      */
     public static int convertLetterNumber(String coord) {
         // Convert column letter to number
-        int x = cols.get(coord.substring(0, 1));
+        int x = cols.get(coord.substring(0, 1).toUpperCase());
         int y = Integer.parseInt(coord.substring(1)) - 1;
 
         return (x + (y * WIDTH));

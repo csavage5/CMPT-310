@@ -13,21 +13,9 @@ public class Game {
         this.player2 = player2;
     }
 
-    public void startGame() {
-
-        takeTurn();
-
-        // check if game is over
-
-
-    }
+    // TODO check if game is over
 
     public void takeTurn() {
-
-        // TODO deal with case where player passes turn
-        //  because no valid moves
-
-        board.discoverValidMoves();
 
         int moveLocation = -1;
 
@@ -38,6 +26,17 @@ public class Game {
         }
 
         board.selectValidMove(moveLocation);
-
+        board.switchTurn();
     }
+
+    public void discoverValidMoves() {
+        // TODO deal with case where player passes turn
+        //  because no valid moves
+        board.discoverValidMoves();
+    }
+
+    public boolean isGameFinished() {
+        return (board.state == Board.Turn.FINISHED);
+    }
+
 }

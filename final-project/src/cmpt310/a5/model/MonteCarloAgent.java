@@ -3,7 +3,7 @@ package cmpt310.a5.model;
 public class MonteCarloAgent extends Agent{
 
 
-    public MonteCarloAgent(Game.Turn playerNumber) {
+    public MonteCarloAgent(Board.Turn playerNumber) {
         super(playerNumber);
     }
 

@@ -11,7 +11,8 @@ public class TextOutput {
     private static String sideNumbers = "12345678";
     private static String divider = "  ---------------------------------";
 
-    //ArrayList<Board.Tile> board
+    private static String inputPrompt = "Enter a coordinate of a valid move: ";
+
     public static void printBoard(ArrayList<Board.Tile> gameBoard) {
         System.out.println(topLetters);
         System.out.println(divider);
@@ -57,5 +58,12 @@ public class TextOutput {
         }
 
     }
+
+    public static void promptCoordinateEntry() {
+        System.out.print(inputPrompt);
+    }
+
+    // TODO prompts for choosing players
+    // TODO
 
 }

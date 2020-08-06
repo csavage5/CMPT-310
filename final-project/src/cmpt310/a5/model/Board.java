@@ -5,6 +5,13 @@ import java.util.HashMap;
 
 public class Board {
 
+    //region Enums
+    public enum Turn {
+        PLAYER1,
+        PLAYER2,
+        FINISHED
+    }
+
     public enum Tile {
         Player1,
         Player2,
@@ -22,12 +29,13 @@ public class Board {
         DiagDownLeft,
         DiagDownRight
     }
+    //endregion
 
-    private Enum<Game.Turn> state = Game.Turn.PLAYER1;
+    public Turn state = Turn.PLAYER1;
 
     private ArrayList<Tile> gameBoard;
 
-    //(valid move index, originating tiles)
+    // (key, value) = (valid move index, path to originating tile)
     private HashMap<Integer, ArrayList<Integer>> validMoves;
 
     private int scorePlayer1 = 2;
@@ -72,25 +80,27 @@ public class Board {
     //endregion
 
     /**
-     * Discover and save valid moves in validMoves for the given
-     * tile type
-     * @param playerTile type of tile to generate valid moves from
+     * Discover and save valid moves in validMoves. Uses state to determine
+     * the turn of the current player
      */
-    public void discoverValidMoves(Tile playerTile) {
+    public void discoverValidMoves() {
         // TODO break into separate methods
-
+        Tile playerTile = null;
         Tile enemyTile;
 
-        switch (playerTile) {
-            case Player1:
+        switch (state) {
+            case PLAYER1:
+                playerTile = Tile.Player1;
                 enemyTile = Tile.Player2;
                 break;
 
-            case Player2:
+            case PLAYER2:
+                playerTile = Tile.Player2;
                 enemyTile = Tile.Player1;
                 break;
+
             default:
-                throw new IllegalStateException("Unexpected value: " + playerTile);
+                throw new IllegalStateException("'state' was not set to a player");
         }
 
         // iterate through all tiles in gameBoard
@@ -98,6 +108,8 @@ public class Board {
         // moves from that tile
         int index = 0;
         ArrayList<Integer> pathToGoal = new ArrayList<>();
+        validMoves.clear();
+
         for (Tile itr : gameBoard) {
 
             if (itr == playerTile) {
@@ -119,7 +131,7 @@ public class Board {
 
                         pathToGoal.add(currentIndex);
 
-                        // found own before an empty tile => end search in this direction
+                        // found own tile before an empty tile => end search in this direction
                         if (gameBoard.get(currentIndex) == playerTile) {
                             // move on to next direction
                             break;
@@ -181,12 +193,7 @@ public class Board {
 
     private void changeTileAlignment(int index) {
 
-        Tile tileToFlip = gameBoard.get(index);
-
-        // TODO adjust score for both players
-        //  - reduce and add for every flipped tile,
-        //  only add for placing a new tile
-        //  ** Need to know turn for this
+        Tile tileToFlip = getGameBoardWithValidMoves().get(index);
 
         switch (tileToFlip) {
             case Player1:
@@ -203,7 +210,7 @@ public class Board {
 
             case ValidMove:
 
-                if (state == Game.Turn.PLAYER1) {
+                if (state == Turn.PLAYER1) {
                     gameBoard.set(index, Tile.Player1);
                     scorePlayer1++;
                 } else {
@@ -212,12 +219,13 @@ public class Board {
                 }
 
                 System.out.println("placing tile at valid move " + index);
+                validMoves.clear();
                 break;
 
             case Empty:
                 // FIXME valid moves not saved to board, so
                 //  tile type ValidMove not found
-                System.out.println("cannot flip tile at " + index);
+                System.out.println("cannot flip empty tile at " + index);
                 return;
         }
 

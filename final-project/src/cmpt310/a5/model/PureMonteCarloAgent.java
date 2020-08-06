@@ -3,7 +3,7 @@ package cmpt310.a5.model;
 public class PureMonteCarloAgent extends Agent{
 
 
-    public PureMonteCarloAgent(Game.Turn playerNumber) {
+    public PureMonteCarloAgent(Board.Turn playerNumber) {
         super(playerNumber);
     }
 

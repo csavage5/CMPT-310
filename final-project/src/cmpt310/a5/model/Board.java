@@ -1,6 +1,7 @@
 package cmpt310.a5.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Board {
@@ -174,8 +175,9 @@ public class Board {
 
     }
 
+    
     public void selectValidMove(int validMovePosition) {
-
+        Integer[] flippedTiles = generateNewBitmap();
         // check for existence of valid move at given position
         if (!validMoves.containsKey(validMovePosition)) {
             throw new IllegalArgumentException("Selected move is invalid");
@@ -183,11 +185,14 @@ public class Board {
 
         // check dictionary for list of tiles to flip
         ArrayList<Integer> tilesToFlip = validMoves.get(validMovePosition);
-        
+
         // change tile alignment for tiles on path -
         //  *should* be # of elements in list
         for (Integer itr : tilesToFlip) {
-            changeTileAlignment(itr);
+            if (flippedTiles[itr] == 0) {
+                changeTileAlignment(itr);
+                flippedTiles[itr] = 1;
+            }
         }
 
     }
@@ -202,6 +207,12 @@ public class Board {
                 state = Turn.PLAYER1;
                 break;
         }
+    }
+
+    private Integer[] generateNewBitmap() {
+        Integer[] array = new Integer[64];
+        Arrays.fill(array, 0);
+        return array;
     }
 
     private void changeTileAlignment(int index) {

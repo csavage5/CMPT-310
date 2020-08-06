@@ -20,7 +20,6 @@ public class GameController {
         game = new Game(new MonteCarloAgent(Game.Turn.PLAYER1),
                 new HumanAgent(Game.Turn.PLAYER2));
 
-
         gameLoop();
     }
 
@@ -28,6 +27,8 @@ public class GameController {
 
         Scanner scanner = new Scanner(System.in);
         game.board.discoverValidMoves(Board.Tile.Player1);
+        TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
+        game.board.selectValidMove(Position.convertLetterNumber("F4"));
         TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
 
     }

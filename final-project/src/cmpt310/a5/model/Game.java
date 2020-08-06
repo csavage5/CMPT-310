@@ -8,7 +8,6 @@ public class Game {
         FINISHED
     }
 
-    private Enum<Turn> state;
     public Board board;
 
     private Agent player1;

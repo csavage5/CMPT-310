@@ -23,6 +23,8 @@ public class Board {
         DiagDownRight
     }
 
+    private Enum<Game.Turn> state = Game.Turn.PLAYER1;
+
     private ArrayList<Tile> gameBoard;
 
     //(valid move index, originating tiles)
@@ -46,6 +48,8 @@ public class Board {
         gameBoard.set(Position.convertLetterNumber("D5"), Tile.Player2);
     }
 
+    //region Accessors
+
     public ArrayList<Tile> getGameBoard() {
         return (ArrayList<Tile>) gameBoard.clone();
     }
@@ -65,12 +69,15 @@ public class Board {
         return newGameBoard;
     }
 
+    //endregion
+
     /**
      * Discover and save valid moves in validMoves for the given
      * tile type
      * @param playerTile type of tile to generate valid moves from
      */
     public void discoverValidMoves(Tile playerTile) {
+        // TODO break into separate methods
 
         Tile enemyTile;
 
@@ -110,7 +117,7 @@ public class Board {
                     // end when game borders are crossed
                     while (Position.insideBoard(Position.convertIndex(currentIndex))) {
 
-                        pathToGoal.add(prevIndex);
+                        pathToGoal.add(currentIndex);
 
                         // found own before an empty tile => end search in this direction
                         if (gameBoard.get(currentIndex) == playerTile) {
@@ -123,9 +130,9 @@ public class Board {
 
                             if (gameBoard.get(prevIndex) == enemyTile) {
                                 System.out.println("found valid move at " + currentIndex);
+
                                 // add index as an originating tile for currentIndex
                                 ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
-
                                 value.addAll(pathToGoal);
                                 validMoves.put(currentIndex, value);
                             }
@@ -155,17 +162,65 @@ public class Board {
     }
 
     public void selectValidMove(int validMovePosition) {
-        // TODO implement
-
-        // TODO check dictionary for list of tiles to flip
 
         // check for existence of valid move at given position
+        if (!validMoves.containsKey(validMovePosition)) {
+            throw new IllegalArgumentException("Selected move is invalid");
+        }
 
+        // check dictionary for list of tiles to flip
+        ArrayList<Integer> tilesToFlip = validMoves.get(validMovePosition);
 
-        // TODO change tile alignment for tiles on path -
+        // change tile alignment for tiles on path -
         //  *should* be # of elements in list
+        for (Integer itr : tilesToFlip) {
+            changeTileAlignment(itr);
+        }
+
+    }
+
+    private void changeTileAlignment(int index) {
+
+        Tile tileToFlip = gameBoard.get(index);
 
         // TODO adjust score for both players
+        //  - reduce and add for every flipped tile,
+        //  only add for placing a new tile
+        //  ** Need to know turn for this
+
+        switch (tileToFlip) {
+            case Player1:
+                gameBoard.set(index, Tile.Player2);
+                scorePlayer2++;
+                scorePlayer1--;
+                break;
+
+            case Player2:
+                gameBoard.set(index, Tile.Player1);
+                scorePlayer1++;
+                scorePlayer2--;
+                break;
+
+            case ValidMove:
+
+                if (state == Game.Turn.PLAYER1) {
+                    gameBoard.set(index, Tile.Player1);
+                    scorePlayer1++;
+                } else {
+                    gameBoard.set(index, Tile.Player2);
+                    scorePlayer2++;
+                }
+
+                System.out.println("placing tile at valid move " + index);
+                break;
+
+            case Empty:
+                // FIXME valid moves not saved to board, so
+                //  tile type ValidMove not found
+                System.out.println("cannot flip tile at " + index);
+                return;
+        }
+
 
     }
 

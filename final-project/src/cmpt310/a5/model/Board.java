@@ -175,7 +175,6 @@ public class Board {
 
     }
 
-    
     public void selectValidMove(int validMovePosition) {
         Integer[] flippedTiles = generateNewBitmap();
         // check for existence of valid move at given position

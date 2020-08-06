@@ -2,9 +2,6 @@ package cmpt310.a5.controller;
 
 import cmpt310.a5.model.*;
 import cmpt310.a5.view.*;
-import org.w3c.dom.Text;
-
-import java.util.Scanner;
 
 /**
  * Receives user input and sends the Model commands based on that input.
@@ -13,21 +10,20 @@ import java.util.Scanner;
 public class GameController {
 
     private Game game;
-    public static final Scanner scanner = new Scanner(System.in);
 
 
     public GameController() {
         // TODO prompt user to choose which agents
         //  occupy which player slots
-        game = new Game(new HumanAgent(Board.Turn.PLAYER1),
-                new HumanAgent(Board.Turn.PLAYER2));
+
+        Integer[] selection = TextOutput.selectPlayerPrompt();
+        game = new Game(getAgentTypeFromInput(selection[0], Board.Turn.PLAYER1),
+                getAgentTypeFromInput(selection[1], Board.Turn.PLAYER2));
 
         gameLoop();
     }
 
     private void gameLoop() {
-
-        //TODO add while loop that terminates when game is finished
 
         while (!game.isGameFinished()) {
             game.discoverValidMoves();
@@ -42,8 +38,24 @@ public class GameController {
      * Prompts user for coordinate
      * @return index of move
      */
-    public static int promptUserForInput() {
-        TextOutput.promptCoordinateEntry();
-        return Position.convertLetterNumber(scanner.nextLine());
+    public static int promptUserForCoordinate() {
+        return Position.convertLetterNumber(TextOutput.promptCoordinateEntry());
     }
+
+    private Agent getAgentTypeFromInput(Integer input, Board.Turn turn) {
+        switch (input) {
+            case 0:
+                return new HumanAgent(turn);
+
+            case 1:
+                return new PureMonteCarloAgent(turn);
+
+            case 2:
+                return new MonteCarloAgent(turn);
+
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
 }

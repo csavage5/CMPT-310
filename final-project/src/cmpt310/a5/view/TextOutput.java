@@ -1,12 +1,18 @@
 package cmpt310.a5.view;
 
 import cmpt310.a5.model.*;
+
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Pushes UI to console output
  */
 public class TextOutput {
+
+    public static final Scanner scanner = new Scanner(System.in);
+
     private static String topLetters = "    A   B   C   D   E   F   G   H";
     private static String sideNumbers = "12345678";
     private static String divider = "  ---------------------------------";
@@ -70,12 +76,46 @@ public class TextOutput {
         }
     }
 
-    public static void promptCoordinateEntry() {
+    public static String promptCoordinateEntry() {
         System.out.print(inputPrompt);
+        return scanner.nextLine();
     }
 
 
     // TODO prompts for choosing players
+    public static Integer[] selectPlayerPrompt() {
+        Integer[] result = new Integer[2];
+        Boolean validEntries = false;
+
+        System.out.println("Choose the players for the game.");
+        System.out.print("Enter: \n   0 for Human \n   1 for Pure Monte Carlo \n   2 for Monte Carlo with heuristics\n");
+
+        while (!validEntries) {
+
+            try {
+                System.out.print("Choice for Player 1: ");
+                result[0] = Integer.parseInt(scanner.nextLine());
+
+                System.out.print("Choice for Player 2: ");
+                result[1] = Integer.parseInt(scanner.nextLine());
+
+                if (result[0] < 0 || result[0] > 2 || result[1] < 0 || result[1] > 2) {
+                    throw new NumberFormatException();
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid selection, try again\n");
+                continue;
+            }
+
+            validEntries = true;
+        }
+
+        return result;
+    }
+
+
+
     // TODO
 
 }

@@ -10,7 +10,7 @@ public class HumanAgent extends Agent {
 
     @Override
     public int makeMove(Board board) {
-        return GameController.promptUserForInput();
+        return GameController.promptUserForCoordinate();
     }
 
 

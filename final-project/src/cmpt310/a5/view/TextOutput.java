@@ -12,7 +12,7 @@ public class TextOutput {
     private static String divider = "  ---------------------------------";
 
     //ArrayList<Board.Tile> board
-    public static void printBoard(Board board) {
+    public static void printBoard(ArrayList<Board.Tile> gameBoard) {
         System.out.println(topLetters);
         System.out.println(divider);
         for (int y = 0; y < 8; y++) {
@@ -28,7 +28,7 @@ public class TextOutput {
                 System.out.print(" | ");
 
                 //TODO print game tile
-                switch (board.getGameBoard().get(Position.convertCartesian(x, y))) {
+                switch (gameBoard.get(Position.convertCartesian(x, y))) {
 
                     case Empty:
                         System.out.print(" ");

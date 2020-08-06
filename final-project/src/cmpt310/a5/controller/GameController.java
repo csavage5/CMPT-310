@@ -1,9 +1,6 @@
 package cmpt310.a5.controller;
 
-import cmpt310.a5.model.Game;
-import cmpt310.a5.model.HumanAgent;
-import cmpt310.a5.model.MonteCarloAgent;
-import cmpt310.a5.model.PureMonteCarloAgent;
+import cmpt310.a5.model.*;
 import cmpt310.a5.view.*;
 
 import java.util.Scanner;
@@ -30,8 +27,8 @@ public class GameController {
     private void gameLoop() {
 
         Scanner scanner = new Scanner(System.in);
-
-        TextOutput.printBoard(game.getBoard());
+        game.board.discoverValidMoves(Board.Tile.Player1);
+        TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
 
     }
 }

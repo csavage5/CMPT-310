@@ -9,7 +9,7 @@ public class Game {
     }
 
     private Enum<Turn> state;
-    private Board board;
+    public Board board;
 
     private Agent player1;
     private Agent player2;
@@ -20,8 +20,5 @@ public class Game {
         this.player2 = player2;
     }
 
-    public Board getBoard() {
-        return board;
-    }
 
 }

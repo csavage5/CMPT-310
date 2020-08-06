@@ -33,7 +33,7 @@ public class Board {
 
     public Board() {
         this.gameBoard = new ArrayList<Tile>(8 * 8);
-
+        this.validMoves = new HashMap<>();
         // fill board
         for (int i = 0; i < 64; i++) {
             gameBoard.add(Tile.Empty);
@@ -53,6 +53,16 @@ public class Board {
     public int getScore(Tile player) {
         // TODO implement
         return 0;
+    }
+
+    public ArrayList<Tile> getGameBoardWithValidMoves() {
+        ArrayList<Tile> newGameBoard = getGameBoard();
+
+        for (int key : validMoves.keySet()) {
+            newGameBoard.set(key, Tile.ValidMove);
+        }
+
+        return newGameBoard;
     }
 
     /**
@@ -89,8 +99,11 @@ public class Board {
 
                 // ** Check all directions for valid moves ** //
                 for (Direction dir : Direction.values()) {
+                    System.out.println("Moving in direction " + dir);
+                    System.out.print("At index " + currentIndex + ", moving to ");
 
                     currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
+                    System.out.println(currentIndex);
 
                     // end when game borders are crossed
                     while (Position.insideBoard(Position.convertIndex(currentIndex))) {
@@ -103,8 +116,15 @@ public class Board {
                         if (gameBoard.get(currentIndex) == Tile.Empty) {
 
                             if (gameBoard.get(prevIndex) == enemyTile) {
+                                System.out.println("found valid move at " + currentIndex);
                                 // add index as an originating tile for currentIndex
-                                ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
+                                ArrayList<Integer> value = validMoves.get(currentIndex);
+
+                                if (value == null) {
+                                    value = new ArrayList<>();
+                                }
+
+                                //ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
                                 value.add(index);
                                 validMoves.put(currentIndex, value);
                             }
@@ -115,10 +135,14 @@ public class Board {
                         } else {
                             // pattern not yet found, increment other values
                             prevIndex = currentIndex;
+                            currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
                         }
 
                     }
 
+                    // reset index
+                    prevIndex = index;
+                    currentIndex = index;
                 }
 
             }
@@ -127,7 +151,6 @@ public class Board {
         }
 
     }
-
 
     public void selectValidMove(int validMovePosition) {
         // TODO implement

@@ -26,12 +26,21 @@ public class GameController {
     private void gameLoop() {
 
         while (!game.isGameFinished()) {
-            game.discoverValidMoves();
-            TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
-            TextOutput.printTurnInformation(game.board.state,
-                    game.board.getScoreP1(), game.board.getScoreP2());
-            game.takeTurn();
+
+            if (game.discoverValidMoves()) {
+                // player doesn't skip turn
+                TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
+                TextOutput.printTurnInformation(game.board.state,
+                        game.board.getScoreP1(), game.board.getScoreP2());
+                game.takeTurn();
+            } else {
+                //player skips turn, output different UI message
+                TextOutput.printSkippedTurn(game.board.state.getOpposite());
+            }
         }
+
+        //game is over
+        TextOutput.printGameOver(game.board.victor, game.board.getScoreP1(), game.board.getScoreP2());
 
     }
 

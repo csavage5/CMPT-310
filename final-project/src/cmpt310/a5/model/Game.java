@@ -26,17 +26,16 @@ public class Game {
         }
 
         board.selectValidMove(moveLocation);
-        board.switchTurn();
     }
 
-    public void discoverValidMoves() {
+    public boolean discoverValidMoves() {
         // TODO deal with case where player passes turn
         //  because no valid moves
-        board.discoverValidMoves();
+        return board.discoverValidMoves();
     }
 
     public boolean isGameFinished() {
-        return (board.state == Board.Turn.FINISHED);
+        return (board.isGameOver());
     }
 
 }

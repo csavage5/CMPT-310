@@ -65,9 +65,12 @@ public class TextOutput {
 
     }
 
-    public static void printTurnInformation(Board.Turn state, int scoreP1, int scoreP2) {
-        System.out.println("Score (P1): " + scoreP1 + "\nScore (P2): " + scoreP2);
+    public static void printScores(int scoreP1, int scoreP2) {
+        System.out.println("Score (P1, X): " + scoreP1 + "\nScore (P2, O): " + scoreP2);
+    }
 
+    public static void printTurnInformation(Board.Turn state, int scoreP1, int scoreP2) {
+        printScores(scoreP1, scoreP2);
         switch (state) {
             case PLAYER1:
                 System.out.println("Now Player 1's turn (X).");
@@ -76,6 +79,16 @@ public class TextOutput {
             case PLAYER2:
                 System.out.println("Now Player 2's turn (O).");
         }
+    }
+
+    public static void printSkippedTurn(Board.Turn skippedPlayer) {
+        System.out.println(skippedPlayer.name() + "'s turn is skipped, has no valid moves.");
+    }
+
+    public static void printGameOver(Board.Turn victor, int scoreP1, int scoreP2) {
+        System.out.println("Game is over! The winner is: " + victor.name());
+        printScores(scoreP1, scoreP2);
+
     }
 
     public static String promptCoordinateEntry() {

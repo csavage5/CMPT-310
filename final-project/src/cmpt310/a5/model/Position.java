@@ -32,7 +32,12 @@ public class Position {
                 && cartesian[1] >= 0 && cartesian[1] < 8);
     }
 
-    public static int modifyCoordinateInDirerction(Board.Direction dir, int index) {
+    public static int modifyCoordinateInDirection(Board.Direction dir, int index) {
+        int[] newCoord = modifyCoordinateInDirerctionCart(dir, index);
+        return convertCartesian(newCoord[0], newCoord[1]);
+    }
+
+    public static int[] modifyCoordinateInDirerctionCart(Board.Direction dir, int index) {
         int[] cartesian = convertIndex(index);
         switch (dir) {
             case Up:
@@ -67,8 +72,12 @@ public class Position {
                 break;
         }
 
-        return convertCartesian(cartesian[0], cartesian[1]);
+        return cartesian;
 
+    }
+
+    public static boolean willNotMoveOutsideOfBoard(Board.Direction dir, int index) {
+        return (insideBoard(modifyCoordinateInDirerctionCart(dir, index)));
     }
 
     //endregion
@@ -101,9 +110,6 @@ public class Position {
     }
 
     //endregion
-
-
-
 
 
 }

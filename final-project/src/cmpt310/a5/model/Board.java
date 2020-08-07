@@ -8,9 +8,9 @@ public class Board {
 
     //region Enums
     public enum Turn {
-        PLAYER1(1),
-        PLAYER2(2),
-        FINISHED(0);
+        PLAYER1(0),
+        PLAYER2(1),
+        NONE(2);
 
         private int value;
         private boolean didSkip;
@@ -25,24 +25,31 @@ public class Board {
 
         public Turn getOpposite() {
             switch (this.value) {
-                case 1:
+                case 0:
                     return PLAYER2;
-
-                case 2:
+                case 1:
                     return PLAYER1;
                 default:
-                    return FINISHED;
+                    return NONE;
             }
         }
 
     }
 
     public enum Tile {
-        Player1,
-        Player2,
-        ValidMove,
-        Empty
+        Player1(0),
+        Player2(1),
+        ValidMove(2),
+        Empty(3);
+
+        private int value;
+
+        Tile(int value) {
+            this.value = value;
+        }
     }
+
+    public Turn victor = Turn.NONE;
 
     public enum Direction {
         Up,
@@ -63,11 +70,8 @@ public class Board {
     // (key, value) = (valid move index, path to originating tile)
     private HashMap<Integer, ArrayList<Integer>> validMoves;
 
-    private int scorePlayer1 = 2;
-    private int scorePlayer2 = 2;
-
-    private boolean player1Passed = false;
-    private boolean player2Passed = false;
+    private int[] score = new int[]{2, 2};
+    private boolean[] didSkipTurn = new boolean[]{false, false};
 
     public Board() {
         this.gameBoard = new ArrayList<Tile>(8 * 8);
@@ -100,34 +104,71 @@ public class Board {
         return newGameBoard;
     }
 
+    public int getScore(Turn player) {
+        return score[state.value];
+    }
+
     public int getScoreP1(){
-        return scorePlayer1;
+        return score[Turn.PLAYER1.value];
     }
 
     public int getScoreP2() {
-        return scorePlayer2;
+        return score[Turn.PLAYER2.value];
+    }
+
+
+    //region State maintenance
+
+    private void increaseScore(Turn player) {
+        score[player.value] += 1;
+    }
+
+    private void decreaseScore(Turn player) {
+        score[player.value] -= 1;
+    }
+
+    private boolean isBoardFilled() {
+        return (getScore(state) + getScore(state.getOpposite()) > 63);
+    }
+
+    private boolean didBothPlayersSkip() {
+        return (didSkipTurn[state.value] && didSkipTurn[state.value]);
+    }
+
+    private void checkForVictor() {
+        if (checkEndConditions()) {
+            // set victor to player with higher score
+            if (getScoreP1() > getScoreP2()){
+                victor = Turn.PLAYER1;
+            } else {
+                victor = Turn.PLAYER2;
+            }
+        }
+    }
+
+    private boolean checkEndConditions() {
+        return (isBoardFilled() && didBothPlayersSkip());
+    }
+
+    public boolean isGameOver() {
+        return (victor != Turn.NONE);
+    }
+
+    public void switchTurn() {
+        didSkipTurn[state.value] = false;
+        state = state.getOpposite();
+    }
+
+    private void skipTurn() {
+        didSkipTurn[state.value] = true;
+        state = state.getOpposite();
     }
 
     //endregion
 
-    //region State checking
 
-    public boolean checkForEndgame() {
-        //TODO
 
-        /*
-        End Conditions:
-            - board is full: check by adding scores together
-            - both players have no valid moves
-         */
-
-        if (scorePlayer1 + scorePlayer2 >= 64) {
-            return true;
-        }
-
-        return false;
-    }
-
+    //region Gameplay
     /**
      * Discover and save valid moves in validMoves. Uses state to determine
      * the turn of the current player
@@ -164,56 +205,14 @@ public class Board {
 
             if (itr == playerTile) {
 
-                int prevIndex = index;
-                int currentIndex = index;
-
                 // ** Check all directions for valid moves ** //
                 for (Direction dir : Direction.values()) {
+
+                    getValidMoveInDirection(dir, index, playerTile, enemyTile);
                     //System.out.println("Moving in direction " + dir);
                     //System.out.print("At index " + currentIndex + ", moving to ");
 
                     pathToGoal.clear();
-                    currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
-
-                    //System.out.println(currentIndex);
-
-                    // end when game borders are crossed
-                    while (Position.insideBoard(Position.convertIndex(currentIndex))) {
-
-                        pathToGoal.add(currentIndex);
-
-                        // found own tile before an empty tile => end search in this direction
-                        if (gameBoard.get(currentIndex) == playerTile) {
-                            // move on to next direction
-                            break;
-                        }
-
-                        // found empty tile
-                        if (gameBoard.get(currentIndex) == Tile.Empty) {
-
-                            if (gameBoard.get(prevIndex) == enemyTile) {
-                                //System.out.println("found valid move at " + currentIndex);
-
-                                // add index as an originating tile for currentIndex
-                                ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
-                                value.addAll(pathToGoal);
-                                validMoves.put(currentIndex, value);
-                            }
-
-                            // move on to next direction
-                            break;
-
-                        } else {
-                            // pattern not yet found, increment other values
-                            prevIndex = currentIndex;
-                            currentIndex = Position.modifyCoordinateInDirerction(dir, currentIndex);
-                        }
-
-                    }
-
-                    // reset index
-                    prevIndex = index;
-                    currentIndex = index;
 
                 }
 
@@ -223,16 +222,60 @@ public class Board {
         }
 
         if (validMoves.keySet().size() == 0) {
-
+            //no valid moves found, skip turn
+            skipTurn();
             return false;
         }
 
-        return (validMoves.keySet().size() > 0);
+        return true;
+    }
+
+    private void getValidMoveInDirection(Direction dir, int startingIndex, Tile playerTile, Tile enemyTile) {
+        int prevIndex = startingIndex;
+        int currentIndex = startingIndex;
+
+        ArrayList<Integer> pathToGoal = new ArrayList<>();
+        boolean foundGoal = false;
+
+        // check if next move will go outside of the board
+        while (Position.willNotMoveOutsideOfBoard(dir, currentIndex) && !foundGoal) {
+            currentIndex = Position.modifyCoordinateInDirection(dir, currentIndex);
+            pathToGoal.add(currentIndex);
+
+            // found own tile before an empty tile => end search in this direction
+            if (gameBoard.get(currentIndex) == playerTile) {
+                // move on to next direction
+                foundGoal = true;
+
+            } else if (gameBoard.get(currentIndex) == Tile.Empty) {
+                // found empty tile
+
+                if (gameBoard.get(prevIndex) == enemyTile) {
+                    //System.out.println("found valid move at " + currentIndex);
+
+                    // add index as an originating tile for currentIndex
+                    ArrayList<Integer> value = validMoves.getOrDefault(currentIndex, new ArrayList<>());
+                    value.addAll(pathToGoal);
+                    validMoves.put(currentIndex, value);
+                }
+
+                // found move, stop searching
+                foundGoal = true;
+
+            } else {
+                // pattern not yet found, increment other values
+                prevIndex = currentIndex;
+            }
+
+        }
+
+
 
     }
 
     public void selectValidMove(int validMovePosition) {
         Integer[] flippedTiles = generateNewBitmap();
+
         // check for existence of valid move at given position
         if (!validMoves.containsKey(validMovePosition)) {
             throw new IllegalArgumentException("Selected move is invalid");
@@ -250,43 +293,43 @@ public class Board {
             }
         }
 
-    }
+        //check if game is won
+        checkForVictor();
 
-    public void switchTurn() {
-        state = state.getOpposite();
-    }
+        if (isGameOver()) {
+            return;
+        }
 
-    private Integer[] generateNewBitmap() {
-        Integer[] array = new Integer[64];
-        Arrays.fill(array, 0);
-        return array;
+        switchTurn();
+
     }
 
     private void changeTileAlignment(int index) {
 
         Tile tileToFlip = getGameBoardWithValidMoves().get(index);
 
+
         switch (tileToFlip) {
             case Player1:
                 gameBoard.set(index, Tile.Player2);
-                scorePlayer2++;
-                scorePlayer1--;
+                increaseScore(Turn.PLAYER2);
+                decreaseScore(Turn.PLAYER1);
                 break;
 
             case Player2:
                 gameBoard.set(index, Tile.Player1);
-                scorePlayer1++;
-                scorePlayer2--;
+                increaseScore(Turn.PLAYER1);
+                decreaseScore(Turn.PLAYER2);
                 break;
 
             case ValidMove:
 
                 if (state == Turn.PLAYER1) {
                     gameBoard.set(index, Tile.Player1);
-                    scorePlayer1++;
+                    increaseScore(Turn.PLAYER1);
                 } else {
                     gameBoard.set(index, Tile.Player2);
-                    scorePlayer2++;
+                    increaseScore(Turn.PLAYER2);
                 }
 
                 System.out.println("placing tile" + state + " at valid move " + index);
@@ -301,6 +344,20 @@ public class Board {
 
     }
 
+    //endregion
+
+
+
+    //region Utility
+
+    private Integer[] generateNewBitmap() {
+        Integer[] array = new Integer[64];
+        Arrays.fill(array, 0);
+        return array;
+    }
+
+
+    //endregion
 
 
 }

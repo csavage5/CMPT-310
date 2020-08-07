@@ -8,9 +8,35 @@ public class Board {
 
     //region Enums
     public enum Turn {
-        PLAYER1,
-        PLAYER2,
-        FINISHED
+        PLAYER1(1),
+        PLAYER2(2),
+        FINISHED(0);
+
+        private int value;
+        private int score;
+        private boolean didSkip;
+
+        Turn(int value) {
+            this.value = value;
+            this.score = 2;
+        }
+
+        public boolean isDidSkip() {
+            return didSkip;
+        }
+
+        public Turn getOpposite() {
+            switch (this.value) {
+                case 1:
+                    return PLAYER2;
+
+                case 2:
+                    return PLAYER1;
+                default:
+                    return FINISHED;
+            }
+        }
+
     }
 
     public enum Tile {
@@ -42,6 +68,9 @@ public class Board {
     private int scorePlayer1 = 2;
     private int scorePlayer2 = 2;
 
+    private boolean player1Passed = false;
+    private boolean player2Passed = false;
+
     public Board() {
         this.gameBoard = new ArrayList<Tile>(8 * 8);
         this.validMoves = new HashMap<>();
@@ -63,11 +92,6 @@ public class Board {
         return (ArrayList<Tile>) gameBoard.clone();
     }
 
-    public int getScore(Tile player) {
-        // TODO implement
-        return 0;
-    }
-
     public ArrayList<Tile> getGameBoardWithValidMoves() {
         ArrayList<Tile> newGameBoard = getGameBoard();
 
@@ -78,16 +102,38 @@ public class Board {
         return newGameBoard;
     }
 
+    public int getScoreP1(){
+        return scorePlayer1;
+    }
+
+    public int getScoreP2() {
+        return scorePlayer2;
+    }
+
     //endregion
+
+    //region State checking
+
+    public boolean checkForEndgame() {
+        //TODO
+
+        /*
+        End Conditions:
+            - board is full: check by adding scores together
+            - both players have no valid moves
+         */
+        return false;
+    }
 
     /**
      * Discover and save valid moves in validMoves. Uses state to determine
      * the turn of the current player
+     * @return true if at least 1 valid move was discovered
      */
-    public void discoverValidMoves() {
+    public boolean discoverValidMoves() {
         // TODO break into separate methods
         Tile playerTile = null;
-        Tile enemyTile;
+        Tile enemyTile = null;
 
         switch (state) {
             case PLAYER1:
@@ -173,6 +219,13 @@ public class Board {
             index += 1;
         }
 
+        if (validMoves.keySet().size() == 0) {
+
+            return false;
+        }
+
+        return (validMoves.keySet().size() > 0);
+
     }
 
     public void selectValidMove(int validMovePosition) {
@@ -197,15 +250,7 @@ public class Board {
     }
 
     public void switchTurn() {
-        switch (state) {
-            case PLAYER1:
-                state = Turn.PLAYER2;
-                break;
-
-            case PLAYER2:
-                state = Turn.PLAYER1;
-                break;
-        }
+        state = state.getOpposite();
     }
 
     private Integer[] generateNewBitmap() {

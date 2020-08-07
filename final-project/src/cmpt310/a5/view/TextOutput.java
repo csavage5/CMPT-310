@@ -65,7 +65,9 @@ public class TextOutput {
 
     }
 
-    public static void printTurnInformation(Board.Turn state) {
+    public static void printTurnInformation(Board.Turn state, int scoreP1, int scoreP2) {
+        System.out.println("Score (P1): " + scoreP1 + "\nScore (P2): " + scoreP2);
+
         switch (state) {
             case PLAYER1:
                 System.out.println("Now Player 1's turn (X).");

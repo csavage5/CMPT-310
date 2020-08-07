@@ -28,7 +28,8 @@ public class GameController {
         while (!game.isGameFinished()) {
             game.discoverValidMoves();
             TextOutput.printBoard(game.board.getGameBoardWithValidMoves());
-            TextOutput.printTurnInformation(game.board.state);
+            TextOutput.printTurnInformation(game.board.state,
+                    game.board.getScoreP1(), game.board.getScoreP2());
             game.takeTurn();
         }
 

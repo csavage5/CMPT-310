@@ -13,12 +13,10 @@ public class Board {
         FINISHED(0);
 
         private int value;
-        private int score;
         private boolean didSkip;
 
         Turn(int value) {
             this.value = value;
-            this.score = 2;
         }
 
         public boolean isDidSkip() {
@@ -122,6 +120,11 @@ public class Board {
             - board is full: check by adding scores together
             - both players have no valid moves
          */
+
+        if (scorePlayer1 + scorePlayer2 >= 64) {
+            return true;
+        }
+
         return false;
     }
 

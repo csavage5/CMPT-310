@@ -116,6 +116,10 @@ public class Board {
         return score[Turn.PLAYER2.value];
     }
 
+    public int getStateValue() {
+        return state.value;
+    }
+
 
     //region State maintenance
 

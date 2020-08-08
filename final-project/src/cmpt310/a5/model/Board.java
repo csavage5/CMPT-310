@@ -10,7 +10,8 @@ public class Board {
     public enum Turn {
         PLAYER1(0),
         PLAYER2(1),
-        NONE(2);
+        NONE(2),
+        TIE(3);
 
         private int value;
         private boolean didSkip;
@@ -49,8 +50,6 @@ public class Board {
         }
     }
 
-    public Turn victor = Turn.NONE;
-
     public enum Direction {
         Up,
         Down,
@@ -64,6 +63,7 @@ public class Board {
     //endregion
 
     public Turn state = Turn.PLAYER1;
+    public Turn victor = Turn.NONE;
 
     private ArrayList<Tile> gameBoard;
 
@@ -120,6 +120,9 @@ public class Board {
         return state.value;
     }
 
+    //endregion
+
+
 
     //region State maintenance
 
@@ -144,14 +147,16 @@ public class Board {
             // set victor to player with higher score
             if (getScoreP1() > getScoreP2()){
                 victor = Turn.PLAYER1;
-            } else {
+            } else if (getScoreP1() < getScoreP2()) {
                 victor = Turn.PLAYER2;
+            } else {
+                victor = Turn.TIE;
             }
         }
     }
 
     private boolean checkEndConditions() {
-        return (isBoardFilled() && didBothPlayersSkip());
+        return (isBoardFilled() || didBothPlayersSkip());
     }
 
     public boolean isGameOver() {
@@ -202,24 +207,17 @@ public class Board {
         // that are owned by agent, discover valid
         // moves from that tile
         int index = 0;
-        ArrayList<Integer> pathToGoal = new ArrayList<>();
         validMoves.clear();
 
         for (Tile itr : gameBoard) {
 
             if (itr == playerTile) {
-
                 // ** Check all directions for valid moves ** //
                 for (Direction dir : Direction.values()) {
-
                     getValidMoveInDirection(dir, index, playerTile, enemyTile);
                     //System.out.println("Moving in direction " + dir);
                     //System.out.print("At index " + currentIndex + ", moving to ");
-
-                    pathToGoal.clear();
-
                 }
-
             }
 
             index += 1;

@@ -16,12 +16,10 @@ public class PureMonteCarloAgent extends Agent{
     public int makeMove(Board board) {
         System.out.println("Duplicating board to create root...");
         // copy given board to starting node
-        try {
-            rootMcNode = new mcNode((Board) board.clone());
-            rootMcNode.generateChildren();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+
+        rootMcNode = new mcNode(board.cloneBoard());
+        rootMcNode.generateChildren();
+
         System.out.println("starting Pure MCTS...");
         return pureMonteCarloSearch();
     }

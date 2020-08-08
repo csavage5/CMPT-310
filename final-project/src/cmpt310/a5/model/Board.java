@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Board implements Cloneable {
+public class Board {
 
     //region Enums
     public enum Turn {
@@ -86,6 +86,24 @@ public class Board implements Cloneable {
         gameBoard.set(Position.convertLetterNumber("E4"), Tile.Player2);
         gameBoard.set(Position.convertLetterNumber("E5"), Tile.Player1);
         gameBoard.set(Position.convertLetterNumber("D5"), Tile.Player2);
+    }
+
+
+    /**
+     * Copy constructor
+     */
+    public Board cloneBoard() {
+        Board newBoard = new Board();
+
+        newBoard.gameBoard = (ArrayList<Tile>) gameBoard.clone();
+
+        // state info
+        newBoard.state = state;
+        newBoard.victor = victor;
+        newBoard.score = score.clone();
+        newBoard.didSkipTurn = didSkipTurn.clone();
+
+        return newBoard;
     }
 
     //region Accessors
@@ -357,11 +375,6 @@ public class Board implements Cloneable {
         Integer[] array = new Integer[64];
         Arrays.fill(array, 0);
         return array;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return (Board) super.clone();
     }
 
     //endregion

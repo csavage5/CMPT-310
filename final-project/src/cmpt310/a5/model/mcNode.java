@@ -44,20 +44,15 @@ public class mcNode {
         ArrayList<Integer> keys = new ArrayList<>(board.validMoves.keySet());
         for (Integer key : keys) {
             // generate new node, add cloned board + current node as parent
-            try {
-                temp = new mcNode(this, (Board) board.clone());
 
-                // make a valid move
-                temp.board.selectValidMove(key);
-                validMoveLocation = key;
-                children.add(temp);
-                System.out.println("gameboard after adding a child:");
-                TextOutput.printBoard(board.getGameBoardWithValidMoves());
+            temp = new mcNode(this, board.cloneBoard());
 
-            } catch (CloneNotSupportedException e) {
-                System.out.println("Error: failed to clone board to new mcNode");
-                e.printStackTrace();
-            }
+            // make a valid move
+            temp.board.selectValidMove(key);
+            validMoveLocation = key;
+            children.add(temp);
+            System.out.println("gameboard after adding a child:");
+            TextOutput.printBoard(board.getGameBoardWithValidMoves());
 
         }
 

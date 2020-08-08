@@ -1,9 +1,11 @@
 package cmpt310.a5.model;
 
+import cmpt310.a5.view.TextOutput;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
 public class mcNode {
 
@@ -36,11 +38,11 @@ public class mcNode {
         if (children.size() > 0) {
             return;
         }
-
+        System.out.println("in generateChildren()...");
         board.discoverValidMoves();
         mcNode temp;
-
-        for (int key : board.validMoves.keySet()) {
+        ArrayList<Integer> keys = new ArrayList<>(board.validMoves.keySet());
+        for (Integer key : keys) {
             // generate new node, add cloned board + current node as parent
             try {
                 temp = new mcNode(this, (Board) board.clone());
@@ -49,6 +51,8 @@ public class mcNode {
                 temp.board.selectValidMove(key);
                 validMoveLocation = key;
                 children.add(temp);
+                System.out.println("gameboard after adding a child:");
+                TextOutput.printBoard(board.getGameBoardWithValidMoves());
 
             } catch (CloneNotSupportedException e) {
                 System.out.println("Error: failed to clone board to new mcNode");
@@ -58,12 +62,17 @@ public class mcNode {
         }
 
         if (children.size() == 0) {
+            System.out.println("hit leaf node");
             leafNode = true;
         }
 
     }
 
     public mcNode getRandomChild() {
+        if (children.size() == 0) {
+            throw new IllegalStateException("Trying to generate children of a leaf node");
+        }
+
         return children.get(rand.nextInt(children.size()));
     }
 
@@ -107,4 +116,17 @@ public class mcNode {
 
     //endregion
 
+    public void displayChildInfo() {
+        String info = "";
+        int index = 0;
+        for (mcNode child : children) {
+            info += "Option #" + index + "\n" + "   " +
+                    "move coord: " + validMoveLocation + "\n" + "   " +
+                    "wins: " + wins + "\n" + "   " +
+                    "losses: " + losses  + "\n" + "   " +
+                    "draws: "  + "\n" + "   " +
+                    "eval metric: " + evalMetric + "\n\n";
+        }
+        System.out.println(info);
+    }
 }

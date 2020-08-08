@@ -280,7 +280,7 @@ public class Board implements Cloneable {
 
         // check for existence of valid move at given position
         if (!validMoves.containsKey(validMovePosition)) {
-            throw new IllegalArgumentException("Selected move is invalid");
+            throw new IllegalArgumentException("Selected move " + validMovePosition + " is invalid");
         }
 
         // check dictionary for list of tiles to flip
@@ -310,16 +310,17 @@ public class Board implements Cloneable {
 
         Tile tileToFlip = getGameBoardWithValidMoves().get(index);
 
-
         switch (tileToFlip) {
             case Player1:
                 gameBoard.set(index, Tile.Player2);
+                System.out.println("flipping tile at " + index);
                 increaseScore(Turn.PLAYER2);
                 decreaseScore(Turn.PLAYER1);
                 break;
 
             case Player2:
                 gameBoard.set(index, Tile.Player1);
+                System.out.println("flipping tile at " + index);
                 increaseScore(Turn.PLAYER1);
                 decreaseScore(Turn.PLAYER2);
                 break;
@@ -334,7 +335,7 @@ public class Board implements Cloneable {
                     increaseScore(Turn.PLAYER2);
                 }
 
-                System.out.println("placing tile" + state + " at valid move " + index);
+                System.out.println("placing tile " + state + " at valid move " + index);
                 validMoves.clear();
                 break;
 

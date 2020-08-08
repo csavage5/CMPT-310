@@ -14,8 +14,7 @@ public class PureMonteCarloAgent extends Agent{
 
     @Override
     public int makeMove(Board board) {
-        // TODO implement
-
+        System.out.println("Duplicating board to create root...");
         // copy given board to starting node
         try {
             rootMcNode = new mcNode((Board) board.clone());
@@ -23,30 +22,31 @@ public class PureMonteCarloAgent extends Agent{
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
-
-
+        System.out.println("starting Pure MCTS...");
         return pureMonteCarloSearch();
     }
 
     private int pureMonteCarloSearch() {
 
-        mcNode cursor = rootMcNode;
+        //mcNode cursor = rootMcNode;
 
         long startTime = System.currentTimeMillis();
 
         // run simulated playouts for 5 seconds
         while(System.currentTimeMillis() - startTime < 6000) {
-
             // randomly choose first child and
             // traverse tree from chosen child
+            System.out.println("at root node");
+            System.out.println("size of root's children: " + rootMcNode.children.size());
             treeTraversal(rootMcNode.getRandomChild());
-
         }
 
+        rootMcNode.displayChildInfo();
         return rootMcNode.getBestChild().validMoveLocation;
     }
 
     private void treeTraversal(mcNode child) {
+        System.out.println("at child of root node");
         mcNode cursor = child;
 
         while (!cursor.leafNode) {

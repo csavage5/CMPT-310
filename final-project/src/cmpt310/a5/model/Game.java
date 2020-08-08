@@ -33,7 +33,8 @@ public class Game {
                 board.selectValidMove(players[board.getStateValue()].makeMove(board));
 
             } catch (IllegalArgumentException e) {
-                System.out.println("Error: selected invalid coordinate, please try again.\n");
+                //System.out.println("Error: selected invalid coordinate, please try again.\n");
+                System.out.println(e.getMessage());
                 continue;
             }
 

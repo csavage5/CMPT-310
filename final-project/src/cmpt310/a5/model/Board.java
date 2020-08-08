@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Board {
+public class Board implements Cloneable {
 
     //region Enums
     public enum Turn {
@@ -68,7 +68,7 @@ public class Board {
     private ArrayList<Tile> gameBoard;
 
     // (key, value) = (valid move index, path to originating tile)
-    private HashMap<Integer, ArrayList<Integer>> validMoves;
+    public HashMap<Integer, ArrayList<Integer>> validMoves;
 
     private int[] score = new int[]{2, 2};
     private boolean[] didSkipTurn = new boolean[]{false, false};
@@ -358,6 +358,10 @@ public class Board {
         return array;
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return (Board) super.clone();
+    }
 
     //endregion
 

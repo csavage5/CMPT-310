@@ -2,7 +2,7 @@ package cmpt310.a5.model;
 
 public abstract class Agent {
 
-    private Board.Turn playerNumber;
+    protected Board.Turn playerNumber;
 
     public Agent(Board.Turn playerNumber) {
         this.playerNumber = playerNumber;

@@ -1,5 +1,7 @@
 package cmpt310.a5.model;
 
+import cmpt310.a5.view.TextOutput;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,6 +98,7 @@ public class Board {
         Board newBoard = new Board();
 
         newBoard.gameBoard = (ArrayList<Tile>) gameBoard.clone();
+        newBoard.validMoves = (HashMap<Integer, ArrayList<Integer>>) validMoves.clone();
 
         // state info
         newBoard.state = state;
@@ -152,11 +155,11 @@ public class Board {
         score[player.value] -= 1;
     }
 
-    private boolean isBoardFilled() {
+    public boolean isBoardFilled() {
         return (getScore(state) + getScore(state.getOpposite()) > 63);
     }
 
-    private boolean didBothPlayersSkip() {
+    public boolean didBothPlayersSkip() {
         return (didSkipTurn[state.value] && didSkipTurn[state.value]);
     }
 
@@ -177,6 +180,10 @@ public class Board {
         return (isBoardFilled() || didBothPlayersSkip());
     }
 
+    /**
+     *
+     * @return true if game is over
+     */
     public boolean isGameOver() {
         return (victor != Turn.NONE);
     }
@@ -243,7 +250,9 @@ public class Board {
 
         if (validMoves.keySet().size() == 0) {
             //no valid moves found, skip turn
+            TextOutput.printSkippedTurn(state);
             skipTurn();
+            checkForVictor();
             return false;
         }
 

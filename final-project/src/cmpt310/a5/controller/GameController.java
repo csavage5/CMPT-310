@@ -39,7 +39,14 @@ public class GameController {
             }
         }
 
-        //game is over
+        //Display reason for game ending
+        TextOutput.printBoard(game.board.getGameBoard());
+        if (game.board.didBothPlayersSkip()) {
+            System.out.println("Game is over: both players could not place a tile.");
+        } else if (game.board.isBoardFilled()) {
+            System.out.println("Game is over: game board is filled.");
+        }
+        
         TextOutput.printGameOver(game.board.victor, game.board.getScoreP1(), game.board.getScoreP2());
 
     }

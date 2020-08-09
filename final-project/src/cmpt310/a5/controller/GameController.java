@@ -46,7 +46,7 @@ public class GameController {
         } else if (game.board.isBoardFilled()) {
             System.out.println("Game is over: game board is filled.");
         }
-        
+
         TextOutput.printGameOver(game.board.victor, game.board.getScoreP1(), game.board.getScoreP2());
 
     }

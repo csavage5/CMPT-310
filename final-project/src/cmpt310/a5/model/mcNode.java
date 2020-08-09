@@ -46,13 +46,8 @@ public class mcNode {
 
         System.out.print("Generating children...");
 
-        if (!board.discoverValidMoves() && !board.isGameOver()) {
-            // this turn is skipped and game is still valid
-            // add current board as sole child of this state
-            children.add(new mcNode(this, board.cloneBoard()));
-
-        } else {
-
+        if (board.discoverValidMoves()) {
+            System.out.println(board.validMoves.keySet());
             mcNode temp;
             for (Integer key : board.validMoves.keySet()) {
                 // generate new node, add cloned board + current node as parent
@@ -60,13 +55,17 @@ public class mcNode {
 
                 // make a valid move
                 temp.board.selectValidMove(key);
-                validMoveLocation = key;
+                temp.validMoveLocation = key;
                 children.add(temp);
                 //System.out.println("gameboard after adding a child:");
                 //TextOutput.printBoard(board.getGameBoardWithValidMoves());
-
             }
 
+        } else {
+
+            // this turn is skipped and game is still valid
+            // add current board as sole child of this state
+            children.add(new mcNode(this, board.cloneBoard()));
         }
 
         System.out.print("Done.");
@@ -75,6 +74,7 @@ public class mcNode {
     }
 
     public mcNode getRandomChild() {
+        System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");
         }
@@ -132,6 +132,8 @@ public class mcNode {
                     "losses: " + losses  + "\n" + "   " +
                     "draws: "  + "\n" + "   " +
                     "eval metric: " + evalMetric + "\n\n";
+
+            index += 1;
         }
         System.out.println(info);
     }

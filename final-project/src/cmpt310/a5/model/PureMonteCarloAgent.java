@@ -31,7 +31,8 @@ public class PureMonteCarloAgent extends Agent{
         long startTime = System.currentTimeMillis();
 
         // run simulated playouts for 5 seconds
-        while(System.currentTimeMillis() - startTime < 6000) {
+        while(System.currentTimeMillis() - startTime < 60) {
+            System.out.println("current time: " + (System.currentTimeMillis() - startTime));
             // randomly choose first child and
             // traverse tree from chosen child
             System.out.println("at root node");
@@ -51,7 +52,7 @@ public class PureMonteCarloAgent extends Agent{
         while (!cursor.board.isGameOver()) {
             // randomly choose child
             //System.out.println(cursor.board.isGameOver());
-            cursor = child.getRandomChild();
+            cursor = cursor.getRandomChild();
             cursor.generateChildren();
         }
 

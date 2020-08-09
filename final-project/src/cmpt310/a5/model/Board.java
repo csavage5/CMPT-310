@@ -163,6 +163,11 @@ public class Board {
         return (didSkipTurn[state.value] && didSkipTurn[state.value]);
     }
 
+    private void resetSkips() {
+        didSkipTurn[0] = false;
+        didSkipTurn[1] = false;
+    }
+
     private void checkForVictor() {
         if (checkEndConditions()) {
             // set victor to player with higher score
@@ -321,6 +326,8 @@ public class Board {
                 flippedTiles[itr] = 1;
             }
         }
+
+        resetSkips();
 
         //check if game is won
         checkForVictor();

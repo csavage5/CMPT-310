@@ -21,12 +21,6 @@ public class Game {
 
         int moveLocation = -1;
 
-//        if (board.state == Board.Turn.PLAYER1) {
-//            moveLocation = player1.makeMove(board);
-//        } else if (board.state == Board.Turn.PLAYER2) {
-//            moveLocation = player2.makeMove(board);
-//        }
-
         // re-prompt player for move selection if invalid
         while (true) {
             try {
@@ -52,6 +46,13 @@ public class Game {
 
     public boolean isGameFinished() {
         return (board.isGameOver());
+    }
+
+    /**
+     * Resets game board to starting state
+     */
+    public void reset() {
+        board = new Board();
     }
 
 }

@@ -97,12 +97,14 @@ public class TextOutput {
     }
 
 
-    // TODO prompts for choosing players
     public static Integer[] selectPlayerPrompt() {
         Integer[] result = new Integer[2];
         Boolean validEntries = false;
 
-        System.out.println("Choose the players for the game.");
+        System.out.println("Welome to Reversi!");
+
+        System.out.println("\nChoose the players for the game. The game will automatically " +
+                "restart with the selected players 30 times.");
         System.out.print("Enter: \n   0 for Human \n   1 for Pure Monte Carlo \n   2 for Monte Carlo with heuristics\n");
 
         while (!validEntries) {

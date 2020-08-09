@@ -10,11 +10,12 @@ import cmpt310.a5.view.*;
 public class GameController {
 
     private Game game;
+    private int gamesWonP1 = 0;
+    private int gamesWonP2 = 0;
+    private int gamesDrawn = 0;
 
 
     public GameController() {
-        // TODO prompt user to choose which agents
-        //  occupy which player slots
 
         Integer[] selection = TextOutput.selectPlayerPrompt();
         game = new Game(getAgentTypeFromInput(selection[0], Board.Turn.PLAYER1),
@@ -47,7 +48,28 @@ public class GameController {
             System.out.println("Game ended: game board is filled.");
         }
 
+        // record win
+        switch (game.board.victor) {
+            case PLAYER1:
+                gamesWonP1++;
+                break;
+            case PLAYER2:
+                gamesWonP2++;
+                break;
+            case TIE:
+                gamesDrawn++;
+                break;
+        }
+
         TextOutput.printGameOver(game.board.victor, game.board.getScoreP1(), game.board.getScoreP2());
+        System.out.println("Totals: P1 - " + gamesWonP1 + "; P2 - " + gamesWonP2 + "; Draws: " + gamesDrawn);
+
+
+        if (gamesWonP1 + gamesWonP2 + gamesDrawn < 30) {
+            game.reset();
+            System.out.println("Starting new game...\n");
+            gameLoop();
+        }
 
     }
 

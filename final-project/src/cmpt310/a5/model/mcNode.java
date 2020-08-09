@@ -16,11 +16,11 @@ public class mcNode {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
-    protected int evalMetric = 0;
-    protected int wins = 0;
-    protected int losses = 0;
-    protected int draws = 0;
-    protected int simulations = 0;
+    protected long evalMetric = 0;
+    protected long wins = 0;
+    protected long losses = 0;
+    protected long draws = 0;
+    protected long simulations = 0;
 
     public mcNode(Board board) {
         this.board = board;

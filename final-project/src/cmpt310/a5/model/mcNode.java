@@ -44,10 +44,10 @@ public class mcNode {
             return;
         }
 
-        System.out.print("Generating children...");
+        //System.out.print("Generating children...");
 
         if (board.discoverValidMoves()) {
-            System.out.println(board.validMoves.keySet());
+            //System.out.println(board.validMoves.keySet());
             mcNode temp;
             for (Integer key : board.validMoves.keySet()) {
                 // generate new node, add cloned board + current node as parent
@@ -68,13 +68,13 @@ public class mcNode {
             children.add(new mcNode(this, board.cloneBoard()));
         }
 
-        System.out.print("Done.");
+        //System.out.print("Done.");
 
 
     }
 
     public mcNode getRandomChild() {
-        System.out.println("children size: " + children.size());
+        //System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");
         }
@@ -88,13 +88,17 @@ public class mcNode {
 
     public mcNode getBestChild() {
         mcNode bestChild = children.get(0);
-
+        int index = 0;
+        int bestIndex = 0;
         for (mcNode itr : children) {
             if (itr.evalMetric > bestChild.evalMetric) {
                 bestChild = itr;
+                bestIndex = index;
             }
-        }
+            index += 1;
 
+        }
+        System.out.println("Chose Option #" + bestIndex + ".\n");
         return bestChild;
     }
 
@@ -127,12 +131,12 @@ public class mcNode {
         int index = 0;
         for (mcNode child : children) {
             info += "Option #" + index + "\n" + "   " +
-                    "move coord: " + child.validMoveLocation + "\n" + "   " +
+                    "coordinate: " + Position.convertIndexToLetterNumber(child.validMoveLocation) + "\n" + "   " +
                     "wins: " + child.wins + "\n" + "   " +
                     "losses: " + child.losses  + "\n" + "   " +
-                    "draws: "  + "\n" + "   " +
+                    "draws: "  + child.draws + "\n" + "   " +
                     "total playouts: " + child.simulations + "\n" + "   " +
-                    "eval metric: " + child.evalMetric + "\n\n";
+                    "eval metric: " + child.evalMetric + "\n";
 
             index += 1;
         }

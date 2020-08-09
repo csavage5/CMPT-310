@@ -10,6 +10,7 @@ public class Position {
     public static final int WIDTH = 8;
     public static final int HEIGHT = 8;
 
+    private static String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H"};
     private static HashMap<String, Integer> cols;
 
     static {
@@ -107,6 +108,11 @@ public class Position {
         int x = index - (y * WIDTH);
 
         return new int[]{x, y};
+    }
+
+    public static String convertIndexToLetterNumber(int index) {
+        int[] cartesian = convertIndex(index);
+        return letters[cartesian[0]] + (cartesian[1] + 1);
     }
 
     //endregion

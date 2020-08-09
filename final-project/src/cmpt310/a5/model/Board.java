@@ -250,7 +250,7 @@ public class Board {
 
         if (validMoves.keySet().size() == 0) {
             //no valid moves found, skip turn
-            TextOutput.printSkippedTurn(state);
+            //TextOutput.printSkippedTurn(state);
             skipTurn();
             checkForVictor();
             return false;
@@ -340,14 +340,14 @@ public class Board {
         switch (tileToFlip) {
             case Player1:
                 gameBoard.set(index, Tile.Player2);
-                System.out.println("flipping tile at " + index);
+                //System.out.println("flipping tile at " + Position.convertIndexToLetterNumber(index));
                 increaseScore(Turn.PLAYER2);
                 decreaseScore(Turn.PLAYER1);
                 break;
 
             case Player2:
                 gameBoard.set(index, Tile.Player1);
-                System.out.println("flipping tile at " + index);
+                //System.out.println("flipping tile at " + Position.convertIndexToLetterNumber(index));
                 increaseScore(Turn.PLAYER1);
                 decreaseScore(Turn.PLAYER2);
                 break;
@@ -362,12 +362,12 @@ public class Board {
                     increaseScore(Turn.PLAYER2);
                 }
 
-                System.out.println("placing tile " + state + " at valid move " + index);
+                //System.out.println("placing tile " + state + " at valid move " + Position.convertIndexToLetterNumber(index));
                 validMoves.clear();
                 break;
 
             case Empty:
-                System.out.println("cannot flip empty tile at " + index);
+                System.out.println("cannot flip empty tile at " + Position.convertIndexToLetterNumber(index));
                 return;
         }
 

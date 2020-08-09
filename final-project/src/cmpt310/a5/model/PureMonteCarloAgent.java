@@ -14,13 +14,13 @@ public class PureMonteCarloAgent extends Agent{
 
     @Override
     public int makeMove(Board board) {
-        System.out.println("Duplicating board to create root...");
+        //System.out.println("Duplicating board to create root...");
         // copy given board to starting node
 
         rootMcNode = new mcNode(board.cloneBoard());
         rootMcNode.generateChildren();
 
-        System.out.println("starting Pure MCTS...");
+        System.out.println(playerNumber.name() + " is calculating...");
         return pureMonteCarloSearch();
     }
 
@@ -32,20 +32,20 @@ public class PureMonteCarloAgent extends Agent{
 
         // run simulated playouts for 5 seconds
         while(System.currentTimeMillis() - startTime < 6000) {
-            System.out.println("current time: " + (System.currentTimeMillis() - startTime));
+            //System.out.println("current time: " + (System.currentTimeMillis() - startTime));
             // randomly choose first child and
             // traverse tree from chosen child
-            System.out.println("at root node");
-            System.out.println("size of root's children: " + rootMcNode.children.size());
+            //System.out.println("at root node");
+            //System.out.println("size of root's children: " + rootMcNode.children.size());
             treeTraversal(rootMcNode.getRandomChild());
         }
-        System.out.println("Done Pure MCTS!");
+        System.out.println("...done calculating.");
         rootMcNode.displayChildInfo();
         return rootMcNode.getBestChild().validMoveLocation;
     }
 
     private void treeTraversal(mcNode child) {
-        System.out.println("at child of root node");
+        //System.out.println("at child of root node");
         mcNode cursor = child;
         cursor.generateChildren();
 
@@ -62,14 +62,15 @@ public class PureMonteCarloAgent extends Agent{
         // depending on victor value and this.playerNumber
         if (cursor.board.victor == this.playerNumber) {
             child.increaseWins();
-            System.out.println("Sim WIN");
+            //System.out.println("Sim WIN");
+
         } else if (cursor.board.victor.getOpposite() == this.playerNumber) {
             child.increaseLosses();
-            System.out.println("Sim LOSS");
+            //System.out.println("Sim LOSS");
 
         } else {
             child.increaseDraws();
-            System.out.println("Sim DRAW");
+            //System.out.println("Sim DRAW");
         }
 
     }

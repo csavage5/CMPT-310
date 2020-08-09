@@ -156,7 +156,7 @@ public class Board {
     }
 
     public boolean isBoardFilled() {
-        return (getScore(state) + getScore(state.getOpposite()) > 63);
+        return ( (getScoreP1() + getScoreP2()) > 63 );
     }
 
     public boolean didBothPlayersSkip() {

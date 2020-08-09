@@ -16,11 +16,11 @@ public class mcNode {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
-    protected int evalMetric;
-    protected int wins;
-    protected int losses;
-    protected int draws;
-    protected int simulations;
+    protected int evalMetric = 0;
+    protected int wins = 0;
+    protected int losses = 0;
+    protected int draws = 0;
+    protected int simulations = 0;
 
     public mcNode(Board board) {
         this.board = board;
@@ -127,11 +127,12 @@ public class mcNode {
         int index = 0;
         for (mcNode child : children) {
             info += "Option #" + index + "\n" + "   " +
-                    "move coord: " + validMoveLocation + "\n" + "   " +
-                    "wins: " + wins + "\n" + "   " +
-                    "losses: " + losses  + "\n" + "   " +
+                    "move coord: " + child.validMoveLocation + "\n" + "   " +
+                    "wins: " + child.wins + "\n" + "   " +
+                    "losses: " + child.losses  + "\n" + "   " +
                     "draws: "  + "\n" + "   " +
-                    "eval metric: " + evalMetric + "\n\n";
+                    "total playouts: " + child.simulations + "\n" + "   " +
+                    "eval metric: " + child.evalMetric + "\n\n";
 
             index += 1;
         }

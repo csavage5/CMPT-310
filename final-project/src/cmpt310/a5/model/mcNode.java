@@ -98,7 +98,8 @@ public class mcNode {
             index += 1;
 
         }
-        System.out.println("Chose Option #" + bestIndex + ".\n");
+        System.out.println("Chose Option #" + bestIndex + " (" +
+                Position.convertIndexToLetterNumber(bestChild.validMoveLocation) + ").\n");
         return bestChild;
     }
 

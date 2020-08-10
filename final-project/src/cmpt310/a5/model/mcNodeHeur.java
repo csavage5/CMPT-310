@@ -1,9 +1,7 @@
 package cmpt310.a5.model;
 
 import java.lang.Math;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Duplicate of McNode, but has overloaded functions to
@@ -20,30 +18,42 @@ public class mcNodeHeur {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
+    // Statistics
     protected long wins = 0;
     protected long losses = 0;
     protected long draws = 0;
     protected long visits = 0;
 
+    // for UCT calculation
     protected Double evalMetric = 0.0;
-    protected float uctScaleFactor = 1;
+    public float uctScaleFactor = 1;
     protected double exploitation;
     protected double exploration;
     protected double c = Math.sqrt(2);
 
+    // Heuristics
+    private final List<Integer> goodPositionCorner = Arrays.asList(new Integer[]{0, 7, 50, 63});
+    private final List<Integer> badPositionCornerGiveaway =
+            Arrays.asList(new Integer[]{1, 8, 6, 15, 48, 57, 55, 62});
+
+    private Board.Turn agentOrder;
     private boolean isRoot = false;
+
+
 
     //region Constructors
 
     public mcNodeHeur(Board board) {
         this.board = board;
         this.parent = null;
+        agentOrder = board.state;
         isRoot = true;
     }
 
-    public mcNodeHeur(mcNodeHeur parent, Board board) {
+    public mcNodeHeur(mcNodeHeur parent, Board board, Board.Turn agentOrder) {
         this.parent = parent;
         this.board = board;
+        this.agentOrder = agentOrder;
 
         // update eval parameter
         //this.increaseVisits();
@@ -79,7 +89,9 @@ public class mcNodeHeur {
             mcNodeHeur temp;
             for (Integer key : board.validMoves.keySet()) {
                 // generate new node, add cloned board + current node as parent
-                temp = new mcNodeHeur(this, board.cloneBoard());
+                temp = new mcNodeHeur(this, board.cloneBoard(), agentOrder);
+
+                checkHeuristicsForMove(key, temp);
 
                 // make a valid move
                 temp.board.selectValidMove(key);
@@ -94,7 +106,7 @@ public class mcNodeHeur {
 
             // this turn is skipped and game is still valid
             // add current board as sole child of this state
-            children.add(new mcNodeHeur(this, board.cloneBoard()));
+            children.add(new mcNodeHeur(this, board.cloneBoard(), agentOrder));
         }
 
         //System.out.print("Done.");
@@ -144,6 +156,38 @@ public class mcNodeHeur {
         return bestChild;
     }
 
+    /**
+     * Called *before* the child makes the valid move. This method evaluates the valid move
+     * via heuristics and adjusts the uctScaleFactor in the child
+     * @param move
+     * @param newNode
+     */
+    public void checkHeuristicsForMove(int move, mcNodeHeur newNode) {
+        // check for corners
+
+        // agent's turn
+        if (newNode.board.state == newNode.agentOrder) {
+            // corner move is good
+            if (goodPositionCorner.contains(move)) {
+                newNode.uctScaleFactor += 1.5f;
+            } else if (badPositionCornerGiveaway.contains(move)) {
+                // move adjacent to corner is bad
+
+                newNode.uctScaleFactor = 0.5f;
+            }
+
+        } else if (newNode.board.state == newNode.agentOrder.getOpposite()) {
+            // not agent's turn
+
+            // corner move is bad
+            if (goodPositionCorner.contains(move)) {
+                newNode.uctScaleFactor -= 0.5f;
+            }
+        }
+
+
+
+    }
 
     public void updateEvalMetric() {
 
@@ -155,10 +199,7 @@ public class mcNodeHeur {
         exploration = c * ( Math.sqrt( Math.log(parent.visits) / (visits + 1) ) );
         //System.out.println(exploration);
         evalMetric = exploitation + exploration;
-
         evalMetric = evalMetric * uctScaleFactor;
-
-        //evalMetric = Double.valueOf(wins + draws - losses);
     }
 
 
@@ -170,10 +211,6 @@ public class mcNodeHeur {
             parent.increaseWins();
             updateEvalMetric();
         }
-
-    }
-
-    public void adjustScaleFactor(float ) {
 
     }
 
@@ -212,6 +249,7 @@ public class mcNodeHeur {
                     "draws: "  + child.draws + "\n" + "   " +
                     "total playouts: " + child.visits + "\n" + "   " +
                     "eval metric: " + child.evalMetric + "\n" + "   " +
+                    "eval scale: " + child.uctScaleFactor + "\n" + "   " +
                     "exploitation: " + child.exploitation + "\n" + "   " +
                     "exploration: " + child.exploration + "\n";
 

@@ -1,7 +1,12 @@
 package cmpt310.a5.model;
 
-public class mcNodeHeur extends mcNode {
+import java.lang.Math;
 
+/**
+ * Duplicate of McNode, but has overloaded functions to
+ * search for nodes with a heuristic instead of randomly
+ */
+public class mcNodeHeur extends mcNode{
 
     public mcNodeHeur(Board board) {
         super(board);
@@ -50,38 +55,32 @@ public class mcNodeHeur extends mcNode {
 
 
     }
-    //todo rename to exploreBestChild() - needs to differ from getBestChild
-    public mcNode getRandomChild() {
+
+    @Override
+    public mcNode getNextChild() {
         //System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");
         }
 
-        return children.get(rand.nextInt(children.size()));
+        // choose child based on eval criteria
+        mcNode bestChild = children.get(0);
+        for (mcNode itr : children) {
+            if (itr.evalMetric > bestChild.evalMetric) {
+                bestChild = itr;
+            }
+        }
+
+        return bestChild;
+
     }
 
     @Override
     public void updateEvalMetric() {
-        //todo update with UCT formula
-        evalMetric = wins + draws - losses;
-    }
-
-    //this can probably be removed
-    public mcNode getBestChild() {
-        mcNode bestChild = children.get(0);
-        int index = 0;
-        int bestIndex = 0;
-        for (mcNode itr : children) {
-            if (itr.evalMetric > bestChild.evalMetric) {
-                bestChild = itr;
-                bestIndex = index;
-            }
-            index += 1;
-
-        }
-        System.out.println("Chose Option #" + bestIndex + " (" +
-                Position.convertIndexToLetterNumber(bestChild.validMoveLocation) + ").\n");
-        return bestChild;
+        // todo deal with children that haven't been explored,
+        //  will have 0 wins / draws / losses
+        double interior = (Math.log(parent.simulations) / simulations );
+        evalMetric =  ((double) wins / simulations)  + ( Math.sqrt(2) * Math.sqrt(interior));
     }
 
 
@@ -89,21 +88,25 @@ public class mcNodeHeur extends mcNode {
 
     public void increaseWins() {
         wins++;
+        parent.increaseWins();
         updateEvalMetric();
     }
 
     public void increaseLosses() {
         losses++;
+        parent.losses++;
         updateEvalMetric();
     }
 
     public void increaseDraws() {
         draws++;
+        parent.increaseDraws();
         updateEvalMetric();
     }
 
     public void increaseSims() {
         simulations++;
+        //parent.increaseSims();
     }
 
     //endregion

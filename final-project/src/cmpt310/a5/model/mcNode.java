@@ -16,7 +16,7 @@ public class mcNode {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
-    protected long evalMetric = 0;
+    protected double evalMetric = 0;
     protected long wins = 0;
     protected long losses = 0;
     protected long draws = 0;
@@ -73,7 +73,11 @@ public class mcNode {
 
     }
 
-    public mcNode getRandomChild() {
+    /**
+     * Chooses a child of the current node to explore next
+     * @return node to explore next
+     */
+    public mcNode getNextChild() {
         //System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");

@@ -8,7 +8,7 @@ import cmpt310.a5.view.*;
  * Receives results from Model and tells the View what to display.
  */
 public class GameController {
-
+    public static final int MAX_GAME_LOOPS = 15;
     private Game game;
     private int gamesWonP1 = 0;
     private int gamesWonP2 = 0;
@@ -65,7 +65,7 @@ public class GameController {
         System.out.println("Totals: P1 - " + gamesWonP1 + "; P2 - " + gamesWonP2 + "; Draws: " + gamesDrawn);
 
 
-        if (gamesWonP1 + gamesWonP2 + gamesDrawn < 30) {
+        if (gamesWonP1 + gamesWonP2 + gamesDrawn < MAX_GAME_LOOPS) {
             game.reset();
             System.out.println("Starting new game...\n");
             gameLoop();

@@ -1,8 +1,8 @@
 package cmpt310.a5.view;
 
+import cmpt310.a5.controller.GameController;
 import cmpt310.a5.model.*;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -104,7 +104,7 @@ public class TextOutput {
         System.out.println("Welome to Reversi!");
 
         System.out.println("\nChoose the players for the game. The game will automatically " +
-                "restart with the selected players 30 times.");
+                "restart with the selected players " + GameController.MAX_GAME_LOOPS + " times.");
         System.out.print("Enter: \n   0 for Human \n   1 for Pure Monte Carlo \n   2 for Monte Carlo with heuristics\n");
 
         while (!validEntries) {

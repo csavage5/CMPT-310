@@ -37,7 +37,7 @@ public class PureMonteCarloAgent extends Agent{
             // traverse tree from chosen child
             //System.out.println("at root node");
             //System.out.println("size of root's children: " + rootMcNode.children.size());
-            treeTraversal(rootMcNode.getNextChild());
+            treeTraversal(rootMcNode.getChildToExplore());
         }
         System.out.println("...done calculating.");
         rootMcNode.displayChildInfo();
@@ -52,7 +52,7 @@ public class PureMonteCarloAgent extends Agent{
         while (!cursor.board.isGameOver()) {
             // randomly choose child
             //System.out.println(cursor.board.isGameOver());
-            cursor = cursor.getNextChild();
+            cursor = cursor.getChildToExplore();
             cursor.generateChildren();
         }
 

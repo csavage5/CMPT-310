@@ -1,11 +1,8 @@
 package cmpt310.a5.model;
 
-import java.util.Random;
-
 public class MonteCarloAgent extends Agent{
 
-    private mcNode rootMcNode;
-    private Random rand = new Random();
+    private mcNodeHeur rootMcNode;
 
     public MonteCarloAgent(Board.Turn playerNumber) {
         super(playerNumber);
@@ -33,7 +30,8 @@ public class MonteCarloAgent extends Agent{
             // traverse tree from chosen child
             //System.out.println("at root node");
             //System.out.println("size of root's children: " + rootMcNode.children.size());
-            treeTraversal(rootMcNode.getNextChild());
+            rootMcNode.increaseSims();
+            treeTraversal(rootMcNode.getChildToExplore());
         }
         System.out.println("...done calculating.");
         rootMcNode.displayChildInfo();
@@ -42,13 +40,13 @@ public class MonteCarloAgent extends Agent{
 
     private void treeTraversal(mcNode child) {
 
-        mcNode cursor = child;
+        mcNodeHeur cursor = child;
         cursor.generateChildren();
 
         while (!cursor.board.isGameOver()) {
             // randomly choose child
             //System.out.println(cursor.board.isGameOver());
-            cursor = cursor.getNextChild();
+            cursor = cursor.getChildToExplore();
             cursor.generateChildren();
         }
 

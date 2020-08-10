@@ -8,8 +8,11 @@ import java.lang.Math;
  */
 public class mcNodeHeur extends mcNode{
 
+    private boolean isRoot = false;
+
     public mcNodeHeur(Board board) {
         super(board);
+        isRoot = true;
     }
 
     public mcNodeHeur(mcNode parent, Board board) {
@@ -57,7 +60,13 @@ public class mcNodeHeur extends mcNode{
     }
 
     @Override
-    public mcNode getNextChild() {
+    /**
+     * Chooses a child of the current node to explore next.
+     * For non-pure MCTS, this is done by picking the best
+     * child node based on evaluation criteria.
+     * @return node to explore next
+     */
+    public mcNode getChildToExplore() {
         //System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");
@@ -77,10 +86,13 @@ public class mcNodeHeur extends mcNode{
 
     @Override
     public void updateEvalMetric() {
-        // todo deal with children that haven't been explored,
-        //  will have 0 wins / draws / losses
-        double interior = (Math.log(parent.simulations) / simulations );
-        evalMetric =  ((double) wins / simulations)  + ( Math.sqrt(2) * Math.sqrt(interior));
+
+        // UCT formula - from Wikipedia:
+        // https://en.wikipedia.org/wiki/Monte_Carlo_tree_search#Exploration_and_exploitation
+
+        double exploitation =  ( (double) wins )  / simulations;
+        double exploration = Math.sqrt(2.0) * Math.sqrt( Math.log( (double) parent.simulations ) / simulations );
+        evalMetric = exploitation + exploration;
     }
 
 
@@ -88,25 +100,34 @@ public class mcNodeHeur extends mcNode{
 
     public void increaseWins() {
         wins++;
-        parent.increaseWins();
-        updateEvalMetric();
+        if (!isRoot) {
+            parent.increaseWins();
+            updateEvalMetric();
+        }
+
     }
 
     public void increaseLosses() {
         losses++;
-        parent.losses++;
-        updateEvalMetric();
+
+        if (!isRoot) {
+            parent.increaseLosses();
+            updateEvalMetric();
+        }
+
     }
 
     public void increaseDraws() {
         draws++;
-        parent.increaseDraws();
-        updateEvalMetric();
+        if (!isRoot) {
+            parent.increaseDraws();
+            updateEvalMetric();
+        }
+
     }
 
     public void increaseSims() {
         simulations++;
-        //parent.increaseSims();
     }
 
     //endregion

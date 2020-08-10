@@ -16,7 +16,7 @@ public class mcNode {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
-    protected double evalMetric = 0;
+    protected Double evalMetric = 0.0;
     protected long wins = 0;
     protected long losses = 0;
     protected long draws = 0;
@@ -74,10 +74,11 @@ public class mcNode {
     }
 
     /**
-     * Chooses a child of the current node to explore next
+     * Chooses a child of the current node to explore next.
+     * For Pure MCTS, this is done randomly.
      * @return node to explore next
      */
-    public mcNode getNextChild() {
+    public mcNode getChildToExplore() {
         //System.out.println("children size: " + children.size());
         if (children.size() == 0) {
             throw new IllegalStateException("Trying to generate children of a leaf node");
@@ -87,7 +88,7 @@ public class mcNode {
     }
 
     public void updateEvalMetric() {
-        evalMetric = wins + draws - losses;
+        evalMetric = (double) (wins + draws) / losses;
     }
 
     public mcNode getBestChild() {

@@ -20,15 +20,16 @@ public class mcNodeHeur {
     public boolean leafNode = false;
     protected Random rand = new Random();
 
-    protected Double evalMetric = 0.0;
     protected long wins = 0;
     protected long losses = 0;
     protected long draws = 0;
     protected long visits = 0;
+
+    protected Double evalMetric = 0.0;
+    protected float uctScaleFactor = 1;
     protected double exploitation;
     protected double exploration;
     protected double c = Math.sqrt(2);
-
 
     private boolean isRoot = false;
 
@@ -169,6 +170,10 @@ public class mcNodeHeur {
             parent.increaseWins();
             updateEvalMetric();
         }
+
+    }
+
+    public void adjustScaleFactor(float ) {
 
     }
 

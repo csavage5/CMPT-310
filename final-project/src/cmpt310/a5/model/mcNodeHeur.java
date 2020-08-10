@@ -138,24 +138,15 @@ public class mcNodeHeur {
         //Collections.shuffle(children);
         mcNodeHeur bestChild = children.get(0);
         int index = 0;
-        if (board.state == agentOrder) {
-            for (mcNodeHeur itr : children) {
-                if (itr.evalMetric > bestChild.evalMetric) {
-                    bestChild = itr;
-                    bestChildIndex = index;
-                }
-                index += 1;
-            }
 
-        } else {
-            for (mcNodeHeur itr : children) {
-                if (itr.evalMetric < bestChild.evalMetric) {
-                    bestChild = itr;
-                    bestChildIndex = index;
-                }
-                index += 1;
+        for (mcNodeHeur itr : children) {
+            if (itr.evalMetric > bestChild.evalMetric) {
+                bestChild = itr;
+                bestChildIndex = index;
             }
+            index += 1;
         }
+
 
         return bestChild;
 
@@ -186,13 +177,13 @@ public class mcNodeHeur {
         //      move will decrease it.
 
         // agent's turn
-        if (newNode.board.state == newNode.agentOrder) {
-            val = 1f;
-
-        } else if (newNode.board.state == newNode.agentOrder.getOpposite()) {
-            //not agent's turn
-            val = -1f;
-        }
+//        if (newNode.board.state == newNode.agentOrder) {
+//            val = 1f;
+//
+//        } else if (newNode.board.state == newNode.agentOrder.getOpposite()) {
+//            //not agent's turn
+//            val = -1f;
+//        }
 
         // corner move
         if (goodPositionCorner.contains(move)) {

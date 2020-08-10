@@ -17,6 +17,7 @@ public class mcNodeHeur {
     public int validMoveLocation;
     public boolean leafNode = false;
     protected Random rand = new Random();
+    int bestChildIndex = 0;
 
     // Statistics
     protected long wins = 0;
@@ -136,9 +137,23 @@ public class mcNodeHeur {
         // choose child based on eval criteria
         //Collections.shuffle(children);
         mcNodeHeur bestChild = children.get(0);
-        for (mcNodeHeur itr : children) {
-            if (itr.evalMetric > bestChild.evalMetric) {
-                bestChild = itr;
+        int index = 0;
+        if (board.state == agentOrder) {
+            for (mcNodeHeur itr : children) {
+                if (itr.evalMetric > bestChild.evalMetric) {
+                    bestChild = itr;
+                    bestChildIndex = index;
+                }
+                index += 1;
+            }
+
+        } else {
+            for (mcNodeHeur itr : children) {
+                if (itr.evalMetric < bestChild.evalMetric) {
+                    bestChild = itr;
+                    bestChildIndex = index;
+                }
+                index += 1;
             }
         }
 
@@ -147,18 +162,9 @@ public class mcNodeHeur {
     }
 
     public mcNodeHeur getBestChild() {
-        mcNodeHeur bestChild = children.get(0);
-        int index = 0;
-        int bestIndex = 0;
-        for (mcNodeHeur itr : children) {
-            if (itr.evalMetric > bestChild.evalMetric) {
-                bestChild = itr;
-                bestIndex = index;
-            }
-            index += 1;
+        mcNodeHeur bestChild = getChildToExplore();
 
-        }
-        System.out.println("Chose Option #" + bestIndex + " (" +
+        System.out.println("Chose Option #" + bestChildIndex + " (" +
                 Position.convertIndexToLetterNumber(bestChild.validMoveLocation) + ").\n");
         return bestChild;
     }
@@ -170,7 +176,7 @@ public class mcNodeHeur {
      * @param newNode
      */
     public void checkHeuristicsForMove(int move, mcNodeHeur newNode) {
-        float val = 0f;
+        float val = 1f;
 
         // check for corners
 

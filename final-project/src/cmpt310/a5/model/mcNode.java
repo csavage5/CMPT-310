@@ -1,11 +1,7 @@
 package cmpt310.a5.model;
 
-import cmpt310.a5.view.TextOutput;
-import jdk.jshell.spi.ExecutionControl;
-
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 
 public class mcNode {
 
@@ -20,7 +16,7 @@ public class mcNode {
     protected long wins = 0;
     protected long losses = 0;
     protected long draws = 0;
-    protected long simulations = 0;
+    protected long visits = 0;
 
     public mcNode(Board board) {
         this.board = board;
@@ -127,7 +123,7 @@ public class mcNode {
     }
 
     public void increaseSims() {
-        simulations++;
+        visits++;
     }
 
     //endregion
@@ -141,7 +137,7 @@ public class mcNode {
                     "wins: " + child.wins + "\n" + "   " +
                     "losses: " + child.losses  + "\n" + "   " +
                     "draws: "  + child.draws + "\n" + "   " +
-                    "total playouts: " + child.simulations + "\n" + "   " +
+                    "total playouts: " + child.visits + "\n" + "   " +
                     "eval metric: " + child.evalMetric + "\n";
 
             index += 1;

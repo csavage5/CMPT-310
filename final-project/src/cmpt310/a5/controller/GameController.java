@@ -8,7 +8,7 @@ import cmpt310.a5.view.*;
  * Receives results from Model and tells the View what to display.
  */
 public class GameController {
-    public static final int MAX_GAME_LOOPS = 15;
+    public static final int MAX_GAME_LOOPS = 10;
     private Game game;
     private int gamesWonP1 = 0;
     private int gamesWonP2 = 0;

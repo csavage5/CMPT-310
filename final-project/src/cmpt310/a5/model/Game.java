@@ -3,6 +3,7 @@ package cmpt310.a5.model;
 public class Game {
 
     public Board board;
+    public static int MCTS_SEARCH_TIME = 12000;
 
     private Agent[] players = new Agent[2];
 
@@ -39,8 +40,6 @@ public class Game {
     }
 
     public boolean discoverValidMoves() {
-        // TODO deal with case where player passes turn
-        //  because no valid moves
         return board.discoverValidMoves();
     }
 

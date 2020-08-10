@@ -4,6 +4,7 @@ package cmpt310.a5.model;
 public class MonteCarloAgent extends Agent{
 
     private mcNodeHeur rootMcNode;
+    private long totalIterations = 0;
 
     public MonteCarloAgent(Board.Turn playerNumber) {
         super(playerNumber);
@@ -13,7 +14,7 @@ public class MonteCarloAgent extends Agent{
     public int makeMove(Board board) {
         //System.out.println("Duplicating board to create root...");
         // copy given board to starting node
-
+        totalIterations = 0;
         rootMcNode = new mcNodeHeur(board.cloneBoard());
         rootMcNode.generateOrUpdateChildren();
         //rootMcNode.displayChildInfo();
@@ -25,8 +26,8 @@ public class MonteCarloAgent extends Agent{
     private int monteCarloSearch() {
         long startTime = System.currentTimeMillis();
 
-        // run simulated playouts for 6 seconds
-        while(System.currentTimeMillis() - startTime < 6000) {
+        // run simulated playouts for Game.MCTS_SEARCH_TIME
+        while(System.currentTimeMillis() - startTime < Game.MCTS_SEARCH_TIME) {
             //System.out.println("current time: " + (System.currentTimeMillis() - startTime));
             // randomly choose first child and
             // traverse tree from chosen child
@@ -38,7 +39,8 @@ public class MonteCarloAgent extends Agent{
         System.out.println("...done calculating.");
         rootMcNode.displayChildInfo();
         System.out.println("Total playouts: " + rootMcNode.visits);
-        System.out.println("Total wins: " + rootMcNode.wins);
+        System.out.println("Total iterations: " + totalIterations);
+        //System.out.println("Total wins: " + rootMcNode.wins);
         return rootMcNode.getBestChild().validMoveLocation;
     }
 
@@ -50,6 +52,7 @@ public class MonteCarloAgent extends Agent{
         while (!cursor.board.isGameOver()) {
             // randomly choose child
             //System.out.println(cursor.board.isGameOver());
+            totalIterations += 1;
             cursor = cursor.getChildToExplore();
             cursor.generateOrUpdateChildren();
         }

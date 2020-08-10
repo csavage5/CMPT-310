@@ -9,6 +9,9 @@ import java.util.Random;
  * Duplicate of McNode, but has overloaded functions to
  * search for nodes with a heuristic instead of randomly
  */
+
+//TODO see if this can be subclassed to mcNode again
+
 public class mcNodeHeur {
     protected ArrayList<mcNodeHeur> children = new ArrayList<>();
     public mcNodeHeur parent;
@@ -38,7 +41,7 @@ public class mcNodeHeur {
         this.board = board;
 
         // update eval parameter
-        this.increaseVisits();
+        //this.increaseVisits();
         this.updateEvalMetric();
     }
 
@@ -142,9 +145,9 @@ public class mcNodeHeur {
         // UCT formula - from Wikipedia:
         // https://en.wikipedia.org/wiki/Monte_Carlo_tree_search#Exploration_and_exploitation
 
-        double exploitation =  ( (double) wins )  / (visits);
-        double c = 1.4;
-        double exploration = c * ( Math.sqrt( Math.log(parent.visits) / (visits) ) );
+        double exploitation = (double) wins / (visits + 1);
+        double c = 3;
+        double exploration = c * ( Math.sqrt( Math.log(parent.visits) / (visits + 1) ) );
         //System.out.println(exploration);
         evalMetric = exploitation + exploration;
         //evalMetric = Double.valueOf(wins + draws - losses);

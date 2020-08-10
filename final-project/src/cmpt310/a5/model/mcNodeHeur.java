@@ -32,17 +32,24 @@ public class mcNodeHeur {
     protected double c = Math.sqrt(2);
 
     // Heuristics
-    private final List<Integer> goodPositionCorner = Arrays.asList(new Integer[]{0, 7, 50, 63});
-    private final List<Integer> badPositionCornerGiveaway =
-            Arrays.asList(new Integer[]{1, 8, 6, 15, 48, 57, 55, 62});
+
+    // corners are good positions
+    private final List<Integer> goodPositionCorner = Arrays.asList(0, 7, 50, 63);
+
+    // positions left/right/up/down from corners are bad
+    private final List<Integer> badPositionCornerAdjCardinal =
+            Arrays.asList(1, 8, 6, 15, 48, 57, 55, 62);
+
+    // positions at diagonals from corners are very bad
+    private final List<Integer> veryBadPositionCornerAdjDiag =
+            Arrays.asList(9, 14, 49, 54);
+
 
     private Board.Turn agentOrder;
     private boolean isRoot = false;
 
 
-
     //region Constructors
-
     public mcNodeHeur(Board board) {
         this.board = board;
         this.parent = null;
@@ -163,29 +170,34 @@ public class mcNodeHeur {
      * @param newNode
      */
     public void checkHeuristicsForMove(int move, mcNodeHeur newNode) {
+        float val = 0f;
+
         // check for corners
+
+        // set val according to which player's turn it is
+        // i.e. if it's this agent's turn, the corner move will
+        //      increase the uctScaleFactor, and the adjacent corner
+        //      move will decrease it.
 
         // agent's turn
         if (newNode.board.state == newNode.agentOrder) {
-            // corner move is good
-            if (goodPositionCorner.contains(move)) {
-                newNode.uctScaleFactor += 1.5f;
-            } else if (badPositionCornerGiveaway.contains(move)) {
-                // move adjacent to corner is bad
-
-                newNode.uctScaleFactor = 0.5f;
-            }
+            val = 1f;
 
         } else if (newNode.board.state == newNode.agentOrder.getOpposite()) {
-            // not agent's turn
-
-            // corner move is bad
-            if (goodPositionCorner.contains(move)) {
-                newNode.uctScaleFactor -= 0.5f;
-            }
+            //not agent's turn
+            val = -1f;
         }
 
-
+        // corner move
+        if (goodPositionCorner.contains(move)) {
+            newNode.uctScaleFactor += (1.5f * val);
+        } else if (badPositionCornerAdjCardinal.contains(move)) {
+            // move adjacent to corner
+            newNode.uctScaleFactor -= (1.5f * val);
+        } else if (veryBadPositionCornerAdjDiag.contains(move)) {
+            // move diagonal from corner
+            newNode.uctScaleFactor -= (3.0f * val);
+        }
 
     }
 

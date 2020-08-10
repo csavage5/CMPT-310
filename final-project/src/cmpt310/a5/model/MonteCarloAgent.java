@@ -19,7 +19,7 @@ public class MonteCarloAgent extends Agent{
         rootMcNode.generateOrUpdateChildren();
         //rootMcNode.displayChildInfo();
 
-        System.out.println(playerNumber.name() + " is calculating...");
+        System.out.println(playerNumber.name() + " is calculating (heuristic)...");
         return monteCarloSearch();
     }
 

@@ -25,6 +25,10 @@ public class mcNodeHeur {
     protected long losses = 0;
     protected long draws = 0;
     protected long visits = 0;
+    protected double exploitation;
+    protected double exploration;
+    protected double c = Math.sqrt(2);
+
 
     private boolean isRoot = false;
 
@@ -145,11 +149,14 @@ public class mcNodeHeur {
         // UCT formula - from Wikipedia:
         // https://en.wikipedia.org/wiki/Monte_Carlo_tree_search#Exploration_and_exploitation
 
-        double exploitation = (double) wins / (visits + 1);
-        double c = 3;
-        double exploration = c * ( Math.sqrt( Math.log(parent.visits) / (visits + 1) ) );
+        exploitation = ( (double) wins + draws ) / (visits + 1);
+        //System.out.println(Math.log(parent.visits));
+        exploration = c * ( Math.sqrt( Math.log(parent.visits) / (visits + 1) ) );
         //System.out.println(exploration);
         evalMetric = exploitation + exploration;
+
+        evalMetric = evalMetric * uctScaleFactor;
+
         //evalMetric = Double.valueOf(wins + draws - losses);
     }
 
@@ -167,7 +174,6 @@ public class mcNodeHeur {
 
     public void increaseLosses() {
         losses++;
-
         if (!isRoot) {
             parent.increaseLosses();
             updateEvalMetric();
@@ -200,7 +206,9 @@ public class mcNodeHeur {
                     "losses: " + child.losses  + "\n" + "   " +
                     "draws: "  + child.draws + "\n" + "   " +
                     "total playouts: " + child.visits + "\n" + "   " +
-                    "eval metric: " + child.evalMetric + "\n";
+                    "eval metric: " + child.evalMetric + "\n" + "   " +
+                    "exploitation: " + child.exploitation + "\n" + "   " +
+                    "exploration: " + child.exploration + "\n";
 
             index += 1;
         }

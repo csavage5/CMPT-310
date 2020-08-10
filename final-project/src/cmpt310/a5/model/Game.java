@@ -3,7 +3,7 @@ package cmpt310.a5.model;
 public class Game {
 
     public Board board;
-    public static int MCTS_SEARCH_TIME = 12000;
+    public static int MCTS_SEARCH_TIME = 5000;
 
     private Agent[] players = new Agent[2];
 

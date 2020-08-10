@@ -21,7 +21,7 @@ public class PureMonteCarloAgent extends Agent{
         rootMcNode = new mcNode(board.cloneBoard());
         rootMcNode.generateChildren();
 
-        System.out.println(playerNumber.name() + " is calculating...");
+        System.out.println(playerNumber.name() + " is calculating (randomized)...");
         return pureMonteCarloSearch();
     }
 

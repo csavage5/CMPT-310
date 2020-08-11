@@ -100,14 +100,14 @@ public class TextOutput {
     public static Integer[] selectPlayerPrompt() {
         Integer[] result = new Integer[2];
         Boolean validEntries = false;
-        Float estimatedTotalRuntime = ( (float) (Game.MCTS_SEARCH_TIME * 0.001 * 64) / 60 ) * ( (float) GameController.MAX_GAME_LOOPS / 60 );
+        Float estimatedTotalRuntime = ( (float) (Game.MCTS_SEARCH_MAX_PLAYOUTS * 0.001 * 64) / 60 ) * ( (float) GameController.MAX_GAME_LOOPS / 60 );
         System.out.println("Welome to Reversi!");
 
         System.out.println("\nChoose the players for the game. The game will automatically " +
                 "restart with the selected players " + GameController.MAX_GAME_LOOPS + " times.");
 
         System.out.println("\nWith the current settings of " + GameController.MAX_GAME_LOOPS + " game loops and " +
-                        Game.MCTS_SEARCH_TIME + " milliseconds per turn" +
+                        Game.MCTS_SEARCH_MAX_PLAYOUTS + " milliseconds per turn" +
                 ", this will take an \nestimated time of " + estimatedTotalRuntime + " hours to complete " +
                 "if two Monte Carlo agents are selected.\n");
 

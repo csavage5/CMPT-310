@@ -29,10 +29,10 @@ public class PureMonteCarloAgent extends Agent{
 
         //mcNode cursor = rootMcNode;
 
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
 
         // run simulated playouts for Game.MCTS_SEARCH_TIME
-        while(System.currentTimeMillis() - startTime < Game.MCTS_SEARCH_TIME) {
+        while(rootMcNode.visits < Game.MCTS_SEARCH_MAX_PLAYOUTS) {
             //System.out.println("current time: " + (System.currentTimeMillis() - startTime));
             // randomly choose first child and
             // traverse tree from chosen child

@@ -16,8 +16,6 @@ public class Game {
         this.players[1] = player2;
     }
 
-    // TODO check if game is over
-
     public void takeTurn() {
 
         int moveLocation = -1;

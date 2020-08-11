@@ -196,11 +196,13 @@ public class Board {
     public void switchTurn() {
         didSkipTurn[state.value] = false;
         state = state.getOpposite();
+        validMoves.clear();
     }
 
     private void skipTurn() {
         didSkipTurn[state.value] = true;
         state = state.getOpposite();
+        validMoves.clear();
     }
 
     //endregion
@@ -214,7 +216,10 @@ public class Board {
      * @return true if at least 1 valid move was discovered
      */
     public boolean discoverValidMoves() {
-        // TODO break into separate methods
+        if (validMoves.size() > 0) {
+            return true;
+        }
+
         Tile playerTile = null;
         Tile enemyTile = null;
 

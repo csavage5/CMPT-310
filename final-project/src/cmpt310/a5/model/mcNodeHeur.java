@@ -27,18 +27,19 @@ public class mcNodeHeur {
 
     // for UCT calculation
     protected Double evalMetric = 0.0;
-    public float uctScalePositionWeights = 1;
+    public float uctScaleCorners = 1;
+    public float uctScaleStability = 0;
     public float uctScaleMobilityActualOpposing = 1;
     public float uctScaleMobilityPotential = 1;
     protected double exploitation;
     protected double exploration;
-    protected double c = Math.sqrt(2);
+    protected double c = 3;
 
     // Heuristics
 
     // static position weights
     // from https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf, section 5.2
-    private final Integer[] staticBoardWeights = new Integer[]{
+    private final Integer[] stabilityBoardWeights = new Integer[]{
             4, -3, 2, 2, 2, 2, -3, 4,
             -3, -4, -1, -1, -1, -1, -4, -3,
             2, -1, 1, 0, 0, 1, -1, 2,
@@ -186,37 +187,40 @@ public class mcNodeHeur {
      */
     public void checkHeuristicsPreMove(int move, mcNodeHeur newNode) {
 
-
-
-
-        //TODO add documentation
-        newNode.uctScalePositionWeights = staticBoardWeights[move];
-
-
         // check for corners
         // Corner Heuristic Calculation
-//        if (goodPositionCorner.contains(move)) {
-//            // move in the corner - good move
-//            newNode.uctScalePositionWeights = (1.5f);
-//        } else if (badPositionCornerAdjCardinal.contains(move)) {
-//            // move adjacent to corner
-//            newNode.uctScalePositionWeights = (-0.5f);
-//        } else if (veryBadPositionCornerAdjDiag.contains(move)) {
-//            // move diagonal from corner
-//            newNode.uctScalePositionWeights = (-3.0f);
-//        }
+        if (goodPositionCorner.contains(move)) {
+            // move in the corner - good move
+            newNode.uctScaleCorners = 4f;
+        } else if (badPositionCornerAdjCardinal.contains(move)) {
+            // move adjacent to corner
+            newNode.uctScaleCorners = -1.5f;
+        } else if (veryBadPositionCornerAdjDiag.contains(move)) {
+            // move diagonal from corner
+            newNode.uctScaleCorners = -15.0f;
+        }
     }
 
     private void checkHeuristicsPostMove(mcNodeHeur newNode) {
-        // Mobility (Actual)
-
+        // Heuristic: Mobility (Actual)
         //  Actual Mobility will measure the number of moves that the
         //  player for this board has. The smaller this value is, the better -
         //  goal is to minimize the number of possible moves for the opposing
         //  player. The reciprocal of this value is taken so that a smaller value
         //  will lead to a larger scale factor.
         if (newNode.board.discoverValidMoves()) {
-            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 5;
+            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 10;
+        }
+
+        // Calculate stability of tiles using stabilityBoardWeights
+        int index = 0;
+        for (Board.Tile tile : newNode.board.getGameBoard()) {
+            if (tile.value == newNode.board.state.getOpposite().value) {
+                // found tile of same turn
+                System.out.println("Tile value: " + tile.value);
+                uctScaleStability += stabilityBoardWeights[index] * 0.5;
+            }
+            index += 1;
         }
 
     }
@@ -236,8 +240,9 @@ public class mcNodeHeur {
         // Multiply evalMetric against the scale factor to get consistency if the
         // heuristic is not changed - i.e. if it stays at 1
         evalMetric = evalMetric +
-                (evalMetric * uctScalePositionWeights) +
-                (evalMetric * uctScaleMobilityActualOpposing);
+                (evalMetric * uctScaleCorners) +
+                (evalMetric * uctScaleMobilityActualOpposing) +
+                (evalMetric * uctScaleStability);
     }
 
 
@@ -287,8 +292,9 @@ public class mcNodeHeur {
                     "draws: "  + child.draws + "\n" + "   " +
                     "total playouts: " + child.visits + "\n" + "   " +
                     "eval metric: " + child.evalMetric + "\n" + "   " +
-                    "eval heur. corners: " + child.uctScalePositionWeights + "\n" + "   " +
+                    "eval heur. corners: " + child.uctScaleCorners + "\n" + "   " +
                     "eval heur. act. mobility: " + child.uctScaleMobilityActualOpposing + "\n" + "   " +
+                    "eval heur. stability: " + child.uctScaleStability + "\n" + "   " +
                     "exploitation: " + child.exploitation + "\n" + "   " +
                     "exploration: " + child.exploration + "\n";
 

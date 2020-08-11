@@ -15,15 +15,10 @@ public class Board {
         NONE(2),
         TIE(3);
 
-        private int value;
-        private boolean didSkip;
+        public int value;
 
         Turn(int value) {
             this.value = value;
-        }
-
-        public boolean isDidSkip() {
-            return didSkip;
         }
 
         public Turn getOpposite() {
@@ -45,7 +40,7 @@ public class Board {
         ValidMove(2),
         Empty(3);
 
-        private int value;
+        public int value;
 
         Tile(int value) {
             this.value = value;

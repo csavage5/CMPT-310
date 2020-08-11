@@ -27,7 +27,7 @@ public class mcNodeHeur {
 
     // for UCT calculation
     protected Double evalMetric = 0.0;
-    public float uctScaleCorners = 1;
+    public float uctScalePositionWeights = 1;
     public float uctScaleMobilityActualOpposing = 1;
     public float uctScaleMobilityPotential = 1;
     protected double exploitation;
@@ -35,6 +35,19 @@ public class mcNodeHeur {
     protected double c = Math.sqrt(2);
 
     // Heuristics
+
+    // static position weights
+    // from https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf, section 5.2
+    private final Integer[] staticBoardWeights = new Integer[]{
+            4, -3, 2, 2, 2, 2, -3, 4,
+            -3, -4, -1, -1, -1, -1, -4, -3,
+            2, -1, 1, 0, 0, 1, -1, 2,
+            2, -1, 0, 1, 1, 0, -1, 2,
+            2, -1, 0, 1, 1, 0, -1, 2,
+            2, -1, 1, 0, 0, 1, -1, 2,
+            -3, -4, -1, -1, -1, -1, -4, -3,
+            4, -3, 2, 2, 2, 2, -3, 4
+    };
 
     // corners are good positions
     private final List<Integer> goodPositionCorner = Arrays.asList(0, 7, 50, 63);
@@ -172,37 +185,26 @@ public class mcNodeHeur {
      * @param newNode
      */
     public void checkHeuristicsPreMove(int move, mcNodeHeur newNode) {
-        //float val = 1f;
 
-        // check for corners
 
-        // set val according to which player's turn it is
-        // i.e. if it's this agent's turn, the corner move will
-        //      increase the uctScaleFactor, and the adjacent corner
-        //      move will decrease it.
 
-        // agent's turn
-//        if (newNode.board.state == newNode.agentOrder) {
-//            val = 1f;
-//
-//        } else if (newNode.board.state == newNode.agentOrder.getOpposite()) {
-//            //not agent's turn
-//            val = -1f;
-//        }
 
         //TODO add documentation
+        newNode.uctScalePositionWeights = staticBoardWeights[move];
 
+
+        // check for corners
         // Corner Heuristic Calculation
-        if (goodPositionCorner.contains(move)) {
-            // move in the corner - good move
-            newNode.uctScaleCorners = (1.5f);
-        } else if (badPositionCornerAdjCardinal.contains(move)) {
-            // move adjacent to corner
-            newNode.uctScaleCorners = (-0.5f);
-        } else if (veryBadPositionCornerAdjDiag.contains(move)) {
-            // move diagonal from corner
-            newNode.uctScaleCorners = (-3.0f);
-        }
+//        if (goodPositionCorner.contains(move)) {
+//            // move in the corner - good move
+//            newNode.uctScalePositionWeights = (1.5f);
+//        } else if (badPositionCornerAdjCardinal.contains(move)) {
+//            // move adjacent to corner
+//            newNode.uctScalePositionWeights = (-0.5f);
+//        } else if (veryBadPositionCornerAdjDiag.contains(move)) {
+//            // move diagonal from corner
+//            newNode.uctScalePositionWeights = (-3.0f);
+//        }
     }
 
     private void checkHeuristicsPostMove(mcNodeHeur newNode) {
@@ -234,7 +236,7 @@ public class mcNodeHeur {
         // Multiply evalMetric against the scale factor to get consistency if the
         // heuristic is not changed - i.e. if it stays at 1
         evalMetric = evalMetric +
-                (evalMetric * uctScaleCorners) +
+                (evalMetric * uctScalePositionWeights) +
                 (evalMetric * uctScaleMobilityActualOpposing);
     }
 
@@ -285,7 +287,7 @@ public class mcNodeHeur {
                     "draws: "  + child.draws + "\n" + "   " +
                     "total playouts: " + child.visits + "\n" + "   " +
                     "eval metric: " + child.evalMetric + "\n" + "   " +
-                    "eval heur. corners: " + child.uctScaleCorners + "\n" + "   " +
+                    "eval heur. corners: " + child.uctScalePositionWeights + "\n" + "   " +
                     "eval heur. act. mobility: " + child.uctScaleMobilityActualOpposing + "\n" + "   " +
                     "exploitation: " + child.exploitation + "\n" + "   " +
                     "exploration: " + child.exploration + "\n";

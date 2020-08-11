@@ -33,7 +33,7 @@ public class mcNodeHeur {
     public float uctScaleMobilityPotential = 1;
     protected double exploitation;
     protected double exploration;
-    protected double c = 3;
+    protected double c = Math.sqrt(2);
 
     // Heuristics
 
@@ -209,19 +209,19 @@ public class mcNodeHeur {
         //  player. The reciprocal of this value is taken so that a smaller value
         //  will lead to a larger scale factor.
         if (newNode.board.discoverValidMoves()) {
-            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 10;
+            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
         }
 
         // Calculate stability of tiles using stabilityBoardWeights
-        int index = 0;
-        for (Board.Tile tile : newNode.board.getGameBoard()) {
-            if (tile.value == newNode.board.state.getOpposite().value) {
-                // found tile of same turn
-                System.out.println("Tile value: " + tile.value);
-                uctScaleStability += stabilityBoardWeights[index] * 0.5;
-            }
-            index += 1;
-        }
+//        int index = 0;
+//        for (Board.Tile tile : newNode.board.getGameBoard()) {
+//            if (tile.value == newNode.board.state.getOpposite().value) {
+//                // found tile of same turn
+//                //System.out.println("Tile value: " + tile.value);
+//                uctScaleStability += stabilityBoardWeights[index] * 0.5;
+//            }
+//            index += 1;
+//        }
 
     }
 

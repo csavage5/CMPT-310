@@ -8,7 +8,7 @@ import cmpt310.a5.view.*;
  * Receives results from Model and tells the View what to display.
  */
 public class GameController {
-    public static final int MAX_GAME_LOOPS = 30;
+    public int MAX_GAME_LOOPS;
     private Game game;
     private int gamesWonP1 = 0;
     private int gamesWonP2 = 0;
@@ -20,6 +20,8 @@ public class GameController {
         Integer[] selection = TextOutput.selectPlayerPrompt();
         game = new Game(getAgentTypeFromInput(selection[0], Board.Turn.PLAYER1),
                 getAgentTypeFromInput(selection[1], Board.Turn.PLAYER2));
+
+        MAX_GAME_LOOPS = selection[2];
 
         gameLoop();
     }

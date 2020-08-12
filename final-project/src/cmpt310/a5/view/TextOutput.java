@@ -98,27 +98,49 @@ public class TextOutput {
 
 
     public static Integer[] selectPlayerPrompt() {
-        Integer[] result = new Integer[2];
+        Integer[] result = new Integer[3];
         Boolean validEntries = false;
-        Float estimatedTotalRuntime = (2) * ( (float) GameController.MAX_GAME_LOOPS / 60 );
+
         System.out.println("Welome to Reversi!");
 
-        System.out.println("\nChoose the players for the game. The game will automatically " +
-                "restart with the selected players " + GameController.MAX_GAME_LOOPS + " times.");
+        System.out.println("\nRules / Information: ");
+        System.out.println("   - Player 1 will always go first\n" +
+                "   - if a human agent is selected, coordinates are entered like: 'A6' or 'a6'.\n" +
+                "     The program will prompt you again if it can't interpret your input.\n" +
+                "   - Read the README for information on how to change the active heuristic.\n");
 
-        System.out.println("\nWith the current settings of " + GameController.MAX_GAME_LOOPS + " game loops and " +
+
+        while (!validEntries) {
+            try {
+                System.out.print("Choose the number of games to play: ");
+                result[2] = Integer.parseInt(scanner.nextLine());
+
+                if (result[2] < 1) {
+                    throw new NumberFormatException();
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid entry, try again\n");
+                continue;
+            }
+
+            validEntries = true;
+        }
+
+        Float estimatedTotalRuntime = (2) * ( (float) result[2] / 60 );
+
+        System.out.println("\nWith the current settings of " + result[2] + " games and " +
                         Game.MCTS_SEARCH_MAX_PLAYOUTS + " playouts per turn" +
                 ", this will take an \nestimated time of " + estimatedTotalRuntime + " hours to complete " +
                 "if two Monte Carlo agents are selected.\n");
 
-        System.out.println("Information: ");
-        System.out.println("   - Player 1 will always go first\n" +
-                "   - if a human agent is selected, coordinates are entered like: 'A6' or 'a6'.\n" +
-                "     The program will prompt you again if it can't interpret your input.\n" +
-                "   - Read the README for information on how to change the active heuristic or total game loops.\n");
+        System.out.println("Choose the players for the game. The game will automatically " +
+                "restart with the selected players " + result[2] + " times." +
+                "\nThe total number of wins and draws for each player will be displayed after each game.\n");
 
         System.out.print("Enter: \n   0 for Human \n   1 for Pure Monte Carlo \n   2 for Monte Carlo with heuristics\n");
 
+        validEntries = false;
         while (!validEntries) {
 
             try {

@@ -111,6 +111,12 @@ public class TextOutput {
                 ", this will take an \nestimated time of " + estimatedTotalRuntime + " hours to complete " +
                 "if two Monte Carlo agents are selected.\n");
 
+        System.out.println("Information: ");
+        System.out.println("   - Player 1 will always go first\n" +
+                "   - if a human agent is selected, coordinates are entered like: 'A6' or 'a6'.\n" +
+                "     The program will prompt you again if it can't interpret your input.\n" +
+                "   - Read the README for information on how to change the active heuristic or total game loops.\n");
+
         System.out.print("Enter: \n   0 for Human \n   1 for Pure Monte Carlo \n   2 for Monte Carlo with heuristics\n");
 
         while (!validEntries) {

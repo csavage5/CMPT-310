@@ -186,10 +186,8 @@ public class mcNodeHeur {
      * @param newNode
      */
     public void checkHeuristicsPreMove(int move, mcNodeHeur newNode) {
-        // todo adjust to use static values
-       // newNode.uctScaleCorners = stabilityBoardWeights[move];
-        // check for corners
-        // Corner Heuristic Calculation
+
+        // ** Heuristic: Corners **
         if (goodPositionCorner.contains(move)) {
             // move in the corner - good move
             newNode.uctScaleCorners = 4f;
@@ -203,7 +201,7 @@ public class mcNodeHeur {
     }
 
     private void checkHeuristicsPostMove(mcNodeHeur newNode) {
-        // Heuristic: Mobility (Actual)
+        // ** Heuristic: Mobility (Actual) **
         //  Actual Mobility will measure the number of moves that the
         //  player for this board has. The smaller this value is, the better -
         //  goal is to minimize the number of possible moves for the opposing
@@ -213,7 +211,7 @@ public class mcNodeHeur {
             newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
         }
 
-        // Calculate stability of tiles using stabilityBoardWeights
+        // ** Heuristic: Stability **
 //        int index = 0;
 //        for (Board.Tile tile : newNode.board.getGameBoard()) {
 //            if (tile.value == newNode.board.state.getOpposite().value) {
@@ -242,6 +240,7 @@ public class mcNodeHeur {
 
         // Multiply evalMetric against the scale factor to get consistency if the
         // heuristic is not changed - i.e. if it stays at 1
+
 
         // ** Heuristic: Corners Only **
 //        evalMetric = evalMetric +

@@ -209,23 +209,23 @@ public class mcNodeHeur {
         //  goal is to minimize the number of possible moves for the opposing
         //  player. The reciprocal of this value is taken so that a smaller value
         //  will lead to a larger scale factor.
-        if (newNode.board.discoverValidMoves()) {
-            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
-        }
+//        if (newNode.board.discoverValidMoves()) {
+//            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
+//        }
 
         // Calculate stability of tiles using stabilityBoardWeights
-        int index = 0;
-        for (Board.Tile tile : newNode.board.getGameBoard()) {
-            if (tile.value == newNode.board.state.getOpposite().value) {
-                // found tile of same turn
-                //System.out.println("Tile value: " + tile.value);
-                uctScaleStability += stabilityBoardWeights[index];
-            }
-            index += 1;
-        }
-        // lowest possible is 53, add 54 to avoid ln(<=0)
-        uctScaleStability += 54;
-        uctScaleStability = (float) Math.log(uctScaleStability);
+//        int index = 0;
+//        for (Board.Tile tile : newNode.board.getGameBoard()) {
+//            if (tile.value == newNode.board.state.getOpposite().value) {
+//                // found tile of same turn
+//                //System.out.println("Tile value: " + tile.value);
+//                uctScaleStability += stabilityBoardWeights[index];
+//            }
+//            index += 1;
+//        }
+//        // lowest possible is 53, add 54 to avoid ln(<=0)
+//        uctScaleStability += 54;
+//        uctScaleStability = (float) Math.log(uctScaleStability);
     }
 
     public void updateEvalMetric() {
@@ -242,40 +242,25 @@ public class mcNodeHeur {
 
         // Multiply evalMetric against the scale factor to get consistency if the
         // heuristic is not changed - i.e. if it stays at 1
-//        evalMetric = evalMetric +
-//                (evalMetric * uctScaleCorners) +
-//                (evalMetric * uctScaleMobilityActualOpposing) +
-//                (evalMetric * uctScaleStability);
 
-        // Heuristic: Corners
-//        evalMetric = evalMetric +
-//                (evalMetric * uctScaleCorners);
-
-        // Heuristic: Corners + stability
-//        evalMetric = evalMetric +
-//                (evalMetric * uctScaleCorners) +
-//                (evalMetric * uctScaleStability);
-
-        // Heuristic: Corners + stability (weighted)
-//        evalMetric = evalMetric +
-//                (evalMetric * uctScaleCorners) +
-//                (uctScaleStability);
-
-        // Heuristic: Corner + actual mobility (weighted)
+        // ** Heuristic: Corners Only **
         evalMetric = evalMetric +
-                (evalMetric * uctScaleCorners) +
-                (uctScaleMobilityActualOpposing * 0.9);
+                (evalMetric * uctScaleCorners);
 
-
-        // Heuristic : corner + actual mobility (unweighted)
+        // ** Heuristic: Corners + Stability **
 //        evalMetric = evalMetric +
 //                (evalMetric * uctScaleCorners) +
-//                (evalMetric * uctScaleMobilityActualOpposing);
+//                (evalMetric * uctScaleStability);
+
+        // ** Heuristic: Corners + Actual Mobility ** - best results
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners) +
+//                (uctScaleMobilityActualOpposing * 0.9);
+
     }
 
 
     //region Statistics
-
     public void increaseWins() {
         wins++;
         if (!isRoot) {

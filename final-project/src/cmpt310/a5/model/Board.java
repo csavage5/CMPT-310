@@ -386,7 +386,6 @@ public class Board {
     //endregion
 
 
-
     //region Utility
 
     private Integer[] generateNewBitmap() {

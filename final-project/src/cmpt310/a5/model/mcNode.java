@@ -3,6 +3,10 @@ package cmpt310.a5.model;
 import java.util.ArrayList;
 import java.util.Random;
 
+
+/**
+ * Facilitates the tree structure of pure MCTS
+ */
 public class mcNode {
 
     protected ArrayList<mcNode> children = new ArrayList<>();
@@ -27,7 +31,6 @@ public class mcNode {
         this.parent = parent;
         this.board = board;
 
-        //generateChildren();
     }
 
     public void generateChildren() {
@@ -40,10 +43,8 @@ public class mcNode {
             return;
         }
 
-        //System.out.print("Generating children...");
-
         if (board.discoverValidMoves()) {
-            //System.out.println(board.validMoves.keySet());
+
             mcNode temp;
             for (Integer key : board.validMoves.keySet()) {
                 // generate new node, add cloned board + current node as parent
@@ -63,9 +64,6 @@ public class mcNode {
             // add current board as sole child of this state
             children.add(new mcNode(this, board.cloneBoard()));
         }
-
-        //System.out.print("Done.");
-
 
     }
 

@@ -3,7 +3,7 @@ package cmpt310.a5.model;
 import java.util.HashMap;
 
 /**
- * Utility class
+ * Utility class for coordinate manipulation
  */
 public class Position {
 

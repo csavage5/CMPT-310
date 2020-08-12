@@ -8,7 +8,6 @@ import java.util.Random;
 public class PureMonteCarloAgent extends Agent{
 
     private mcNode rootMcNode;
-    private Random rand = new Random();
     private long totalIterations = 0;
 
     public PureMonteCarloAgent(Board.Turn playerNumber) {

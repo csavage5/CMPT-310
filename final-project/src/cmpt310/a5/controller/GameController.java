@@ -27,7 +27,7 @@ public class GameController {
     }
 
     private void gameLoop() {
-        //System.out.println("nanosecond length: " + System.nanoTime());
+
         while (!game.isGameFinished()) {
 
             if (game.discoverValidMoves()) {

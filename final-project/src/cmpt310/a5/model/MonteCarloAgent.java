@@ -30,11 +30,8 @@ public class MonteCarloAgent extends Agent{
 
         // run simulated playouts for Game.MCTS_SEARCH_TIME
         while(rootMcNode.visits < Game.MCTS_SEARCH_MAX_PLAYOUTS) {
-            //System.out.println("current time: " + (System.currentTimeMillis() - startTime));
             // randomly choose first child and
             // traverse tree from chosen child
-            //System.out.println("at root node");
-            //System.out.println("size of root's children: " + rootMcNode.children.size());
             treeTraversal(rootMcNode.getChildToExplore());
             rootMcNode.generateOrUpdateChildren();
         }
@@ -42,7 +39,6 @@ public class MonteCarloAgent extends Agent{
         rootMcNode.displayChildInfo();
         System.out.println("Total playouts: " + rootMcNode.visits);
         System.out.println("Total iterations: " + totalIterations);
-        //System.out.println("Total wins: " + rootMcNode.wins);
         return rootMcNode.getBestChild().validMoveLocation;
     }
 
@@ -59,13 +55,10 @@ public class MonteCarloAgent extends Agent{
             cursor.generateOrUpdateChildren();
         }
 
-        //System.out.println("Went " + counter + " levels deep to find endgame");
         // add to original child's win/loss/draw statistics
         // depending on victor value and this.playerNumber
         if (cursor.board.victor == this.playerNumber) {
             child.increaseWins();
-            //System.out.println("Victory gameboard: ");
-            //TextOutput.printBoard(cursor.board.getGameBoardWithValidMoves());
             //System.out.println("Sim WIN");
 
         } else if (cursor.board.victor.getOpposite() == this.playerNumber) {

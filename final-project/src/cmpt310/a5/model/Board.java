@@ -1,11 +1,13 @@
 package cmpt310.a5.model;
 
-import cmpt310.a5.view.TextOutput;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
+/**
+ * Records state of game board
+ */
 public class Board {
 
     //region Enums

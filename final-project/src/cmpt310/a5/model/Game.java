@@ -1,5 +1,8 @@
 package cmpt310.a5.model;
 
+/**
+ * Overarching class that stores Agents, board state, initiates actions
+ */
 public class Game {
 
     public Board board;

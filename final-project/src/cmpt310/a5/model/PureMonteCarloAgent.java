@@ -2,7 +2,9 @@ package cmpt310.a5.model;
 
 import java.util.Random;
 
-
+/**
+ * Agent to perform pure MCTS
+ */
 public class PureMonteCarloAgent extends Agent{
 
     private mcNode rootMcNode;

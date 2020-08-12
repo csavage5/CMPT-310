@@ -4,11 +4,9 @@ import java.lang.Math;
 import java.util.*;
 
 /**
- * Duplicate of McNode, but has overloaded functions to
+ * Duplicate of McNode, but has changed functions to
  * search for nodes with a heuristic instead of randomly
  */
-
-//TODO see if this can be subclassed to mcNode again
 
 public class mcNodeHeur {
     protected ArrayList<mcNodeHeur> children = new ArrayList<>();

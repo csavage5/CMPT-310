@@ -1,6 +1,8 @@
 package cmpt310.a5.model;
 
-
+/**
+ * Agent to perform MCTS with heuristics
+ */
 public class MonteCarloAgent extends Agent{
 
     private mcNodeHeur rootMcNode;

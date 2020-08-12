@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Pushes UI to console output
+ * Pushes text UI to console output and receives user input
  */
 public class TextOutput {
 

@@ -33,7 +33,7 @@ public class mcNodeHeur {
     public float uctScaleMobilityPotential = 1;
     protected double exploitation;
     protected double exploration;
-    protected double c = Math.sqrt(2);
+    protected double c = 5;
 
     // Heuristics
 
@@ -186,7 +186,8 @@ public class mcNodeHeur {
      * @param newNode
      */
     public void checkHeuristicsPreMove(int move, mcNodeHeur newNode) {
-
+        // todo adjust to use static values
+       // newNode.uctScaleCorners = stabilityBoardWeights[move];
         // check for corners
         // Corner Heuristic Calculation
         if (goodPositionCorner.contains(move)) {
@@ -194,7 +195,7 @@ public class mcNodeHeur {
             newNode.uctScaleCorners = 4f;
         } else if (badPositionCornerAdjCardinal.contains(move)) {
             // move adjacent to corner
-            newNode.uctScaleCorners = -1.5f;
+            newNode.uctScaleCorners = -0.5f;
         } else if (veryBadPositionCornerAdjDiag.contains(move)) {
             // move diagonal from corner
             newNode.uctScaleCorners = -15.0f;
@@ -213,16 +214,18 @@ public class mcNodeHeur {
         }
 
         // Calculate stability of tiles using stabilityBoardWeights
-//        int index = 0;
-//        for (Board.Tile tile : newNode.board.getGameBoard()) {
-//            if (tile.value == newNode.board.state.getOpposite().value) {
-//                // found tile of same turn
-//                //System.out.println("Tile value: " + tile.value);
-//                uctScaleStability += stabilityBoardWeights[index] * 0.5;
-//            }
-//            index += 1;
-//        }
-
+        int index = 0;
+        for (Board.Tile tile : newNode.board.getGameBoard()) {
+            if (tile.value == newNode.board.state.getOpposite().value) {
+                // found tile of same turn
+                //System.out.println("Tile value: " + tile.value);
+                uctScaleStability += stabilityBoardWeights[index];
+            }
+            index += 1;
+        }
+        // lowest possible is 53, add 54 to avoid ln(<=0)
+        uctScaleStability += 54;
+        uctScaleStability = (float) Math.log(uctScaleStability);
     }
 
     public void updateEvalMetric() {
@@ -239,10 +242,35 @@ public class mcNodeHeur {
 
         // Multiply evalMetric against the scale factor to get consistency if the
         // heuristic is not changed - i.e. if it stays at 1
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners) +
+//                (evalMetric * uctScaleMobilityActualOpposing) +
+//                (evalMetric * uctScaleStability);
+
+        // Heuristic: Corners
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners);
+
+        // Heuristic: Corners + stability
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners) +
+//                (evalMetric * uctScaleStability);
+
+        // Heuristic: Corners + stability (weighted)
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners) +
+//                (uctScaleStability);
+
+        // Heuristic: Corner + actual mobility (weighted)
         evalMetric = evalMetric +
                 (evalMetric * uctScaleCorners) +
-                (evalMetric * uctScaleMobilityActualOpposing) +
-                (evalMetric * uctScaleStability);
+                (uctScaleMobilityActualOpposing * 0.9);
+
+
+        // Heuristic : corner + actual mobility (unweighted)
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners) +
+//                (evalMetric * uctScaleMobilityActualOpposing);
     }
 
 

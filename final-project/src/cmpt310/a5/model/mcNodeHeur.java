@@ -209,9 +209,9 @@ public class mcNodeHeur {
         //  goal is to minimize the number of possible moves for the opposing
         //  player. The reciprocal of this value is taken so that a smaller value
         //  will lead to a larger scale factor.
-//        if (newNode.board.discoverValidMoves()) {
-//            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
-//        }
+        if (newNode.board.discoverValidMoves()) {
+            newNode.uctScaleMobilityActualOpposing = (1.0f / newNode.board.validMoves.size()) * 4;
+        }
 
         // Calculate stability of tiles using stabilityBoardWeights
 //        int index = 0;
@@ -244,8 +244,8 @@ public class mcNodeHeur {
         // heuristic is not changed - i.e. if it stays at 1
 
         // ** Heuristic: Corners Only **
-        evalMetric = evalMetric +
-                (evalMetric * uctScaleCorners);
+//        evalMetric = evalMetric +
+//                (evalMetric * uctScaleCorners);
 
         // ** Heuristic: Corners + Stability **
 //        evalMetric = evalMetric +
@@ -253,9 +253,9 @@ public class mcNodeHeur {
 //                (evalMetric * uctScaleStability);
 
         // ** Heuristic: Corners + Actual Mobility ** - best results
-//        evalMetric = evalMetric +
-//                (evalMetric * uctScaleCorners) +
-//                (uctScaleMobilityActualOpposing * 0.9);
+        evalMetric = evalMetric +
+                (evalMetric * uctScaleCorners) +
+                (uctScaleMobilityActualOpposing * 0.9);
 
     }
 
